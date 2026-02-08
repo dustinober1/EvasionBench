@@ -1,0 +1,25 @@
+# Data and models
+/data/
+/models/
+/experiments/
+/.cache/
+/.venv/
+.env
+.env.*
+
+# Notebook checkpoints
+.ipynb_checkpoints
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# DVC
+.dvc/
+
+# Docker
+docker-compose.override.yml
+
+# OS
+.DS_Store
