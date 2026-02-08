@@ -51,10 +51,137 @@ stages:
       size: 12231890
     - path: scripts/prepare_data.py
       hash: md5
-      md5: 2e7d67c622c48ce9948ebf3f74ac7d9d
-      size: 1541
+      md5: 53aca501e3c3e5ae8271ece3679e3fc8
+      size: 1672
     outs:
     - path: data/processed/evasionbench_prepared.parquet
       hash: md5
-      md5: d6a6c7cef112f23f18599b8ed48a63b1
-      size: 12269487
+      md5: 57b710613f26d8e8c1b9bb6097457116
+      size: 12273749
+  analyze_core_stats:
+    cmd: python scripts/analyze_core_stats.py --input 
+      data/processed/evasionbench_prepared.parquet --output-root 
+      artifacts/analysis/phase3
+    deps:
+    - path: data/processed/evasionbench_prepared.parquet
+      hash: md5
+      md5: 57b710613f26d8e8c1b9bb6097457116
+      size: 12273749
+    - path: scripts/analyze_core_stats.py
+      hash: md5
+      md5: cd5519757f8d48384e32607e90416210
+      size: 1103
+    - path: src/analysis/artifacts.py
+      hash: md5
+      md5: 5830451d77c34def7f4b335520c6a067
+      size: 2437
+    - path: src/analysis/core_stats.py
+      hash: md5
+      md5: 15d98b2907663ef13887406f5e8aaaff
+      size: 7751
+    outs:
+    - path: artifacts/analysis/phase3/core_stats
+      hash: md5
+      md5: cb19c2139ddf064206306a77b78387e6.dir
+      size: 83076
+      nfiles: 11
+  analyze_lexical:
+    cmd: python scripts/analyze_lexical.py --input 
+      data/processed/evasionbench_prepared.parquet --output-root 
+      artifacts/analysis/phase3
+    deps:
+    - path: data/processed/evasionbench_prepared.parquet
+      hash: md5
+      md5: 57b710613f26d8e8c1b9bb6097457116
+      size: 12273749
+    - path: scripts/analyze_lexical.py
+      hash: md5
+      md5: 640c10df53d504eb064f7c1c0dc0beee
+      size: 1214
+    - path: src/analysis/artifacts.py
+      hash: md5
+      md5: 5830451d77c34def7f4b335520c6a067
+      size: 2437
+    - path: src/analysis/lexical.py
+      hash: md5
+      md5: cf4b59c6770623f296b2c47d9c71a466
+      size: 4910
+    outs:
+    - path: artifacts/analysis/phase3/lexical
+      hash: md5
+      md5: 924536c0772e1891a363e3001b66ab22.dir
+      size: 170414
+      nfiles: 15
+  analyze_linguistic_quality:
+    cmd: python scripts/analyze_linguistic_quality.py --input 
+      data/processed/evasionbench_prepared.parquet --output-root 
+      artifacts/analysis/phase3
+    deps:
+    - path: data/processed/evasionbench_prepared.parquet
+      hash: md5
+      md5: 57b710613f26d8e8c1b9bb6097457116
+      size: 12273749
+    - path: scripts/analyze_linguistic_quality.py
+      hash: md5
+      md5: 52f386182fbe763ac08503e301a3b73f
+      size: 1214
+    - path: src/analysis/artifacts.py
+      hash: md5
+      md5: 5830451d77c34def7f4b335520c6a067
+      size: 2437
+    - path: src/analysis/linguistic_quality.py
+      hash: md5
+      md5: 63c7ff51a576a13b0f4a1ec7046c14ed
+      size: 7428
+    outs:
+    - path: artifacts/analysis/phase3/linguistic_quality
+      hash: md5
+      md5: 9f579310aab8652056b0ed73472b36ed.dir
+      size: 509380
+      nfiles: 10
+  analyze_phase3:
+    cmd: python scripts/run_phase3_analyses.py --input 
+      data/processed/evasionbench_prepared.parquet --output-root 
+      artifacts/analysis/phase3 --families all
+    deps:
+    - path: data/processed/evasionbench_prepared.parquet
+      hash: md5
+      md5: 57b710613f26d8e8c1b9bb6097457116
+      size: 12273749
+    - path: scripts/analyze_core_stats.py
+      hash: md5
+      md5: cd5519757f8d48384e32607e90416210
+      size: 1103
+    - path: scripts/analyze_lexical.py
+      hash: md5
+      md5: 640c10df53d504eb064f7c1c0dc0beee
+      size: 1214
+    - path: scripts/analyze_linguistic_quality.py
+      hash: md5
+      md5: 52f386182fbe763ac08503e301a3b73f
+      size: 1214
+    - path: scripts/run_phase3_analyses.py
+      hash: md5
+      md5: 6995bc29be17e8a442f2b11ce776e27c
+      size: 2229
+    - path: src/analysis/artifacts.py
+      hash: md5
+      md5: 5830451d77c34def7f4b335520c6a067
+      size: 2437
+    - path: src/analysis/core_stats.py
+      hash: md5
+      md5: 15d98b2907663ef13887406f5e8aaaff
+      size: 7751
+    - path: src/analysis/lexical.py
+      hash: md5
+      md5: cf4b59c6770623f296b2c47d9c71a466
+      size: 4910
+    - path: src/analysis/linguistic_quality.py
+      hash: md5
+      md5: 63c7ff51a576a13b0f4a1ec7046c14ed
+      size: 7428
+    outs:
+    - path: artifacts/analysis/phase3/artifact_index.json
+      hash: md5
+      md5: 99de353691b9eeba743af7f9b0ba9feb
+      size: 2557

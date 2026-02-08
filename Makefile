@@ -1,4 +1,4 @@
-.PHONY: env install test lint format verify-structure ci-check run-api run-dashboard data-fetch data-validate data-prepare run-experiment
+.PHONY: env install test lint format verify-structure ci-check run-api run-dashboard data-fetch data-validate data-prepare run-experiment analysis-phase3
 
 env:
 	python -m venv .venv
@@ -40,3 +40,6 @@ data-prepare:
 
 run-experiment:
 	python scripts/run_experiment.py --tracking-uri file:./mlruns --experiment-name evasionbench-baselines
+
+analysis-phase3:
+	python scripts/run_phase3_analyses.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/analysis/phase3 --families all

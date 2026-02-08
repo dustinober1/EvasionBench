@@ -23,3 +23,48 @@ stages:
       - data/contracts/evasionbench_manifest.json
     outs:
       - data/processed/evasionbench_prepared.parquet
+
+  analyze_core_stats:
+    cmd: python scripts/analyze_core_stats.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/analysis/phase3
+    deps:
+      - scripts/analyze_core_stats.py
+      - src/analysis/core_stats.py
+      - src/analysis/artifacts.py
+      - data/processed/evasionbench_prepared.parquet
+    outs:
+      - artifacts/analysis/phase3/core_stats
+
+  analyze_lexical:
+    cmd: python scripts/analyze_lexical.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/analysis/phase3
+    deps:
+      - scripts/analyze_lexical.py
+      - src/analysis/lexical.py
+      - src/analysis/artifacts.py
+      - data/processed/evasionbench_prepared.parquet
+    outs:
+      - artifacts/analysis/phase3/lexical
+
+  analyze_linguistic_quality:
+    cmd: python scripts/analyze_linguistic_quality.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/analysis/phase3
+    deps:
+      - scripts/analyze_linguistic_quality.py
+      - src/analysis/linguistic_quality.py
+      - src/analysis/artifacts.py
+      - data/processed/evasionbench_prepared.parquet
+    outs:
+      - artifacts/analysis/phase3/linguistic_quality
+
+  analyze_phase3:
+    cmd: python scripts/run_phase3_analyses.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/analysis/phase3 --families all
+    deps:
+      - scripts/run_phase3_analyses.py
+      - scripts/analyze_core_stats.py
+      - scripts/analyze_lexical.py
+      - scripts/analyze_linguistic_quality.py
+      - src/analysis/artifacts.py
+      - src/analysis/core_stats.py
+      - src/analysis/lexical.py
+      - src/analysis/linguistic_quality.py
+      - data/processed/evasionbench_prepared.parquet
+    outs:
+      - artifacts/analysis/phase3/artifact_index.json
