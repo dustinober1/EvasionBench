@@ -2,6 +2,7 @@
 /data/
 /models/
 /experiments/
+/mlruns/
 /.cache/
 /.venv/
 .env
@@ -24,3 +25,6 @@ docker-compose.override.yml
 # OS
 .DS_Store
 firebase-debug.log
+
+!data/contracts/
+!data/contracts/evasionbench_manifest.json

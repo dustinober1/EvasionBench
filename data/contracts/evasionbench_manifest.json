@@ -1,0 +1,29 @@
+{
+  "checksum_sha256": "5f1fd37b31b71411a2070d2f2c46bfeaa9d378d861b04460657cf6b9096053c7",
+  "dataset": {
+    "dataset_id": "FutureMa/EvasionBench",
+    "revision": "main",
+    "split": "train"
+  },
+  "generated_at_utc": "2026-02-08T20:38:36.335665Z",
+  "row_count": 16726,
+  "schema": [
+    {
+      "dtype": "object",
+      "name": "uid"
+    },
+    {
+      "dtype": "object",
+      "name": "question"
+    },
+    {
+      "dtype": "object",
+      "name": "answer"
+    },
+    {
+      "dtype": "object",
+      "name": "eva4b_label"
+    }
+  ],
+  "source_file": "data/raw/evasionbench.parquet"
+}
