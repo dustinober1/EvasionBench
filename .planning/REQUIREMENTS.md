@@ -18,8 +18,8 @@
 - [x] **ANLY-02**: User can generate answer/question length distribution analysis with statistical significance tests
 - [x] **ANLY-03**: User can compute lexical and n-gram feature comparisons by evasiveness label
 - [x] **ANLY-04**: User can compute readability, POS, and discourse marker analyses by label
-- [ ] **ANLY-05**: User can run question-answer semantic similarity analysis and include findings in the report
-- [ ] **ANLY-06**: User can run topic and question-type analyses tied to evasion behavior hypotheses
+- [x] **ANLY-05**: User can run question-answer semantic similarity analysis and include findings in the report
+- [x] **ANLY-06**: User can run topic and question-type analyses tied to evasion behavior hypotheses
 
 ### Modeling
 
@@ -92,8 +92,8 @@
 | ANLY-02 | Phase 3 | Complete |
 | ANLY-03 | Phase 3 | Complete |
 | ANLY-04 | Phase 3 | Complete |
-| ANLY-05 | Phase 4 | Pending |
-| ANLY-06 | Phase 4 | Pending |
+| ANLY-05 | Phase 4 | Complete |
+| ANLY-06 | Phase 4 | Complete |
 | MODL-01 | Phase 5 | Pending |
 | MODL-02 | Phase 5 | Pending |
 | MODL-03 | Phase 6 | Pending |
@@ -123,4 +123,4 @@
 
 ---
 *Requirements defined: 2026-02-08*
-*Last updated: 2026-02-08 after completing Phase 3*
+*Last updated: 2026-02-08 after completing Phase 4*
