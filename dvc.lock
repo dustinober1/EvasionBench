@@ -1,0 +1,60 @@
+schema: '2.0'
+stages:
+  download_data:
+    cmd: python scripts/download_data.py --output data/raw/evasionbench.parquet 
+      --revision main
+    deps:
+    - path: scripts/download_data.py
+      hash: md5
+      md5: 8d42fffb3e99aebed954b817a54012a5
+      size: 1338
+    - path: src/data.py
+      hash: md5
+      md5: 8be23b75ef01beec8c2276a357095bb4
+      size: 1658
+    outs:
+    - path: data/raw/evasionbench.parquet
+      hash: md5
+      md5: 58b662e58da61b397223743bcfab02bd
+      size: 12231890
+  validate_data:
+    cmd: python scripts/validate_dataset.py --data data/raw/evasionbench.parquet
+      --contract data/contracts/evasionbench_manifest.json
+    deps:
+    - path: data/contracts/evasionbench_manifest.json
+      hash: md5
+      md5: 7bffa46605bc4901634540135532e044
+      size: 591
+    - path: data/raw/evasionbench.parquet
+      hash: md5
+      md5: 58b662e58da61b397223743bcfab02bd
+      size: 12231890
+    - path: scripts/validate_dataset.py
+      hash: md5
+      md5: f705ecb33dbaea595fe7b5ab8e81107a
+      size: 2303
+    - path: src/data.py
+      hash: md5
+      md5: 8be23b75ef01beec8c2276a357095bb4
+      size: 1658
+  prepare_data:
+    cmd: python scripts/prepare_data.py --input data/raw/evasionbench.parquet 
+      --output data/processed/evasionbench_prepared.parquet
+    deps:
+    - path: data/contracts/evasionbench_manifest.json
+      hash: md5
+      md5: 7bffa46605bc4901634540135532e044
+      size: 591
+    - path: data/raw/evasionbench.parquet
+      hash: md5
+      md5: 58b662e58da61b397223743bcfab02bd
+      size: 12231890
+    - path: scripts/prepare_data.py
+      hash: md5
+      md5: 2e7d67c622c48ce9948ebf3f74ac7d9d
+      size: 1541
+    outs:
+    - path: data/processed/evasionbench_prepared.parquet
+      hash: md5
+      md5: d6a6c7cef112f23f18599b8ed48a63b1
+      size: 12269487

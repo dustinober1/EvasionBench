@@ -1,4 +1,3 @@
-data/raw/*
 models/*
 experiments/*
 .venv/
