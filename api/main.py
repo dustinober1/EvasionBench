@@ -25,4 +25,8 @@ async def health():
 @app.post("/predict", response_model=PredictionResponse)
 async def predict(pair: QAPair):
     # Placeholder: load model and run inference
-    return PredictionResponse(prediction="direct", confidence=0.9, probabilities={"direct": 0.9, "intermediate": 0.09, "fully_evasive": 0.01})
+    return PredictionResponse(
+        prediction="direct",
+        confidence=0.9,
+        probabilities={"direct": 0.9, "intermediate": 0.09, "fully_evasive": 0.01},
+    )

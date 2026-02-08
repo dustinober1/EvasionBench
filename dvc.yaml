@@ -1,0 +1,5 @@
+stages:
+  download_data:
+    cmd: python scripts/download_data.py
+    outs:
+      - data/raw/evasionbench.parquet

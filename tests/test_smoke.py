@@ -11,7 +11,10 @@ def test_health():
 
 
 def test_predict():
-    payload = {"question": "What are your revenue expectations?", "answer": "We expect continued growth."}
+    payload = {
+        "question": "What are your revenue expectations?",
+        "answer": "We expect continued growth.",
+    }
     res = client.post("/predict", json=payload)
     assert res.status_code == 200
     j = res.json()
