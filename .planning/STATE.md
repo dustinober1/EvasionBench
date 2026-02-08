@@ -7,13 +7,14 @@ See: `.planning/PROJECT.md` (updated 2026-02-08)
 **Core value:** A single command reproducibly generates a rigorous, publication-quality research report with charts and explanations from the EvasionBench dataset.
 **Current focus:** Phase 5 - Classical Baseline Modeling
 
-## Current Status
+## Current Position
 
-- Stage: Phase 4 completed and verified
-- Roadmap status: Active execution
-- Active phase: 5
-- Last completed phase: 4 (Q-A Interaction Research Analyses)
-- Next command: `$gsd-discuss-phase 5`
+Phase: 5 of 9 (Classical Baseline Modeling)
+Plan: 1 of 4 in current phase
+Status: Phase 05-01 complete
+Last activity: 2026-02-08 — Established phase-5 classical baseline contract, runner, and DVC wiring
+
+Progress: [█████░░░░░░░░░░░] 25%
 
 ## Artifacts
 
@@ -22,15 +23,46 @@ See: `.planning/PROJECT.md` (updated 2026-02-08)
 - Requirements: `.planning/REQUIREMENTS.md`
 - Roadmap: `.planning/ROADMAP.md`
 
-## Notes
+## Performance Metrics
 
-- Project direction is a brownfield migration from notebook-centric workflows to script-first execution.
-- Full research scope is retained for v1 planning.
-- Old notebooks are considered removable and are not part of forward scope.
-- Phase 1 verification report: `.planning/phases/01-delivery-foundation-ci-baseline/01-VERIFICATION.md` (`status: passed`)
-- Phase 2 verification report: `.planning/phases/02-data-lineage-experiment-backbone/02-VERIFICATION.md` (`status: passed`)
-- Phase 3 verification report: `.planning/phases/03-statistical-linguistic-core-analyses/03-VERIFICATION.md` (`status: passed`)
-- Phase 4 verification report: `.planning/phases/04-q-a-interaction-research-analyses/04-VERIFICATION.md` (`status: passed`)
+**Velocity:**
+- Total plans completed: 1
+- Average duration: 63 min (Phase 5 plans)
+- Total execution time: 63 min
+
+**By Phase:**
+
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| 1-4 | Complete | N/A | N/A |
+| 5 (in progress) | 1 | 63 min | 63 min |
+
+**Recent Trend:**
+- Last 1 plan: 63 min avg (05-01)
+- Trend: Baseline established for phase 5 tracking
+
+*Updated after each plan completion*
+| Phase 05-classical-baseline-modeling P01 | 63 min | 3 tasks | 6 files |
+
+## Accumulated Context
+
+### Decisions
+
+None - followed plan as specified.
+
+### Pending Todos
+
+None yet.
+
+### Blockers/Concerns
+
+None yet.
+
+## Session Continuity
+
+Last session: 2026-02-08
+Stopped at: Completed 05-01 (Classical baseline contract + runner + DVC wiring)
+Resume file: None
 
 ---
-*Last updated: 2026-02-08 after Phase 4 completion*
+*Last updated: 2026-02-08 after Phase 05-01 completion*
