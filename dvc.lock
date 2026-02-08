@@ -231,3 +231,84 @@ stages:
       hash: md5
       md5: f8c97e4fb4612f52b1ee89c74dd382d3
       size: 2164
+  analyze_question_behavior:
+    cmd: python scripts/analyze_question_behavior.py --input 
+      data/processed/evasionbench_prepared.parquet --output-root 
+      artifacts/analysis/phase4
+    deps:
+    - path: data/processed/evasionbench_prepared.parquet
+      hash: md5
+      md5: 57b710613f26d8e8c1b9bb6097457116
+      size: 12273749
+    - path: scripts/analyze_question_behavior.py
+      hash: md5
+      md5: 8b4cbbd815aae01f331772aa290a7f96
+      size: 1283
+    - path: src/analysis/artifacts.py
+      hash: md5
+      md5: bae1cdca1c21c1f067151c89e7b44e27
+      size: 5281
+    - path: src/analysis/question_behavior.py
+      hash: md5
+      md5: 636e48ab551226859e33c9de164667b4
+      size: 7546
+    outs:
+    - path: artifacts/analysis/phase4/question_behavior
+      hash: md5
+      md5: 3b14d2159fa6bc5ec61c27a8049c90fd.dir
+      size: 53267
+      nfiles: 6
+  analyze_topics:
+    cmd: python scripts/analyze_topics.py --input 
+      data/processed/evasionbench_prepared.parquet --output-root 
+      artifacts/analysis/phase4 --topics 8 --seed 42
+    deps:
+    - path: data/processed/evasionbench_prepared.parquet
+      hash: md5
+      md5: 57b710613f26d8e8c1b9bb6097457116
+      size: 12273749
+    - path: scripts/analyze_topics.py
+      hash: md5
+      md5: 53c2d1004a876a7fbbd25a3442f551cb
+      size: 1318
+    - path: src/analysis/artifacts.py
+      hash: md5
+      md5: bae1cdca1c21c1f067151c89e7b44e27
+      size: 5281
+    - path: src/analysis/topic_modeling.py
+      hash: md5
+      md5: 60685d914921684e1a8ab79fc432bbb6
+      size: 6628
+    outs:
+    - path: artifacts/analysis/phase4/topic_modeling
+      hash: md5
+      md5: abddac1b3feb3d7825ad8da8c962549a.dir
+      size: 1048546
+      nfiles: 7
+  analyze_qa_semantic:
+    cmd: python scripts/analyze_qa_semantic.py --input 
+      data/processed/evasionbench_prepared.parquet --output-root 
+      artifacts/analysis/phase4
+    deps:
+    - path: data/processed/evasionbench_prepared.parquet
+      hash: md5
+      md5: 57b710613f26d8e8c1b9bb6097457116
+      size: 12273749
+    - path: scripts/analyze_qa_semantic.py
+      hash: md5
+      md5: 17500b744a971e66ba65ad39ce4d4fd8
+      size: 1297
+    - path: src/analysis/artifacts.py
+      hash: md5
+      md5: bae1cdca1c21c1f067151c89e7b44e27
+      size: 5281
+    - path: src/analysis/qa_semantic.py
+      hash: md5
+      md5: 7af2355c7e1e22c97a07434239a1b3b9
+      size: 5787
+    outs:
+    - path: artifacts/analysis/phase4/semantic_similarity
+      hash: md5
+      md5: 8ebc331f4b73e85eb7e024402a69fcee.dir
+      size: 12469960
+      nfiles: 6
