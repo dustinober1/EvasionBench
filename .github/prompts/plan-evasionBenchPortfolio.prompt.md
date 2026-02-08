@@ -837,7 +837,7 @@ api/
    class QAPair(BaseModel):
        question: str
        answer: str
-   
+
    class PredictionResponse(BaseModel):
        prediction: str  # direct, intermediate, fully_evasive
        confidence: float
@@ -1014,7 +1014,7 @@ dashboard/
          cmd: python scripts/download_data.py
          outs:
            - data/raw/evasionbench.parquet
-       
+
        train_baseline:
          cmd: jupyter nbconvert --execute notebooks/04_traditional_ml_baselines.ipynb
          deps:
