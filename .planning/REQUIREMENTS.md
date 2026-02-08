@@ -14,10 +14,10 @@
 
 ### Statistical & Linguistic Analysis
 
-- [ ] **ANLY-01**: User can generate class distribution and data quality statistics as report-ready tables and figures
-- [ ] **ANLY-02**: User can generate answer/question length distribution analysis with statistical significance tests
-- [ ] **ANLY-03**: User can compute lexical and n-gram feature comparisons by evasiveness label
-- [ ] **ANLY-04**: User can compute readability, POS, and discourse marker analyses by label
+- [x] **ANLY-01**: User can generate class distribution and data quality statistics as report-ready tables and figures
+- [x] **ANLY-02**: User can generate answer/question length distribution analysis with statistical significance tests
+- [x] **ANLY-03**: User can compute lexical and n-gram feature comparisons by evasiveness label
+- [x] **ANLY-04**: User can compute readability, POS, and discourse marker analyses by label
 - [ ] **ANLY-05**: User can run question-answer semantic similarity analysis and include findings in the report
 - [ ] **ANLY-06**: User can run topic and question-type analyses tied to evasion behavior hypotheses
 
@@ -88,10 +88,10 @@
 | DATA-02 | Phase 2 | Complete |
 | DATA-03 | Phase 2 | Complete |
 | DATA-04 | Phase 2 | Complete |
-| ANLY-01 | Phase 3 | Pending |
-| ANLY-02 | Phase 3 | Pending |
-| ANLY-03 | Phase 3 | Pending |
-| ANLY-04 | Phase 3 | Pending |
+| ANLY-01 | Phase 3 | Complete |
+| ANLY-02 | Phase 3 | Complete |
+| ANLY-03 | Phase 3 | Complete |
+| ANLY-04 | Phase 3 | Complete |
 | ANLY-05 | Phase 4 | Pending |
 | ANLY-06 | Phase 4 | Pending |
 | MODL-01 | Phase 5 | Pending |
@@ -123,4 +123,4 @@
 
 ---
 *Requirements defined: 2026-02-08*
-*Last updated: 2026-02-08 after completing Phase 2*
+*Last updated: 2026-02-08 after completing Phase 3*
