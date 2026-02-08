@@ -29,3 +29,5 @@ cleanlab
 huggingface_hub
 rich
 pyyaml
+
+setuptools<81
