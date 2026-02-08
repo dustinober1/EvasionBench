@@ -68,3 +68,48 @@ stages:
       - data/processed/evasionbench_prepared.parquet
     outs:
       - artifacts/analysis/phase3/artifact_index.json
+
+  analyze_qa_semantic:
+    cmd: python scripts/analyze_qa_semantic.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/analysis/phase4
+    deps:
+      - scripts/analyze_qa_semantic.py
+      - src/analysis/qa_semantic.py
+      - src/analysis/artifacts.py
+      - data/processed/evasionbench_prepared.parquet
+    outs:
+      - artifacts/analysis/phase4/semantic_similarity
+
+  analyze_topics:
+    cmd: python scripts/analyze_topics.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/analysis/phase4 --topics 8 --seed 42
+    deps:
+      - scripts/analyze_topics.py
+      - src/analysis/topic_modeling.py
+      - src/analysis/artifacts.py
+      - data/processed/evasionbench_prepared.parquet
+    outs:
+      - artifacts/analysis/phase4/topic_modeling
+
+  analyze_question_behavior:
+    cmd: python scripts/analyze_question_behavior.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/analysis/phase4
+    deps:
+      - scripts/analyze_question_behavior.py
+      - src/analysis/question_behavior.py
+      - src/analysis/artifacts.py
+      - data/processed/evasionbench_prepared.parquet
+    outs:
+      - artifacts/analysis/phase4/question_behavior
+
+  analyze_phase4:
+    cmd: python scripts/run_phase4_analyses.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/analysis/phase4 --families all
+    deps:
+      - scripts/run_phase4_analyses.py
+      - scripts/analyze_qa_semantic.py
+      - scripts/analyze_topics.py
+      - scripts/analyze_question_behavior.py
+      - src/analysis/artifacts.py
+      - src/analysis/qa_semantic.py
+      - src/analysis/topic_modeling.py
+      - src/analysis/question_behavior.py
+      - data/processed/evasionbench_prepared.parquet
+    outs:
+      - artifacts/analysis/phase4/artifact_index.json
