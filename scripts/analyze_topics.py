@@ -22,6 +22,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--topics", type=int, default=8)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--emit-summary", action="store_true")
+    parser.add_argument(
+        "--no-emit-summary",
+        action="store_true",
+        help="Disable summary artifact generation.",
+    )
     return parser.parse_args()
 
 
@@ -34,7 +39,7 @@ def main() -> int:
         source_data=args.input,
         topics=args.topics,
         seed=args.seed,
-        emit_summary=args.emit_summary or True,
+        emit_summary=not args.no_emit_summary,
     )
     print(f"Generated {len(generated)} topic-modeling artifacts")
     return 0

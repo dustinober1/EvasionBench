@@ -109,6 +109,22 @@ def run_topic_modeling(
     _plot_topic_prevalence(prevalence, prevalence_plot)
     generated.append(prevalence_plot)
 
+    prevalence_deltas: list[dict[str, object]] = []
+    for topic in sorted(prevalence["topic"].unique().tolist()):
+        topic_slice = prevalence.loc[prevalence["topic"] == topic].sort_values("mean_weight")
+        if topic_slice.shape[0] < 2:
+            continue
+        low = topic_slice.iloc[0]
+        high = topic_slice.iloc[-1]
+        prevalence_deltas.append(
+            {
+                "topic": int(topic),
+                "lowest_label": str(low["label"]),
+                "highest_label": str(high["label"]),
+                "delta": float(high["mean_weight"] - low["mean_weight"]),
+            }
+        )
+
     summary_payload = {
         "n_topics": int(n_topics),
         "seed": int(seed),
@@ -122,6 +138,7 @@ def run_topic_modeling(
             "Topics with higher prevalence in evasive labels may capture deflection or uncertainty patterns.",
             "Compare prevalence deltas across labels to evaluate behavior-specific topical focus.",
         ],
+        "topic_prevalence_deltas": prevalence_deltas,
     }
     summary_json = out_dir / "topic_summary.json"
     summary_md = out_dir / "topic_summary.md"
