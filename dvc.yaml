@@ -113,3 +113,59 @@ stages:
       - data/processed/evasionbench_prepared.parquet
     outs:
       - artifacts/analysis/phase4/artifact_index.json
+
+  phase5_logreg:
+    cmd: python scripts/run_classical_baselines.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase5 --families logreg
+    deps:
+      - scripts/run_classical_baselines.py
+      - scripts/run_experiment.py
+      - src/models.py
+      - src/evaluation.py
+      - data/processed/evasionbench_prepared.parquet
+    outs:
+      - artifacts/models/phase5/logreg
+
+  phase5_tree:
+    cmd: python scripts/run_classical_baselines.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase5 --families tree
+    deps:
+      - scripts/run_classical_baselines.py
+      - scripts/train_tree_baseline.py
+      - src/models.py
+      - src/evaluation.py
+      - data/processed/evasionbench_prepared.parquet
+    outs:
+      - artifacts/models/phase5/tree
+
+  phase5_boosting:
+    cmd: python scripts/run_classical_baselines.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase5 --families boosting
+    deps:
+      - scripts/run_classical_baselines.py
+      - scripts/train_tree_baseline.py
+      - src/models.py
+      - src/evaluation.py
+      - data/processed/evasionbench_prepared.parquet
+    outs:
+      - artifacts/models/phase5/boosting
+
+  phase5_compare:
+    cmd: python scripts/compare_classical_models.py --input-root artifacts/models/phase5 --output-root artifacts/models/phase5/model_comparison
+    deps:
+      - scripts/compare_classical_models.py
+      - src/visualization.py
+      - artifacts/models/phase5/logreg
+      - artifacts/models/phase5/tree
+      - artifacts/models/phase5/boosting
+    outs:
+      - artifacts/models/phase5/model_comparison
+
+  phase5:
+    cmd: python scripts/run_classical_baselines.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase5 --families all --compare
+    deps:
+      - scripts/run_classical_baselines.py
+      - scripts/compare_classical_models.py
+      - src/models.py
+      - src/evaluation.py
+      - src/visualization.py
+      - data/processed/evasionbench_prepared.parquet
+    outs:
+      - artifacts/models/phase5/run_summary.json
