@@ -1,0 +1,1 @@
+Paper assets go here. Use `papers/evasionbench_analysis.tex` for the write-up and `papers/figures/` for images.

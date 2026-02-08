@@ -1,0 +1,8 @@
+[tool.poetry]
+name = "evasionbench"
+version = "0.1.0"
+description = "EvasionBench data science portfolio"
+authors = ["Your Name <you@example.com>"]
+
+[tool.black]
+line-length = 88
