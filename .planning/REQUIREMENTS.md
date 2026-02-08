@@ -84,43 +84,43 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DATA-01 | TBA | Pending |
-| DATA-02 | TBA | Pending |
-| DATA-03 | TBA | Pending |
-| DATA-04 | TBA | Pending |
-| ANLY-01 | TBA | Pending |
-| ANLY-02 | TBA | Pending |
-| ANLY-03 | TBA | Pending |
-| ANLY-04 | TBA | Pending |
-| ANLY-05 | TBA | Pending |
-| ANLY-06 | TBA | Pending |
-| MODL-01 | TBA | Pending |
-| MODL-02 | TBA | Pending |
-| MODL-03 | TBA | Pending |
-| MODL-04 | TBA | Pending |
-| MODL-05 | TBA | Pending |
-| XAI-01 | TBA | Pending |
-| XAI-02 | TBA | Pending |
-| XAI-03 | TBA | Pending |
-| RPT-01 | TBA | Pending |
-| RPT-02 | TBA | Pending |
-| RPT-03 | TBA | Pending |
-| RPT-04 | TBA | Pending |
-| API-01 | TBA | Pending |
-| API-02 | TBA | Pending |
-| API-03 | TBA | Pending |
-| UI-01 | TBA | Pending |
-| UI-02 | TBA | Pending |
-| QUAL-01 | TBA | Pending |
-| QUAL-02 | TBA | Pending |
-| QUAL-03 | TBA | Pending |
-| QUAL-04 | TBA | Pending |
+| DATA-01 | Phase 2 | Pending |
+| DATA-02 | Phase 2 | Pending |
+| DATA-03 | Phase 2 | Pending |
+| DATA-04 | Phase 2 | Pending |
+| ANLY-01 | Phase 3 | Pending |
+| ANLY-02 | Phase 3 | Pending |
+| ANLY-03 | Phase 3 | Pending |
+| ANLY-04 | Phase 3 | Pending |
+| ANLY-05 | Phase 4 | Pending |
+| ANLY-06 | Phase 4 | Pending |
+| MODL-01 | Phase 5 | Pending |
+| MODL-02 | Phase 5 | Pending |
+| MODL-03 | Phase 6 | Pending |
+| MODL-04 | Phase 5 | Pending |
+| MODL-05 | Phase 6 | Pending |
+| XAI-01 | Phase 6 | Pending |
+| XAI-02 | Phase 6 | Pending |
+| XAI-03 | Phase 6 | Pending |
+| RPT-01 | Phase 7 | Pending |
+| RPT-02 | Phase 7 | Pending |
+| RPT-03 | Phase 7 | Pending |
+| RPT-04 | Phase 7 | Pending |
+| API-01 | Phase 8 | Pending |
+| API-02 | Phase 8 | Pending |
+| API-03 | Phase 8 | Pending |
+| UI-01 | Phase 8 | Pending |
+| UI-02 | Phase 8 | Pending |
+| QUAL-01 | Phase 9 | Pending |
+| QUAL-02 | Phase 9 | Pending |
+| QUAL-03 | Phase 1 | Pending |
+| QUAL-04 | Phase 9 | Pending |
 
 **Coverage:**
 - v1 requirements: 31 total
-- Mapped to phases: 0
-- Unmapped: 31 ⚠️
+- Mapped to phases: 31
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-02-08*
-*Last updated: 2026-02-08 after initial definition*
+*Last updated: 2026-02-08 after roadmap traceability mapping*
