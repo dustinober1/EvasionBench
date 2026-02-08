@@ -7,10 +7,10 @@
 
 ### Data & Reproducibility
 
-- [ ] **DATA-01**: User can download and cache the EvasionBench dataset using a documented script command
-- [ ] **DATA-02**: User can verify dataset schema, row count, and checksum in an automated validation step
-- [ ] **DATA-03**: User can reproduce data preparation artifacts through DVC stages
-- [ ] **DATA-04**: User can run experiments with tracked parameters and metrics in MLflow
+- [x] **DATA-01**: User can download and cache the EvasionBench dataset using a documented script command
+- [x] **DATA-02**: User can verify dataset schema, row count, and checksum in an automated validation step
+- [x] **DATA-03**: User can reproduce data preparation artifacts through DVC stages
+- [x] **DATA-04**: User can run experiments with tracked parameters and metrics in MLflow
 
 ### Statistical & Linguistic Analysis
 
@@ -84,10 +84,10 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DATA-01 | Phase 2 | Pending |
-| DATA-02 | Phase 2 | Pending |
-| DATA-03 | Phase 2 | Pending |
-| DATA-04 | Phase 2 | Pending |
+| DATA-01 | Phase 2 | Complete |
+| DATA-02 | Phase 2 | Complete |
+| DATA-03 | Phase 2 | Complete |
+| DATA-04 | Phase 2 | Complete |
 | ANLY-01 | Phase 3 | Pending |
 | ANLY-02 | Phase 3 | Pending |
 | ANLY-03 | Phase 3 | Pending |
@@ -123,4 +123,4 @@
 
 ---
 *Requirements defined: 2026-02-08*
-*Last updated: 2026-02-08 after completing Phase 1*
+*Last updated: 2026-02-08 after completing Phase 2*
