@@ -196,16 +196,16 @@ stages:
       size: 12273749
     - path: scripts/analyze_qa_semantic.py
       hash: md5
-      md5: 5e138acd336be7c4e640dc539b7a658e
-      size: 1039
+      md5: 17500b744a971e66ba65ad39ce4d4fd8
+      size: 1297
     - path: scripts/analyze_question_behavior.py
       hash: md5
-      md5: cca9ee0882c8a46a8e76770fa13bad7a
-      size: 1142
+      md5: 8b4cbbd815aae01f331772aa290a7f96
+      size: 1283
     - path: scripts/analyze_topics.py
       hash: md5
-      md5: 720f6dc10d6d727791c24a31dfb4d9d7
-      size: 1177
+      md5: 53c2d1004a876a7fbbd25a3442f551cb
+      size: 1318
     - path: scripts/run_phase4_analyses.py
       hash: md5
       md5: 0f384d18b321a654ab151e1d510808f6
@@ -216,16 +216,16 @@ stages:
       size: 5281
     - path: src/analysis/qa_semantic.py
       hash: md5
-      md5: 2779161213aaa08acf893f1132256a24
-      size: 5622
+      md5: 7af2355c7e1e22c97a07434239a1b3b9
+      size: 5787
     - path: src/analysis/question_behavior.py
       hash: md5
-      md5: bdbd05f9db855c661c02ddaeb7694bc6
-      size: 7087
+      md5: 636e48ab551226859e33c9de164667b4
+      size: 7546
     - path: src/analysis/topic_modeling.py
       hash: md5
-      md5: d37097b0d2c8729d7804ac4b011926bc
-      size: 5948
+      md5: 60685d914921684e1a8ab79fc432bbb6
+      size: 6628
     outs:
     - path: artifacts/analysis/phase4/artifact_index.json
       hash: md5
