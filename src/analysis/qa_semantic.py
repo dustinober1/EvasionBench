@@ -63,12 +63,16 @@ def _build_hypothesis_summary(summary: pd.DataFrame) -> dict:
     highest = top.iloc[0]
     lowest = top.iloc[-1]
     delta = float(highest["mean_similarity"] - lowest["mean_similarity"])
+    confidence_note = (
+        "moderate_signal" if abs(delta) >= 0.05 else "weak_signal_needs_follow_up"
+    )
     return {
         "hypotheses": [
             {
                 "id": "H1",
                 "name": "relevance_deflection",
                 "direction": "lower_similarity_implies_more_evasion",
+                "confidence_note": confidence_note,
                 "finding": (
                     f"Highest alignment label: {highest['label']} ({highest['mean_similarity']:.4f}); "
                     f"lowest alignment label: {lowest['label']} ({lowest['mean_similarity']:.4f}); "

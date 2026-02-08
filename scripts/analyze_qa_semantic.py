@@ -19,7 +19,16 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", required=True)
     parser.add_argument("--output-root", required=True)
-    parser.add_argument("--emit-hypothesis-summary", action="store_true")
+    parser.add_argument(
+        "--emit-hypothesis-summary",
+        action="store_true",
+        help="Explicitly request hypothesis summary outputs (enabled by default).",
+    )
+    parser.add_argument(
+        "--no-emit-hypothesis-summary",
+        action="store_true",
+        help="Disable hypothesis summary outputs.",
+    )
     return parser.parse_args()
 
 
@@ -30,7 +39,7 @@ def main() -> int:
         frame,
         args.output_root,
         source_data=args.input,
-        emit_hypothesis_summary=args.emit_hypothesis_summary or True,
+        emit_hypothesis_summary=not args.no_emit_hypothesis_summary,
     )
     print(f"Generated {len(generated)} semantic artifacts")
     return 0
