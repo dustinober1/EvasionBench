@@ -1,0 +1,9 @@
+Metric,Value
+Total Samples,"16,726"
+Direct,"8,749 (52.3%)"
+Intermediate,"7,359 (44.0%)"
+Fully Evasive,618 (3.7%)
+Avg Question Length (words),62.3
+Avg Answer Length (words),164.2
+Missing Values,0
+Duplicate Q&A Pairs,0 (0.00%)
