@@ -157,6 +157,16 @@ def run_question_behavior(
     summary.to_csv(summary_csv, index=False)
     generated.append(summary_csv)
 
+    per_type_spread = (
+        metrics.groupby("question_type", dropna=False)["refusal_rate"]
+        .agg(["min", "max"])
+        .reset_index()
+        .rename(columns={"min": "min_refusal_rate", "max": "max_refusal_rate"})
+    )
+    per_type_spread["refusal_rate_spread"] = (
+        per_type_spread["max_refusal_rate"] - per_type_spread["min_refusal_rate"]
+    )
+
     plot_path = out_dir / "question_behavior_by_label.png"
     _plot_behavior(metrics, plot_path)
     generated.append(plot_path)
@@ -191,6 +201,7 @@ def run_question_behavior(
                 "mean_alignment",
                 "refusal_rate",
             ],
+            "refusal_spread_by_question_type": per_type_spread.to_dict(orient="records"),
         }
         summary_json.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         summary_md.write_text(
