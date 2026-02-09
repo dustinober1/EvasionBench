@@ -76,3 +76,52 @@ Install model once:
 - `python -m spacy download en_core_web_sm`
 
 If the model is missing, run the command above and rerun `scripts/analyze_linguistic_quality.py`.
+
+## Phase 5 Command Surface
+
+- Run all phase-5 classical baselines plus comparison:
+  - `make model-phase5`
+  - or `python scripts/run_classical_baselines.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase5 --families all --compare`
+- Run family-specific baselines:
+  - `python scripts/run_classical_baselines.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase5 --families logreg`
+  - `python scripts/run_classical_baselines.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase5 --families tree`
+  - `python scripts/run_classical_baselines.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase5 --families boosting`
+- Run standalone comparison:
+  - `python scripts/compare_classical_models.py --input-root artifacts/models/phase5 --output-root artifacts/models/phase5/model_comparison`
+
+## Phase 5 Artifact Contract
+
+Each family writes:
+
+- `metrics.json`
+- `classification_report.json`
+- `confusion_matrix.json`
+- `run_metadata.json`
+
+under:
+
+- `artifacts/models/phase5/logreg/`
+- `artifacts/models/phase5/tree/`
+- `artifacts/models/phase5/boosting/`
+
+Comparison outputs live under `artifacts/models/phase5/model_comparison`:
+
+- `model_ranking.csv`
+- `per_class_f1_comparison.csv`
+- `summary.json`
+- `macro_f1_by_model.png`
+- `per_class_f1_delta_heatmap.png`
+
+`summary.json` contains:
+
+- `best_model_family`
+- `metric_deltas_vs_best`
+- `artifacts.confusion_matrices` pointers for report/dashboard linking
+
+Key phase-5 stages:
+
+- `phase5_logreg`
+- `phase5_tree`
+- `phase5_boosting`
+- `phase5_compare`
+- `phase5`

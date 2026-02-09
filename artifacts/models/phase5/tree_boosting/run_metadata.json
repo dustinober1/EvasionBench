@@ -1,0 +1,33 @@
+{
+  "feature_config": {
+    "max_features": 2000,
+    "min_df": 1,
+    "ngram_range": [
+      1,
+      2
+    ]
+  },
+  "labels": [
+    "direct",
+    "fully_evasive",
+    "intermediate"
+  ],
+  "model_config": {
+    "class_weight": "balanced",
+    "max_depth": null,
+    "n_estimators": 80,
+    "n_jobs": -1,
+    "random_state": 42
+  },
+  "model_family": "tree",
+  "split_metadata": {
+    "method": "train_test_split",
+    "random_state": 42,
+    "stratify": true,
+    "test_size": 0.2
+  },
+  "split_seed": 42,
+  "test_rows": 3346,
+  "test_size": 0.2,
+  "train_rows": 13380
+}

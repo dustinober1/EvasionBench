@@ -73,8 +73,8 @@ stages:
       size: 1103
     - path: src/analysis/artifacts.py
       hash: md5
-      md5: 5830451d77c34def7f4b335520c6a067
-      size: 2437
+      md5: bae1cdca1c21c1f067151c89e7b44e27
+      size: 5281
     - path: src/analysis/core_stats.py
       hash: md5
       md5: 15d98b2907663ef13887406f5e8aaaff
@@ -82,8 +82,8 @@ stages:
     outs:
     - path: artifacts/analysis/phase3/core_stats
       hash: md5
-      md5: cb19c2139ddf064206306a77b78387e6.dir
-      size: 83076
+      md5: 36685cf9f700c3023686437d7c9e90c9.dir
+      size: 90474
       nfiles: 11
   analyze_lexical:
     cmd: python scripts/analyze_lexical.py --input 
@@ -100,8 +100,8 @@ stages:
       size: 1214
     - path: src/analysis/artifacts.py
       hash: md5
-      md5: 5830451d77c34def7f4b335520c6a067
-      size: 2437
+      md5: bae1cdca1c21c1f067151c89e7b44e27
+      size: 5281
     - path: src/analysis/lexical.py
       hash: md5
       md5: cf4b59c6770623f296b2c47d9c71a466
@@ -109,8 +109,8 @@ stages:
     outs:
     - path: artifacts/analysis/phase3/lexical
       hash: md5
-      md5: 924536c0772e1891a363e3001b66ab22.dir
-      size: 170414
+      md5: efef2d3702fc2cc13b394206fefc927e.dir
+      size: 186116
       nfiles: 15
   analyze_linguistic_quality:
     cmd: python scripts/analyze_linguistic_quality.py --input 
@@ -127,8 +127,8 @@ stages:
       size: 1214
     - path: src/analysis/artifacts.py
       hash: md5
-      md5: 5830451d77c34def7f4b335520c6a067
-      size: 2437
+      md5: bae1cdca1c21c1f067151c89e7b44e27
+      size: 5281
     - path: src/analysis/linguistic_quality.py
       hash: md5
       md5: 63c7ff51a576a13b0f4a1ec7046c14ed
@@ -166,8 +166,8 @@ stages:
       size: 2229
     - path: src/analysis/artifacts.py
       hash: md5
-      md5: 5830451d77c34def7f4b335520c6a067
-      size: 2437
+      md5: bae1cdca1c21c1f067151c89e7b44e27
+      size: 5281
     - path: src/analysis/core_stats.py
       hash: md5
       md5: 15d98b2907663ef13887406f5e8aaaff
@@ -312,3 +312,164 @@ stages:
       md5: 8ebc331f4b73e85eb7e024402a69fcee.dir
       size: 12469960
       nfiles: 6
+  phase5_logreg:
+    cmd: python scripts/run_classical_baselines.py --input 
+      data/processed/evasionbench_prepared.parquet --output-root 
+      artifacts/models/phase5 --families logreg
+    deps:
+    - path: data/processed/evasionbench_prepared.parquet
+      hash: md5
+      md5: 57b710613f26d8e8c1b9bb6097457116
+      size: 12273749
+    - path: scripts/run_classical_baselines.py
+      hash: md5
+      md5: 189eaea27948bcf88d0cef872e11b1d2
+      size: 7828
+    - path: scripts/run_experiment.py
+      hash: md5
+      md5: a8757877b3a6bc8780c4b7029562926f
+      size: 5390
+    - path: src/evaluation.py
+      hash: md5
+      md5: c4f486ccb5e16bd25744af885e838a83
+      size: 4170
+    - path: src/models.py
+      hash: md5
+      md5: b4f72decc2b3e23b17e18074e16d8645
+      size: 5203
+    outs:
+    - path: artifacts/models/phase5/logreg
+      hash: md5
+      md5: f4e9bc7dfc12a7cbbaac2b70664fd7d6.dir
+      size: 1651
+      nfiles: 4
+  phase5_tree:
+    cmd: python scripts/run_classical_baselines.py --input 
+      data/processed/evasionbench_prepared.parquet --output-root 
+      artifacts/models/phase5 --families tree
+    deps:
+    - path: data/processed/evasionbench_prepared.parquet
+      hash: md5
+      md5: 57b710613f26d8e8c1b9bb6097457116
+      size: 12273749
+    - path: scripts/run_classical_baselines.py
+      hash: md5
+      md5: 189eaea27948bcf88d0cef872e11b1d2
+      size: 7828
+    - path: scripts/train_tree_baseline.py
+      hash: md5
+      md5: eda51f123f1c322e6ca36aff148b8c44
+      size: 1946
+    - path: src/evaluation.py
+      hash: md5
+      md5: c4f486ccb5e16bd25744af885e838a83
+      size: 4170
+    - path: src/models.py
+      hash: md5
+      md5: b4f72decc2b3e23b17e18074e16d8645
+      size: 5203
+    outs:
+    - path: artifacts/models/phase5/tree
+      hash: md5
+      md5: 4558c0b222bbe9a9527974467b3d34b1.dir
+      size: 1654
+      nfiles: 4
+  phase5_boosting:
+    cmd: python scripts/run_classical_baselines.py --input 
+      data/processed/evasionbench_prepared.parquet --output-root 
+      artifacts/models/phase5 --families boosting
+    deps:
+    - path: data/processed/evasionbench_prepared.parquet
+      hash: md5
+      md5: 57b710613f26d8e8c1b9bb6097457116
+      size: 12273749
+    - path: scripts/run_classical_baselines.py
+      hash: md5
+      md5: 189eaea27948bcf88d0cef872e11b1d2
+      size: 7828
+    - path: scripts/train_tree_baseline.py
+      hash: md5
+      md5: eda51f123f1c322e6ca36aff148b8c44
+      size: 1946
+    - path: src/evaluation.py
+      hash: md5
+      md5: c4f486ccb5e16bd25744af885e838a83
+      size: 4170
+    - path: src/models.py
+      hash: md5
+      md5: b4f72decc2b3e23b17e18074e16d8645
+      size: 5203
+    outs:
+    - path: artifacts/models/phase5/boosting
+      hash: md5
+      md5: 77d6dade155c029d09808f89e581da40.dir
+      size: 1651
+      nfiles: 4
+  phase5_compare:
+    cmd: python scripts/compare_classical_models.py --input-root 
+      artifacts/models/phase5 --output-root 
+      artifacts/models/phase5/model_comparison
+    deps:
+    - path: artifacts/models/phase5/boosting
+      hash: md5
+      md5: 77d6dade155c029d09808f89e581da40.dir
+      size: 1651
+      nfiles: 4
+    - path: artifacts/models/phase5/logreg
+      hash: md5
+      md5: f4e9bc7dfc12a7cbbaac2b70664fd7d6.dir
+      size: 1651
+      nfiles: 4
+    - path: artifacts/models/phase5/tree
+      hash: md5
+      md5: 4558c0b222bbe9a9527974467b3d34b1.dir
+      size: 1654
+      nfiles: 4
+    - path: scripts/compare_classical_models.py
+      hash: md5
+      md5: 65965e76f22aa5f5ba26136ba030091c
+      size: 4754
+    - path: src/visualization.py
+      hash: md5
+      md5: 3b1984d69ee60c0cc866965a9711f928
+      size: 1576
+    outs:
+    - path: artifacts/models/phase5/model_comparison
+      hash: md5
+      md5: 81594c12e94aada852499fb09d0ab514.dir
+      size: 66012
+      nfiles: 5
+  phase5:
+    cmd: python scripts/run_classical_baselines.py --input 
+      data/processed/evasionbench_prepared.parquet --output-root 
+      artifacts/models/phase5 --families all --compare
+    deps:
+    - path: data/processed/evasionbench_prepared.parquet
+      hash: md5
+      md5: 57b710613f26d8e8c1b9bb6097457116
+      size: 12273749
+    - path: scripts/compare_classical_models.py
+      hash: md5
+      md5: 65965e76f22aa5f5ba26136ba030091c
+      size: 4754
+    - path: scripts/run_classical_baselines.py
+      hash: md5
+      md5: 189eaea27948bcf88d0cef872e11b1d2
+      size: 7828
+    - path: src/evaluation.py
+      hash: md5
+      md5: c4f486ccb5e16bd25744af885e838a83
+      size: 4170
+    - path: src/models.py
+      hash: md5
+      md5: b4f72decc2b3e23b17e18074e16d8645
+      size: 5203
+    - path: src/visualization.py
+      hash: md5
+      md5: 3b1984d69ee60c0cc866965a9711f928
+      size: 1576
+    outs:
+    - path: artifacts/models/phase5/run_summary.json
+      hash: md5
+      md5: 5fcc1139c59e1d60096c1ba808b8fb00
+      size: 522
