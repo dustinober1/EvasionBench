@@ -60,6 +60,30 @@ def test_phase5_comparison_outputs_exist_and_are_consistent(tmp_path: Path) -> N
     ranking = pd.read_csv(ranking_path)
     assert {"logreg", "tree", "boosting"}.issubset(set(ranking["model_family"]))
 
+    per_class = pd.read_csv(per_class_path)
+    assert "label" in per_class.columns
+    assert per_class.drop(columns=["label"]).notna().all().all()
+
+    delta_path = comparison_root / "per_class_f1_delta.csv"
+    assert delta_path.exists()
+    delta = pd.read_csv(delta_path)
+    assert "label" in delta.columns
+    for col in delta.drop(columns=["label"]).columns:
+        assert (delta[col] <= 0.0).all()
+
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
     assert "metric_deltas_vs_best" in summary
     assert set(summary["families"]) == set(ranking["model_family"])
+
+    deltas = summary["metric_deltas_vs_best"]
+    assert summary["best_model_family"] in deltas
+    assert deltas[summary["best_model_family"]] == 0.0
+    for family in ranking["model_family"]:
+        assert family in deltas
+
+    assert "models" in summary
+    for family in summary["families"]:
+        model = summary["models"][family]
+        for key in ("accuracy", "f1_macro", "precision_macro", "recall_macro"):
+            assert key in model
+        assert Path(model["confusion_matrix"]).name == "confusion_matrix.json"
