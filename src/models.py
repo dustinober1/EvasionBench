@@ -22,8 +22,12 @@ class ModelWrapper:
 
 
 def _build_features(frame: pd.DataFrame) -> pd.Series:
-    question = frame.get("question", "").fillna("").astype(str)
-    answer = frame.get("answer", "").fillna("").astype(str)
+    missing = [col for col in ("question", "answer") if col not in frame.columns]
+    if missing:
+        raise ValueError(f"Missing feature columns: {', '.join(missing)}")
+
+    question = frame["question"].fillna("").astype(str)
+    answer = frame["answer"].fillna("").astype(str)
     return (question + " [SEP] " + answer).astype(str)
 
 
@@ -160,6 +164,10 @@ def train_tree_or_boosting(
         model = RandomForestClassifier(**estimator_params)
         model.fit(X_train, y_train)
         predictions = model.predict(X_test)
+        model_bundle: dict[str, Any] = {
+            "model": model,
+            "predictions": predictions,
+        }
     elif model_family == "boosting":
         n_components = min(256, max(2, X_train.shape[1] - 1))
         svd = TruncatedSVD(n_components=n_components, random_state=random_state)
@@ -175,12 +183,16 @@ def train_tree_or_boosting(
         model.fit(X_train_reduced, y_train)
         predictions = model.predict(X_test_reduced)
         estimator_params = {**model_params, "svd_components": n_components}
+        model_bundle = {
+            "model": model,
+            "predictions": predictions,
+            "svd": svd,
+        }
     else:
         raise ValueError(f"Unsupported model family: {model_family}")
 
     return {
-        "model": model,
-        "predictions": predictions,
+        **model_bundle,
         "y_train": y_train,
         "y_test": y_test,
         "vectorizer": vectorizer,
