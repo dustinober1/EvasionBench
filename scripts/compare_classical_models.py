@@ -15,6 +15,10 @@ if str(ROOT) not in sys.path:
 
 from src.visualization import plot_macro_f1_comparison, plot_per_class_delta_heatmap
 
+
+def _normalize_confusion_refs(refs: dict[str, str]) -> dict[str, str]:
+    return {family: str(Path(path).resolve()) for family, path in refs.items()}
+
 FAMILIES = ("logreg", "tree", "boosting")
 
 
@@ -85,7 +89,7 @@ def run_comparison(input_root: str | Path, output_root: str | Path) -> dict:
 
     families_in_result = ranking["model_family"].tolist()
     per_class_table = pd.DataFrame.from_dict(per_class, orient="index")
-    per_class_table = per_class_table.reindex(columns=families_in_result)
+    per_class_table = per_class_table.reindex(columns=families_in_result).fillna(0.0)
     per_class_table.index.name = "label"
     per_class_wide = per_class_table.reset_index().sort_values(by="label")
     per_class_path = output_path / "per_class_f1_comparison.csv"
@@ -98,10 +102,27 @@ def run_comparison(input_root: str | Path, output_root: str | Path) -> dict:
         for _, row in ranking.iterrows()
     }
 
+    per_class_delta = per_class_table.sub(per_class_table.max(axis=1), axis=0)
+    per_class_delta_wide = per_class_delta.reset_index().sort_values(by="label")
+    per_class_delta_path = output_path / "per_class_f1_delta.csv"
+    per_class_delta_wide.to_csv(per_class_delta_path, index=False)
+
     macro_chart_path = output_path / "macro_f1_by_model.png"
     heatmap_path = output_path / "per_class_f1_delta_heatmap.png"
     plot_macro_f1_comparison(ranking, macro_chart_path)
-    plot_per_class_delta_heatmap(per_class_wide, heatmap_path)
+    plot_per_class_delta_heatmap(per_class_delta_wide, heatmap_path)
+
+    model_summary = {
+        row["model_family"]: {
+            "accuracy": float(row["accuracy"]),
+            "f1_macro": float(row["f1_macro"]),
+            "precision_macro": float(row["precision_macro"]),
+            "recall_macro": float(row["recall_macro"]),
+            "artifact_root": str(row["artifact_root"]),
+            "confusion_matrix": confusion_refs.get(row["model_family"], ""),
+        }
+        for _, row in ranking.iterrows()
+    }
 
     summary = {
         "best_model_family": best_family,
@@ -110,10 +131,12 @@ def run_comparison(input_root: str | Path, output_root: str | Path) -> dict:
         "artifacts": {
             "model_ranking": str(ranking_path),
             "per_class_f1_comparison": str(per_class_path),
+            "per_class_f1_delta": str(per_class_delta_path),
             "macro_f1_chart": str(macro_chart_path),
             "per_class_heatmap": str(heatmap_path),
-            "confusion_matrices": confusion_refs,
+            "confusion_matrices": _normalize_confusion_refs(confusion_refs),
         },
+        "models": model_summary,
     }
     summary_path = output_path / "summary.json"
     summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -121,6 +144,7 @@ def run_comparison(input_root: str | Path, output_root: str | Path) -> dict:
     return {
         "model_ranking": str(ranking_path),
         "per_class_f1_comparison": str(per_class_path),
+        "per_class_f1_delta": str(per_class_delta_path),
         "summary": str(summary_path),
     }
 
