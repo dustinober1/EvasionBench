@@ -45,6 +45,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--target-col", default="label")
     parser.add_argument("--random-state", type=int, default=42)
     parser.add_argument("--test-size", type=float, default=0.2)
+    parser.add_argument("--ngram-min", type=int, default=1)
+    parser.add_argument("--ngram-max", type=int, default=2)
+    parser.add_argument("--min-df", type=int, default=1)
+    parser.add_argument("--max-features", type=int, default=None)
+    parser.add_argument("--c", type=float, default=1.0)
+    parser.add_argument("--class-weight", default="balanced")
+    parser.add_argument("--solver", default="liblinear")
+    parser.add_argument("--n-estimators", type=int, default=80)
+    parser.add_argument("--max-depth", type=int, default=None)
+    parser.add_argument("--learning-rate", type=float, default=0.1)
+    parser.add_argument("--boosting-max-iter", type=int, default=50)
     parser.add_argument("--tracking-uri", default="file:./mlruns")
     parser.add_argument("--experiment-name", default="evasionbench-classical-baselines")
     parser.add_argument("--compare", action="store_true", help="Run model comparison after families finish")
@@ -68,6 +79,7 @@ def _metadata(
     test_rows: int,
     feature_config: dict,
     model_config: dict,
+    split_metadata: dict,
 ) -> dict:
     return {
         "model_family": family,
@@ -77,12 +89,16 @@ def _metadata(
         "test_rows": test_rows,
         "feature_config": feature_config,
         "model_config": model_config,
+        "split_metadata": split_metadata,
         "git_sha": _git_sha(),
     }
 
 
 def _stringify_params(params: dict) -> dict[str, str]:
-    return {str(k): json.dumps(v, sort_keys=True) if isinstance(v, (dict, list, tuple)) else str(v) for k, v in params.items()}
+    return {
+        str(k): json.dumps(v, sort_keys=True) if isinstance(v, (dict, list, tuple)) else str(v)
+        for k, v in params.items()
+    }
 
 
 def _run_logreg(frame: pd.DataFrame, args: argparse.Namespace, output_root: Path) -> dict[str, float]:
@@ -91,6 +107,13 @@ def _run_logreg(frame: pd.DataFrame, args: argparse.Namespace, output_root: Path
         target_col=args.target_col,
         random_state=args.random_state,
         test_size=args.test_size,
+        ngram_min=args.ngram_min,
+        ngram_max=args.ngram_max,
+        min_df=args.min_df,
+        max_features=args.max_features,
+        c=args.c,
+        class_weight=None if args.class_weight == "none" else args.class_weight,
+        solver=args.solver,
     )
     y_pred = trained["model"].predict(trained["X_test"])
     metrics = compute_classification_metrics(trained["y_test"], y_pred)
@@ -104,6 +127,7 @@ def _run_logreg(frame: pd.DataFrame, args: argparse.Namespace, output_root: Path
         test_rows=len(trained["X_test"]),
         feature_config=trained["vectorizer_params"],
         model_config=trained["classifier_params"],
+        split_metadata=trained["split_metadata"],
     )
     artifacts = write_evaluation_artifacts(family_dir, trained["y_test"], y_pred, metrics, metadata)
 
@@ -114,6 +138,8 @@ def _run_logreg(frame: pd.DataFrame, args: argparse.Namespace, output_root: Path
                 "target_col": args.target_col,
                 "random_state": args.random_state,
                 "test_size": args.test_size,
+                "split_strategy": trained["split_metadata"]["method"],
+                "split_stratified": trained["split_metadata"]["stratify"],
                 "train_rows": len(trained["X_train"]),
                 "test_rows": len(trained["X_test"]),
             }
@@ -125,7 +151,13 @@ def _run_logreg(frame: pd.DataFrame, args: argparse.Namespace, output_root: Path
             _stringify_params({f"clf_{k}": v for k, v in trained["classifier_params"].items()})
         )
         mlflow.log_metrics(metrics)
-        mlflow.set_tags({"pipeline_stage": "phase-05-classical-baselines", "git_sha": _git_sha()})
+        mlflow.set_tags(
+            {
+                "pipeline_stage": "phase-05-classical-baselines",
+                "git_sha": _git_sha(),
+                "split_strategy": trained["split_metadata"]["method"],
+            }
+        )
         for path in artifacts:
             mlflow.log_artifact(str(path), artifact_path=f"phase5/{family_dir.name}")
 
@@ -144,6 +176,14 @@ def _run_tree_or_boosting(
         target_col=args.target_col,
         random_state=args.random_state,
         test_size=args.test_size,
+        ngram_min=args.ngram_min,
+        ngram_max=args.ngram_max,
+        min_df=args.min_df,
+        max_features=args.max_features,
+        n_estimators=args.n_estimators,
+        max_depth=args.max_depth,
+        learning_rate=args.learning_rate,
+        boosting_max_iter=args.boosting_max_iter,
     )
     metrics = compute_classification_metrics(trained["y_test"], trained["predictions"])
 
@@ -156,6 +196,7 @@ def _run_tree_or_boosting(
         test_rows=len(trained["y_test"]),
         feature_config=trained["vectorizer_params"],
         model_config=trained["estimator_params"],
+        split_metadata=trained["split_metadata"],
     )
     artifacts = write_evaluation_artifacts(
         family_dir,
@@ -172,6 +213,8 @@ def _run_tree_or_boosting(
                 "target_col": args.target_col,
                 "random_state": args.random_state,
                 "test_size": args.test_size,
+                "split_strategy": trained["split_metadata"]["method"],
+                "split_stratified": trained["split_metadata"]["stratify"],
                 "train_rows": len(trained["y_train"]),
                 "test_rows": len(trained["y_test"]),
             }
@@ -185,7 +228,13 @@ def _run_tree_or_boosting(
             )
         )
         mlflow.log_metrics(metrics)
-        mlflow.set_tags({"pipeline_stage": "phase-05-classical-baselines", "git_sha": _git_sha()})
+        mlflow.set_tags(
+            {
+                "pipeline_stage": "phase-05-classical-baselines",
+                "git_sha": _git_sha(),
+                "split_strategy": trained["split_metadata"]["method"],
+            }
+        )
         for path in artifacts:
             mlflow.log_artifact(str(path), artifact_path=f"phase5/{family_dir.name}")
 
