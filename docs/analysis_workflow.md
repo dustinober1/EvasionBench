@@ -108,6 +108,7 @@ Comparison outputs live under `artifacts/models/phase5/model_comparison`:
 
 - `model_ranking.csv`
 - `per_class_f1_comparison.csv`
+- `per_class_f1_delta.csv`
 - `summary.json`
 - `macro_f1_by_model.png`
 - `per_class_f1_delta_heatmap.png`
@@ -117,6 +118,7 @@ Comparison outputs live under `artifacts/models/phase5/model_comparison`:
 - `best_model_family`
 - `metric_deltas_vs_best`
 - `artifacts.confusion_matrices` pointers for report/dashboard linking
+- `models` map with per-family metrics and artifact roots
 
 Key phase-5 stages:
 

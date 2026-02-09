@@ -16,7 +16,7 @@ def plot_label_distribution(series, title="Label distribution"):
 def plot_macro_f1_comparison(ranking: pd.DataFrame, output_path: str | Path) -> Path:
     chart = ranking[["model_family", "f1_macro"]].copy().sort_values(by="f1_macro", ascending=False)
     plt.figure(figsize=(8, 4))
-    sns.barplot(data=chart, x="model_family", y="f1_macro", palette="Blues_d")
+    sns.barplot(data=chart, x="model_family", y="f1_macro", hue="model_family", palette="Blues_d", legend=False)
     plt.ylim(0.0, 1.0)
     plt.title("Phase 5 Macro-F1 by Model Family")
     plt.xlabel("Model Family")
