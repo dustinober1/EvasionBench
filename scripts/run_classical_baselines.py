@@ -40,7 +40,7 @@ def parse_args() -> argparse.Namespace:
         "--families",
         choices=["all", "logreg", "tree", "boosting"],
         default="all",
-        help="Which model family/families to run",
+        help="Which model family/families to run (tree runs both tree and boosting)",
     )
     parser.add_argument("--target-col", default="label")
     parser.add_argument("--random-state", type=int, default=42)
@@ -244,6 +244,8 @@ def _run_tree_or_boosting(
 def _selected_families(raw: str) -> list[str]:
     if raw == "all":
         return ["logreg", "tree", "boosting"]
+    if raw == "tree":
+        return ["tree", "boosting"]
     return [raw]
 
 
