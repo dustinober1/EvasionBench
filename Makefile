@@ -1,4 +1,4 @@
-.PHONY: env install test lint format verify-structure ci-check run-api run-dashboard data-fetch data-validate data-prepare run-experiment analysis-phase3 analysis-phase4 model-phase5
+.PHONY: env install test lint format verify-structure ci-check run-api run-dashboard data-fetch data-validate data-prepare run-experiment analysis-phase3 analysis-phase4 model-phase5 label-diagnostics
 
 env:
 	python -m venv .venv
@@ -60,3 +60,6 @@ xai-transformer:
 	python scripts/run_transformer_explainability.py --model-path artifacts/models/phase6/transformer/model --data-path data/processed/evasionbench_prepared.parquet --output-root artifacts/explainability/phase6/transformer --n-samples 20
 
 xai-all: xai-classical xai-transformer
+
+label-diagnostics:
+	python scripts/run_label_diagnostics.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/diagnostics/phase6 --random-state 42

@@ -266,17 +266,8 @@ def main() -> int:
     print("Running Cleanlab label quality diagnostics...")
     datalab, issue_summary = run_label_diagnostics(frame, random_state=args.random_state)
 
-    # Get training data info
-    from sklearn.model_selection import train_test_split
-
-    _, X_test, _, _, _ = train_test_split(
-        frame[["question", "answer"]],
-        frame["label"],
-        test_size=0.2,
-        random_state=args.random_state,
-        stratify=frame["label"] if frame["label"].nunique() >= 2 else None,
-    )
-    train_size = len(frame) - len(X_test)
+    # Get training data info (issue_summary only contains training data)
+    train_size = len(issue_summary)
 
     # Extract suspect examples (label issues)
     if "is_label_issue" in issue_summary.columns:

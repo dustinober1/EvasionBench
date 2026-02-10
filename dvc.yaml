@@ -203,3 +203,15 @@ stages:
       - artifacts/explainability/phase6/transformer/transformer_xai.json
       - artifacts/explainability/phase6/transformer/transformer_xai_summary.json
       - artifacts/explainability/phase6/transformer/transformer_xai.html
+
+  phase6_label_diagnostics:
+    cmd: python scripts/run_label_diagnostics.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/diagnostics/phase6 --random-state 42
+    deps:
+      - scripts/run_label_diagnostics.py
+      - src/models.py
+      - data/processed/evasionbench_prepared.parquet
+    outs:
+      - artifacts/diagnostics/phase6/suspect_examples.csv
+      - artifacts/diagnostics/phase6/outlier_examples.csv
+      - artifacts/diagnostics/phase6/label_diagnostics_summary.json
+      - artifacts/diagnostics/phase6/label_diagnostics_report.md
