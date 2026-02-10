@@ -8,6 +8,14 @@
 .env
 .env.*
 
+# Model artifacts (large binary files - use DVC or git-lfs)
+artifacts/models/phase6/transformer/model/*.safetensors
+artifacts/models/phase6/transformer/model/*.bin
+artifacts/models/phase6/transformer/model/*.pt
+
+# Temporary training outputs
+tmp_transformer_output/
+
 # Notebook checkpoints
 .ipynb_checkpoints
 

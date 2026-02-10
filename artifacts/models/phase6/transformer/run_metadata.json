@@ -1,0 +1,36 @@
+{
+  "feature_config": {
+    "max_length": 512,
+    "model_name": "distilbert-base-uncased"
+  },
+  "git_sha": "466b5c1",
+  "labels": [
+    "evasive",
+    "non_evasive"
+  ],
+  "model_config": {
+    "device": "cpu",
+    "fp16": false,
+    "gradient_checkpointing": true,
+    "learning_rate": 2e-05,
+    "max_length": 512,
+    "model_name": "distilbert-base-uncased",
+    "num_epochs": 1,
+    "num_labels": 2,
+    "per_device_batch_size": 4
+  },
+  "model_family": "transformer",
+  "model_name": "distilbert-base-uncased",
+  "split_metadata": {
+    "method": "train_test_split",
+    "random_state": 42,
+    "stratify": true,
+    "test_rows": 20,
+    "test_size": 0.2,
+    "train_rows": 80
+  },
+  "split_seed": 42,
+  "test_rows": 20,
+  "test_size": 0.2,
+  "train_rows": 80
+}

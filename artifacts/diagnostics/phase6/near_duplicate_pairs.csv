@@ -1,0 +1,81 @@
+index,question,answer,label,label_int
+0,What is your revenue?,We cannot disclose financial information.,evasive,1
+1,Can you disclose your earnings?,That's confidential.,evasive,1
+2,Tell me about your financial performance.,I'm not at liberty to discuss earnings.,evasive,1
+3,What are your sales figures?,Financial details are private.,evasive,1
+4,How much profit did you make?,We don't share profit information.,evasive,1
+5,Is your business profitable?,That's not public information.,evasive,1
+6,What's your quarterly income?,I can't discuss revenue figures.,evasive,1
+7,Can you share your annual report?,Our financial reports are confidential.,evasive,1
+8,What are your operating costs?,We keep cost data private.,evasive,1
+9,How's your company doing financially?,Financial performance is not disclosed.,evasive,1
+10,What products do you sell?,We sell software products.,non_evasive,0
+11,How many employees do you have?,We have 500 employees.,non_evasive,0
+12,When was your company founded?,We were founded in 2010.,non_evasive,0
+13,Who is your CEO?,Jane Doe is our CEO.,non_evasive,0
+14,Where are your headquarters?,We're based in San Francisco.,non_evasive,0
+15,What industry are you in?,We're in the technology sector.,non_evasive,0
+16,Do you have international offices?,"Yes, we have offices in Europe.",non_evasive,0
+17,What's your company mission?,To innovate and serve customers.,non_evasive,0
+18,How long have you been in business?,For over 10 years.,non_evasive,0
+19,What are your core values?,Integrity and excellence.,non_evasive,0
+20,What is your revenue?,We cannot disclose financial information.,evasive,1
+21,Can you disclose your earnings?,That's confidential.,evasive,1
+22,Tell me about your financial performance.,I'm not at liberty to discuss earnings.,evasive,1
+23,What are your sales figures?,Financial details are private.,evasive,1
+24,How much profit did you make?,We don't share profit information.,evasive,1
+25,Is your business profitable?,That's not public information.,evasive,1
+26,What's your quarterly income?,I can't discuss revenue figures.,evasive,1
+27,Can you share your annual report?,Our financial reports are confidential.,evasive,1
+28,What are your operating costs?,We keep cost data private.,evasive,1
+29,How's your company doing financially?,Financial performance is not disclosed.,evasive,1
+30,What products do you sell?,We sell software products.,non_evasive,0
+31,How many employees do you have?,We have 500 employees.,non_evasive,0
+32,When was your company founded?,We were founded in 2010.,non_evasive,0
+33,Who is your CEO?,Jane Doe is our CEO.,non_evasive,0
+34,Where are your headquarters?,We're based in San Francisco.,non_evasive,0
+35,What industry are you in?,We're in the technology sector.,non_evasive,0
+36,Do you have international offices?,"Yes, we have offices in Europe.",non_evasive,0
+37,What's your company mission?,To innovate and serve customers.,non_evasive,0
+38,How long have you been in business?,For over 10 years.,non_evasive,0
+39,What are your core values?,Integrity and excellence.,non_evasive,0
+40,What is your revenue?,We cannot disclose financial information.,evasive,1
+41,Can you disclose your earnings?,That's confidential.,evasive,1
+42,Tell me about your financial performance.,I'm not at liberty to discuss earnings.,evasive,1
+43,What are your sales figures?,Financial details are private.,evasive,1
+44,How much profit did you make?,We don't share profit information.,evasive,1
+45,Is your business profitable?,That's not public information.,evasive,1
+46,What's your quarterly income?,I can't discuss revenue figures.,evasive,1
+47,Can you share your annual report?,Our financial reports are confidential.,evasive,1
+48,What are your operating costs?,We keep cost data private.,evasive,1
+49,How's your company doing financially?,Financial performance is not disclosed.,evasive,1
+50,What products do you sell?,We sell software products.,non_evasive,0
+51,How many employees do you have?,We have 500 employees.,non_evasive,0
+52,When was your company founded?,We were founded in 2010.,non_evasive,0
+53,Who is your CEO?,Jane Doe is our CEO.,non_evasive,0
+54,Where are your headquarters?,We're based in San Francisco.,non_evasive,0
+55,What industry are you in?,We're in the technology sector.,non_evasive,0
+56,Do you have international offices?,"Yes, we have offices in Europe.",non_evasive,0
+57,What's your company mission?,To innovate and serve customers.,non_evasive,0
+58,How long have you been in business?,For over 10 years.,non_evasive,0
+59,What are your core values?,Integrity and excellence.,non_evasive,0
+60,What is your revenue?,We cannot disclose financial information.,evasive,1
+61,Can you disclose your earnings?,That's confidential.,evasive,1
+62,Tell me about your financial performance.,I'm not at liberty to discuss earnings.,evasive,1
+63,What are your sales figures?,Financial details are private.,evasive,1
+64,How much profit did you make?,We don't share profit information.,evasive,1
+65,Is your business profitable?,That's not public information.,evasive,1
+66,What's your quarterly income?,I can't discuss revenue figures.,evasive,1
+67,Can you share your annual report?,Our financial reports are confidential.,evasive,1
+68,What are your operating costs?,We keep cost data private.,evasive,1
+69,How's your company doing financially?,Financial performance is not disclosed.,evasive,1
+70,What products do you sell?,We sell software products.,non_evasive,0
+71,How many employees do you have?,We have 500 employees.,non_evasive,0
+72,When was your company founded?,We were founded in 2010.,non_evasive,0
+73,Who is your CEO?,Jane Doe is our CEO.,non_evasive,0
+74,Where are your headquarters?,We're based in San Francisco.,non_evasive,0
+75,What industry are you in?,We're in the technology sector.,non_evasive,0
+76,Do you have international offices?,"Yes, we have offices in Europe.",non_evasive,0
+77,What's your company mission?,To innovate and serve customers.,non_evasive,0
+78,How long have you been in business?,For over 10 years.,non_evasive,0
+79,What are your core values?,Integrity and excellence.,non_evasive,0

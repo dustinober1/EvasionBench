@@ -1,0 +1,35 @@
+{
+  "boosting": {
+    "artifacts": [
+      "shap_summary.png",
+      "shap_summary.json",
+      "shap_samples.json"
+    ],
+    "explainer_type": "TreeExplainer",
+    "n_features": 80,
+    "n_samples": 10,
+    "output_dir": "artifacts/explainability/phase6/boosting"
+  },
+  "logreg": {
+    "artifacts": [
+      "shap_summary.png",
+      "shap_summary.json",
+      "shap_samples.json"
+    ],
+    "explainer_type": "LinearExplainer",
+    "n_features": 268,
+    "n_samples": 10,
+    "output_dir": "artifacts/explainability/phase6/logreg"
+  },
+  "tree": {
+    "artifacts": [
+      "shap_summary.png",
+      "shap_summary.json",
+      "shap_samples.json"
+    ],
+    "explainer_type": "TreeExplainer",
+    "n_features": 268,
+    "n_samples": 10,
+    "output_dir": "artifacts/explainability/phase6/tree"
+  }
+}

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Transformer Explainability - Captum Attributions</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+    .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+    h1 { color: #333; }
+    .sample { margin-bottom: 30px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+    .sample-header { font-weight: bold; margin-bottom: 10px; }
+    .label-correct { color: green; }
+    .label-incorrect { color: red; }
+    .tokens { line-height: 1.8; }
+    .token { margin-right: 4px; padding: 2px 4px; border-radius: 3px; display: inline-block; }
+    .pos { background: linear-gradient(to right, rgba(255, 100, 100, 0.3), rgba(255, 100, 100, 0.8)); }
+    .neg { background: linear-gradient(to right, rgba(100, 100, 255, 0.3), rgba(100, 100, 255, 0.8)); }
+    .neutral { background: #f0f0f0; }
+    .legend { margin: 20px 0; padding: 10px; background: #e8e8e8; border-radius: 5px; }
+    .legend-item { display: inline-block; margin-right: 20px; }
+    .attribution-info { font-size: 0.9em; color: #666; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <div class='container'>
+    <h1>Transformer Explainability Analysis</h1>
+    <p>Word-level attributions generated using Captum LayerIntegratedGradients.</p>
+
+    <div class='legend'>
+      <div class='legend-item'>
+        <span class='token pos' style='background: rgba(255, 100, 100, 0.5);'>Positive</span>: Pushes toward prediction
+      </div>
+      <div class='legend-item'>
+        <span class='token neg' style='background: rgba(100, 100, 255, 0.5);'>Negative</span>: Pushes away from prediction
+      </div>
+    </div>
+
+    <div class='sample'>
+      <div class='sample-header'>
+        Sample 23 | 
+        True: <span class='label-correct'>evasive</span> | 
+        Predicted: evasive
+      </div>
+      <div class='tokens'><span class='token pos' style='background: rgba(255, 100, 100, 0.35427420693041134);' title='Attribution: 0.0039'> what</span><span class='token neg' style='background: rgba(100, 100, 255, 0.3486982340792261);' title='Attribution: -0.0038'> are</span><span class='token pos' style='background: rgba(255, 100, 100, 0.3927330812999197);' title='Attribution: 0.0049'> your</span><span class='token pos' style='background: rgba(255, 100, 100, 0.24289265584808167);' title='Attribution: 0.0011'> sales</span><span class='token pos' style='background: rgba(255, 100, 100, 0.35730410172552163);' title='Attribution: 0.0040'> figures</span><span class='token neg' style='background: rgba(100, 100, 255, 0.26181157867175914);' title='Attribution: -0.0016'> ?</span><span class='token pos' style='background: rgba(255, 100, 100, 0.4013852615287915);' title='Attribution: 0.0051'> financial</span><span class='token neg' style='background: rgba(100, 100, 255, 0.26994236797443033);' title='Attribution: -0.0018'> details</span><span class='token pos' style='background: rgba(255, 100, 100, 0.29681968626027416);' title='Attribution: 0.0025'> are</span><span class='token pos' style='background: rgba(255, 100, 100, 0.2904772091219502);' title='Attribution: 0.0023'> private</span><span class='token pos' style='background: rgba(255, 100, 100, 0.20769682342021603);' title='Attribution: 0.0002'> .</span></div>
+      <div class='attribution-info'>Attribution sum: 0.0169</div>
+    </div>
+    <div class='sample'>
+      <div class='sample-header'>
+        Sample 69 | 
+        True: <span class='label-correct'>evasive</span> | 
+        Predicted: evasive
+      </div>
+      <div class='tokens'><span class='token pos' style='background: rgba(255, 100, 100, 0.21644365590283118);' title='Attribution: 0.0004'> how</span><span class='token pos' style='background: rgba(255, 100, 100, 0.25690791897096865);' title='Attribution: 0.0015'> '</span><span class='token pos' style='background: rgba(255, 100, 100, 0.29361500529488077);' title='Attribution: 0.0024'> s</span><span class='token pos' style='background: rgba(255, 100, 100, 0.24462587137929298);' title='Attribution: 0.0011'> your</span><span class='token pos' style='background: rgba(255, 100, 100, 0.46005605361539725);' title='Attribution: 0.0066'> company</span><span class='token pos' style='background: rgba(255, 100, 100, 0.2693826952062638);' title='Attribution: 0.0018'> doing</span><span class='token pos' style='background: rgba(255, 100, 100, 0.40967519554789067);' title='Attribution: 0.0053'> financially</span><span class='token neg' style='background: rgba(100, 100, 255, 0.2507172269391443);' title='Attribution: -0.0013'> ?</span><span class='token pos' style='background: rgba(255, 100, 100, 0.43632050806591305);' title='Attribution: 0.0060'> financial</span><span class='token pos' style='background: rgba(255, 100, 100, 0.4011973814619362);' title='Attribution: 0.0051'> performance</span><span class='token pos' style='background: rgba(255, 100, 100, 0.2565022821081197);' title='Attribution: 0.0014'> is</span><span class='token pos' style='background: rgba(255, 100, 100, 0.6320856573460087);' title='Attribution: 0.0110'> not</span><span class='token pos' style='background: rgba(255, 100, 100, 0.6835181908888325);' title='Attribution: 0.0123'> disclosed</span><span class='token pos' style='background: rgba(255, 100, 100, 0.5216479716714728);' title='Attribution: 0.0082'> .</span></div>
+      <div class='attribution-info'>Attribution sum: 0.0620</div>
+    </div>
+    <div class='sample'>
+      <div class='sample-header'>
+        Sample 59 | 
+        True: <span class='label-incorrect'>non_evasive</span> | 
+        Predicted: evasive
+      </div>
+      <div class='tokens'><span class='token pos' style='background: rgba(255, 100, 100, 0.3553014112461652);' title='Attribution: 0.0040'> what</span><span class='token neg' style='background: rgba(100, 100, 255, 0.3229920479645895);' title='Attribution: -0.0031'> are</span><span class='token pos' style='background: rgba(255, 100, 100, 0.4674815713160158);' title='Attribution: 0.0068'> your</span><span class='token neg' style='background: rgba(100, 100, 255, 0.21509111071654502);' title='Attribution: -0.0004'> core</span><span class='token pos' style='background: rgba(255, 100, 100, 0.2126601749448328);' title='Attribution: 0.0003'> values</span><span class='token pos' style='background: rgba(255, 100, 100, 0.3070220779233553);' title='Attribution: 0.0027'> ?</span><span class='token neg' style='background: rgba(100, 100, 255, 0.229396190438964);' title='Attribution: -0.0007'> integrity</span><span class='token neg' style='background: rgba(100, 100, 255, 0.2525273348713562);' title='Attribution: -0.0013'> and</span><span class='token neg' style='background: rgba(100, 100, 255, 0.2570637582546496);' title='Attribution: -0.0015'> excellence</span><span class='token pos' style='background: rgba(255, 100, 100, 0.22327993456115422);' title='Attribution: 0.0006'> .</span></div>
+      <div class='attribution-info'>Attribution sum: 0.0074</div>
+    </div>
+    <div class='sample'>
+      <div class='sample-header'>
+        Sample 78 | 
+        True: <span class='label-incorrect'>non_evasive</span> | 
+        Predicted: evasive
+      </div>
+      <div class='tokens'><span class='token pos' style='background: rgba(255, 100, 100, 0.21698533141148316);' title='Attribution: 0.0004'> how</span><span class='token neg' style='background: rgba(100, 100, 255, 0.24866049446058086);' title='Attribution: -0.0012'> long</span><span class='token neg' style='background: rgba(100, 100, 255, 0.2533625866810141);' title='Attribution: -0.0014'> have</span><span class='token pos' style='background: rgba(255, 100, 100, 0.26209014355995836);' title='Attribution: 0.0016'> you</span><span class='token pos' style='background: rgba(255, 100, 100, 0.3032742833121341);' title='Attribution: 0.0026'> been</span><span class='token neg' style='background: rgba(100, 100, 255, 0.23628671197914716);' title='Attribution: -0.0009'> in</span><span class='token neg' style='background: rgba(100, 100, 255, 0.3953901926769976);' title='Attribution: -0.0050'> business</span><span class='token pos' style='background: rgba(255, 100, 100, 0.20860174955190638);' title='Attribution: 0.0002'> ?</span><span class='token neg' style='background: rgba(100, 100, 255, 0.2130169676471245);' title='Attribution: -0.0003'> for</span><span class='token neg' style='background: rgba(100, 100, 255, 0.23077975145034202);' title='Attribution: -0.0008'> over</span><span class='token neg' style='background: rgba(100, 100, 255, 0.28347063219443563);' title='Attribution: -0.0021'> 10</span><span class='token neg' style='background: rgba(100, 100, 255, 0.2814815378182843);' title='Attribution: -0.0021'> years</span><span class='token neg' style='background: rgba(100, 100, 255, 0.32018419241839635);' title='Attribution: -0.0031'> .</span></div>
+      <div class='attribution-info'>Attribution sum: -0.0120</div>
+    </div>
+    <div class='sample'>
+      <div class='sample-header'>
+        Sample 67 | 
+        True: <span class='label-correct'>evasive</span> | 
+        Predicted: evasive
+      </div>
+      <div class='tokens'><span class='token pos' style='background: rgba(255, 100, 100, 0.27344136485423437);' title='Attribution: 0.0019'> can</span><span class='token pos' style='background: rgba(255, 100, 100, 0.226219790555271);' title='Attribution: 0.0007'> you</span><span class='token pos' style='background: rgba(255, 100, 100, 0.38179186150068334);' title='Attribution: 0.0046'> share</span><span class='token pos' style='background: rgba(255, 100, 100, 0.5583725347862074);' title='Attribution: 0.0091'> your</span><span class='token pos' style='background: rgba(255, 100, 100, 0.49636312779074815);' title='Attribution: 0.0076'> annual</span><span class='token pos' style='background: rgba(255, 100, 100, 0.35599107791848156);' title='Attribution: 0.0040'> report</span><span class='token pos' style='background: rgba(255, 100, 100, 0.23064351192188584);' title='Attribution: 0.0008'> ?</span><span class='token pos' style='background: rgba(255, 100, 100, 0.2996641298424262);' title='Attribution: 0.0025'> our</span><span class='token pos' style='background: rgba(255, 100, 100, 0.36564664873768166);' title='Attribution: 0.0042'> financial</span><span class='token pos' style='background: rgba(255, 100, 100, 0.25301642934555124);' title='Attribution: 0.0014'> reports</span><span class='token pos' style='background: rgba(255, 100, 100, 0.3148460007113101);' title='Attribution: 0.0029'> are</span><span class='token neg' style='background: rgba(100, 100, 255, 0.2363164220669937);' title='Attribution: -0.0009'> confidential</span><span class='token pos' style='background: rgba(255, 100, 100, 0.49980614689305136);' title='Attribution: 0.0076'> .</span></div>
+      <div class='attribution-info'>Attribution sum: 0.0464</div>
+    </div>
+    <div class='sample'>
+      <div class='sample-header'>
+        Sample 24 | 
+        True: <span class='label-correct'>evasive</span> | 
+        Predicted: evasive
+      </div>
+      <div class='tokens'><span class='token pos' style='background: rgba(255, 100, 100, 0.287123263214251);' title='Attribution: 0.0022'> how</span><span class='token pos' style='background: rgba(255, 100, 100, 0.23944883778068077);' title='Attribution: 0.0010'> much</span><span class='token pos' style='background: rgba(255, 100, 100, 0.30558794926956645);' title='Attribution: 0.0027'> profit</span><span class='token neg' style='background: rgba(100, 100, 255, 0.2523473211865769);' title='Attribution: -0.0013'> did</span><span class='token pos' style='background: rgba(255, 100, 100, 0.3256574320545646);' title='Attribution: 0.0032'> you</span><span class='token pos' style='background: rgba(255, 100, 100, 0.29540507974795777);' title='Attribution: 0.0024'> make</span><span class='token neg' style='background: rgba(100, 100, 255, 0.3271889431399734);' title='Attribution: -0.0032'> ?</span><span class='token pos' style='background: rgba(255, 100, 100, 0.27100966664154325);' title='Attribution: 0.0018'> we</span><span class='token pos' style='background: rgba(255, 100, 100, 0.20106566078866264);' title='Attribution: 0.0000'> don</span><span class='token pos' style='background: rgba(255, 100, 100, 0.36938418007153384);' title='Attribution: 0.0043'> '</span><span class='token pos' style='background: rgba(255, 100, 100, 0.22489878851104123);' title='Attribution: 0.0006'> t</span><span class='token pos' style='background: rgba(255, 100, 100, 0.36878408880045443);' title='Attribution: 0.0043'> share</span><span class='token pos' style='background: rgba(255, 100, 100, 0.3621231122155918);' title='Attribution: 0.0041'> profit</span><span class='token pos' style='background: rgba(255, 100, 100, 0.3066071000171358);' title='Attribution: 0.0027'> information</span><span class='token pos' style='background: rgba(255, 100, 100, 0.4389772176776848);' title='Attribution: 0.0061'> .</span></div>
+      <div class='attribution-info'>Attribution sum: 0.0310</div>
+    </div>
+    <div class='sample'>
+      <div class='sample-header'>
+        Sample 16 | 
+        True: <span class='label-incorrect'>non_evasive</span> | 
+        Predicted: evasive
+      </div>
+      <div class='tokens'><span class='token neg' style='background: rgba(100, 100, 255, 0.3327413670655938);' title='Attribution: -0.0034'> do</span><span class='token pos' style='background: rgba(255, 100, 100, 0.23115580834251748);' title='Attribution: 0.0008'> you</span><span class='token pos' style='background: rgba(255, 100, 100, 0.3370949233173305);' title='Attribution: 0.0035'> have</span><span class='token pos' style='background: rgba(255, 100, 100, 0.39559021701333763);' title='Attribution: 0.0050'> international</span><span class='token neg' style='background: rgba(100, 100, 255, 0.28465316445620803);' title='Attribution: -0.0022'> offices</span><span class='token pos' style='background: rgba(255, 100, 100, 0.23184195272013172);' title='Attribution: 0.0008'> ?</span><span class='token neg' style='background: rgba(100, 100, 255, 0.26631870514629935);' title='Attribution: -0.0017'> yes</span><span class='token pos' style='background: rgba(255, 100, 100, 0.2932262517059245);' title='Attribution: 0.0024'> ,</span><span class='token pos' style='background: rgba(255, 100, 100, 0.3278224174555912);' title='Attribution: 0.0033'> we</span><span class='token neg' style='background: rgba(100, 100, 255, 0.24840438733989864);' title='Attribution: -0.0012'> have</span><span class='token neg' style='background: rgba(100, 100, 255, 0.330228626398909);' title='Attribution: -0.0033'> offices</span><span class='token pos' style='background: rgba(255, 100, 100, 0.2413394174775309);' title='Attribution: 0.0011'> in</span><span class='token neg' style='background: rgba(100, 100, 255, 0.23358847216159812);' title='Attribution: -0.0009'> europe</span><span class='token pos' style='background: rgba(255, 100, 100, 0.2513265588122677);' title='Attribution: 0.0013'> .</span></div>
+      <div class='attribution-info'>Attribution sum: 0.0054</div>
+    </div>
+    <div class='sample'>
+      <div class='sample-header'>
+        Sample 50 | 
+        True: <span class='label-incorrect'>non_evasive</span> | 
+        Predicted: evasive
+      </div>
+      <div class='tokens'><span class='token pos' style='background: rgba(255, 100, 100, 0.21345079313999824);' title='Attribution: 0.0003'> what</span><span class='token neg' style='background: rgba(100, 100, 255, 0.25571058987558726);' title='Attribution: -0.0014'> products</span><span class='token pos' style='background: rgba(255, 100, 100, 0.24077212486508992);' title='Attribution: 0.0010'> do</span><span class='token neg' style='background: rgba(100, 100, 255, 0.22346952669607595);' title='Attribution: -0.0006'> you</span><span class='token neg' style='background: rgba(100, 100, 255, 0.3542005012587717);' title='Attribution: -0.0039'> sell</span><span class='token neg' style='background: rgba(100, 100, 255, 0.29543887368883215);' title='Attribution: -0.0024'> ?</span><span class='token neg' style='background: rgba(100, 100, 255, 0.21192601504760547);' title='Attribution: -0.0003'> we</span><span class='token neg' style='background: rgba(100, 100, 255, 0.25753686429586137);' title='Attribution: -0.0015'> sell</span><span class='token pos' style='background: rgba(255, 100, 100, 0.37921490230220445);' title='Attribution: 0.0046'> software</span><span class='token neg' style='background: rgba(100, 100, 255, 0.24989042133194755);' title='Attribution: -0.0013'> products</span><span class='token neg' style='background: rgba(100, 100, 255, 0.22118017438794468);' title='Attribution: -0.0005'> .</span></div>
+      <div class='attribution-info'>Attribution sum: -0.0060</div>
+    </div>
+    <div class='sample'>
+      <div class='sample-header'>
+        Sample 17 | 
+        True: <span class='label-incorrect'>non_evasive</span> | 
+        Predicted: evasive
+      </div>
+      <div class='tokens'><span class='token neg' style='background: rgba(100, 100, 255, 0.31714227205718726);' title='Attribution: -0.0030'> what</span><span class='token neg' style='background: rgba(100, 100, 255, 0.2353365552918985);' title='Attribution: -0.0009'> '</span><span class='token pos' style='background: rgba(255, 100, 100, 0.2836269645537197);' title='Attribution: 0.0021'> s</span><span class='token pos' style='background: rgba(255, 100, 100, 0.2068625258031605);' title='Attribution: 0.0002'> your</span><span class='token neg' style='background: rgba(100, 100, 255, 0.31621923452811124);' title='Attribution: -0.0030'> company</span><span class='token pos' style='background: rgba(255, 100, 100, 0.3808563692471132);' title='Attribution: 0.0046'> mission</span><span class='token neg' style='background: rgba(100, 100, 255, 0.36077907943173204);' title='Attribution: -0.0041'> ?</span><span class='token neg' style='background: rgba(100, 100, 255, 0.2304461241703682);' title='Attribution: -0.0008'> to</span><span class='token neg' style='background: rgba(100, 100, 255, 0.2903794066629646);' title='Attribution: -0.0023'> inn</span><span class='token pos' style='background: rgba(255, 100, 100, 0.5059703589387812);' title='Attribution: 0.0078'>ova</span><span class='token neg' style='background: rgba(100, 100, 255, 0.2502548224647266);' title='Attribution: -0.0013'>te</span><span class='token neg' style='background: rgba(100, 100, 255, 0.32795258941481986);' title='Attribution: -0.0033'> and</span><span class='token neg' style='background: rgba(100, 100, 255, 0.2861361075947076);' title='Attribution: -0.0022'> serve</span><span class='token neg' style='background: rgba(100, 100, 255, 0.4411192111459576);' title='Attribution: -0.0061'> customers</span><span class='token pos' style='background: rgba(255, 100, 100, 0.20581031616260664);' title='Attribution: 0.0001'> .</span></div>
+      <div class='attribution-info'>Attribution sum: -0.0121</div>
+    </div>
+    <div class='sample'>
+      <div class='sample-header'>
+        Sample 81 | 
+        True: <span class='label-correct'>evasive</span> | 
+        Predicted: evasive
+      </div>
+      <div class='tokens'><span class='token pos' style='background: rgba(255, 100, 100, 0.2971203528058326);' title='Attribution: 0.0025'> can</span><span class='token neg' style='background: rgba(100, 100, 255, 0.22028998573817038);' title='Attribution: -0.0005'> you</span><span class='token pos' style='background: rgba(255, 100, 100, 0.7959014798451169);' title='Attribution: 0.0152'> disclose</span><span class='token pos' style='background: rgba(255, 100, 100, 0.5396663786507991);' title='Attribution: 0.0087'> your</span><span class='token pos' style='background: rgba(255, 100, 100, 0.489787818526416);' title='Attribution: 0.0074'> earnings</span><span class='token neg' style='background: rgba(100, 100, 255, 0.2123962128558617);' title='Attribution: -0.0003'> ?</span><span class='token pos' style='background: rgba(255, 100, 100, 0.36620239972859736);' title='Attribution: 0.0042'> that</span><span class='token neg' style='background: rgba(100, 100, 255, 0.265913958558845);' title='Attribution: -0.0017'> '</span><span class='token neg' style='background: rgba(100, 100, 255, 0.2145415939361487);' title='Attribution: -0.0004'> s</span><span class='token pos' style='background: rgba(255, 100, 100, 0.7999999607825261);' title='Attribution: 0.0153'> confidential</span><span class='token pos' style='background: rgba(255, 100, 100, 0.38530489733863227);' title='Attribution: 0.0047'> .</span></div>
+      <div class='attribution-info'>Attribution sum: 0.0551</div>
+    </div>
+  </div>
+</body>
+</html>

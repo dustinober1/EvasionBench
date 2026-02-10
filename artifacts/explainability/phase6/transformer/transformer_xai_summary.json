@@ -1,0 +1,68 @@
+{
+  "n_samples": 10,
+  "avg_attribution_sum": 0.01941266757203266,
+  "top_tokens": [
+    {
+      "token": "financial",
+      "attribution": 0.0051350900903344154,
+      "sample_id": 23
+    },
+    {
+      "token": "disclosed",
+      "attribution": 0.01232915185391903,
+      "sample_id": 69
+    },
+    {
+      "token": "your",
+      "attribution": 0.0068204691633582115,
+      "sample_id": 59
+    },
+    {
+      "token": "business",
+      "attribution": -0.004982222802937031,
+      "sample_id": 78
+    },
+    {
+      "token": "your",
+      "attribution": 0.009138083085417747,
+      "sample_id": 67
+    },
+    {
+      "token": ".",
+      "attribution": 0.006093641277402639,
+      "sample_id": 24
+    },
+    {
+      "token": "international",
+      "attribution": 0.0049873231910169125,
+      "sample_id": 16
+    },
+    {
+      "token": "software",
+      "attribution": 0.004569771699607372,
+      "sample_id": 50
+    },
+    {
+      "token": "##ova",
+      "attribution": 0.007801888510584831,
+      "sample_id": 17
+    },
+    {
+      "token": "confidential",
+      "attribution": 0.015299301594495773,
+      "sample_id": 81
+    }
+  ],
+  "sample_indices": [
+    23,
+    69,
+    59,
+    78,
+    67,
+    24,
+    16,
+    50,
+    17,
+    81
+  ]
+}

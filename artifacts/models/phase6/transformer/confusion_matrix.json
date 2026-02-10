@@ -1,0 +1,16 @@
+{
+  "confusion_matrix": [
+    [
+      10,
+      0
+    ],
+    [
+      10,
+      0
+    ]
+  ],
+  "labels": [
+    "evasive",
+    "non_evasive"
+  ]
+}
