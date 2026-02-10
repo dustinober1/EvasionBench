@@ -179,3 +179,15 @@ stages:
       - data/processed/evasionbench_prepared.parquet
     outs:
       - artifacts/models/phase6/transformer
+
+  phase6_xai_classical:
+    cmd: python scripts/run_explainability_analysis.py --data data/processed/evasionbench_prepared.parquet --models-root artifacts/models/phase5 --output-root artifacts/explainability/phase6 --families all
+    deps:
+      - scripts/run_explainability_analysis.py
+      - src/explainability.py
+      - artifacts/models/phase5/logreg
+      - artifacts/models/phase5/tree
+      - artifacts/models/phase5/boosting
+      - data/processed/evasionbench_prepared.parquet
+    outs:
+      - artifacts/explainability/phase6/xai_summary.json
