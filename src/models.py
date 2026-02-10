@@ -12,6 +12,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, Trainer, TrainingArguments
+from datasets import Dataset
 from transformers.trainer_utils import set_seed
 
 
@@ -287,8 +288,8 @@ def train_transformer(
         )
 
     # Convert to Hugging Face datasets
-    train_dataset = transformers.Dataset.from_pandas(train_df)
-    test_dataset = transformers.Dataset.from_pandas(test_df)
+    train_dataset = Dataset.from_pandas(train_df)
+    test_dataset = Dataset.from_pandas(test_df)
 
     train_dataset = train_dataset.map(tokenize_function, batched=True)
     test_dataset = test_dataset.map(tokenize_function, batched=True)
@@ -342,8 +343,7 @@ def train_transformer(
     # Training arguments
     training_args = TrainingArguments(
         output_dir="./tmp_transformer_output",
-        overwrite_output_dir=True,
-        evaluation_strategy="epoch",
+        eval_strategy="epoch",
         save_strategy="epoch",
         learning_rate=learning_rate,
         per_device_train_batch_size=per_device_batch_size,
