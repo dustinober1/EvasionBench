@@ -125,7 +125,9 @@ def explain_classical_model(
         else:
             # RandomForest
             explainer = shap.TreeExplainer(model)
-            shap_values = explainer.shap_values(X_train)
+            # Convert sparse matrix to dense for TreeExplainer
+            X_dense = X_train.toarray() if hasattr(X_train, "toarray") else X_train
+            shap_values = explainer.shap_values(X_dense)
 
             # TreeExplainer returns list for binary classification
             if isinstance(shap_values, list):
@@ -141,13 +143,38 @@ def explain_classical_model(
         shap_values = shap_values.reshape(-1, 1)
 
     # Compute global feature importance (mean absolute SHAP)
-    mean_abs_shap = np.mean(np.abs(shap_values), axis=0)
-    top_indices = np.argsort(mean_abs_shap)[::-1][:top_k]
+    # Handle different shap_values structures
+    if isinstance(shap_values, list):
+        # Multi-class: use positive class
+        shap_vals = shap_values[1] if len(shap_values) > 1 else shap_values[0]
+    else:
+        shap_vals = shap_values
+
+    # Ensure shap_vals is 2D
+    if len(shap_vals.shape) == 1:
+        shap_vals = shap_vals.reshape(-1, 1)
+
+    # Compute mean absolute SHAP across samples
+    mean_abs_shap = np.mean(np.abs(shap_vals), axis=0)
+
+    # Handle multi-output case (e.g., multi-class SHAP)
+    if len(mean_abs_shap.shape) > 1:
+        # Take mean across classes
+        mean_abs_shap = np.mean(mean_abs_shap, axis=1)
+
+    # Ensure top_k doesn't exceed number of features
+    actual_top_k = min(top_k, len(mean_abs_shap))
+    # Get top k indices in descending order
+    sorted_indices = np.argsort(mean_abs_shap)[::-1]
+    top_indices = sorted_indices[:actual_top_k]
+
+    # Convert to list of Python ints for JSON serialization
+    top_indices_list = [int(i) for i in top_indices.flatten()]
 
     global_importance = {
-        "feature_names": [feature_names[i] for i in top_indices],
-        "importance_ranking": top_indices.tolist(),
-        "mean_abs_shap": mean_abs_shap[top_indices].tolist(),
+        "feature_names": [feature_names[i] for i in top_indices_list],
+        "importance_ranking": top_indices_list,
+        "mean_abs_shap": mean_abs_shap[top_indices_list].tolist(),
     }
 
     # Select representative samples for local explanations
@@ -177,7 +204,11 @@ def explain_classical_model(
     # Select top features for visualization
     top_indices = global_importance["importance_ranking"][:min(20, len(global_importance["importance_ranking"]))]
     top_features = [feature_names[i] for i in top_indices]
-    top_importance = [global_importance["mean_abs_shap"][idx] for idx in range(len(top_indices))]
+    top_importance = global_importance["mean_abs_shap"]
+
+    # Handle multi-class importance (take mean across classes if needed)
+    if isinstance(top_importance[0], list):
+        top_importance = [np.mean(vals) for vals in top_importance]
 
     # Create horizontal bar chart
     y_pos = np.arange(len(top_features))
