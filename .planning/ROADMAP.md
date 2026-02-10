@@ -33,7 +33,8 @@
 | 3 | Complete | 2026-02-08 |
 | 4 | Complete | 2026-02-08 |
 | 5 | Complete | 2026-02-09 |
-| 6-9 | Pending | - |
+| 6 | Planning | 2026-02-09 |
+| 7-9 | Pending | - |
 
 ## Phase Details
 
@@ -110,6 +111,12 @@
 4. Label-quality diagnostics produce actionable noise/ambiguity findings with examples.
 5. All outputs are exportable into final report sections without manual notebook intervention.
 
+**Plans:**
+- [ ] 06-01-PLAN.md — DistilBERT transformer training with MLflow registration
+- [ ] 06-02-PLAN.md — SHAP explainability for classical models
+- [ ] 06-03-PLAN.md — Captum explainability for transformer predictions
+- [ ] 06-04-PLAN.md — Cleanlab label quality diagnostics
+
 ### Phase 7: One-Command Research Reporting Pipeline
 
 **Goal:** Build the end-to-end orchestration that outputs Markdown + HTML/PDF with traceable artifacts.
@@ -149,4 +156,4 @@
 4. CI gating incorporates relevant test suites for merge confidence.
 
 ---
-*Last updated: 2026-02-09 after completing Phase 5*
+*Last updated: 2026-02-09 after planning Phase 6*

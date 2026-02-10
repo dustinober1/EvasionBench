@@ -23,10 +23,10 @@
 
 ### Modeling
 
-- [ ] **MODL-01**: User can train and evaluate TF-IDF + Logistic Regression baseline models
-- [ ] **MODL-02**: User can train and evaluate tree/boosting baseline models for comparison
+- [x] **MODL-01**: User can train and evaluate TF-IDF + Logistic Regression baseline models
+- [x] **MODL-02**: User can train and evaluate tree/boosting baseline models for comparison
 - [ ] **MODL-03**: User can train and evaluate at least one transformer-based classifier
-- [ ] **MODL-04**: User can output per-class metrics and confusion matrices for each model family
+- [x] **MODL-04**: User can output per-class metrics and confusion matrices for each model family
 - [ ] **MODL-05**: User can register best-performing model artifacts with versioned metadata
 
 ### Explainability & Label Quality
@@ -94,10 +94,10 @@
 | ANLY-04 | Phase 3 | Complete |
 | ANLY-05 | Phase 4 | Complete |
 | ANLY-06 | Phase 4 | Complete |
-| MODL-01 | Phase 5 | Pending |
-| MODL-02 | Phase 5 | Pending |
+| MODL-01 | Phase 5 | Complete |
+| MODL-02 | Phase 5 | Complete |
 | MODL-03 | Phase 6 | Pending |
-| MODL-04 | Phase 5 | Pending |
+| MODL-04 | Phase 5 | Complete |
 | MODL-05 | Phase 6 | Pending |
 | XAI-01 | Phase 6 | Pending |
 | XAI-02 | Phase 6 | Pending |
@@ -121,6 +121,10 @@
 - Mapped to phases: 31
 - Unmapped: 0 ✓
 
+**Phase Status:**
+- Phase 5: Complete (MODL-01, MODL-02, MODL-04)
+- Phase 6: Planned (MODL-03, MODL-05, XAI-01, XAI-02, XAI-03)
+
 ---
 *Requirements defined: 2026-02-08*
-*Last updated: 2026-02-08 after completing Phase 4*
+*Last updated: 2026-02-09 after completing Phase 5 and planning Phase 6*
