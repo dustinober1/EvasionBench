@@ -159,7 +159,7 @@ def _create_markdown_report(
         ])
 
     # Add near-duplicate section
-    if not near_duplicate_pairs.empty:
+    if not near_duplicate_pairs.empty and "question_x" in near_duplicate_pairs.columns:
         lines.extend([
             "## Near-Duplicate Pairs",
             "",
@@ -196,7 +196,7 @@ def _create_markdown_report(
 
     if label_issues > 0:
         lines.extend([
-            f"1. **HIGH PRIORITY:** Review {label_examples} suspect examples with potential label errors.",
+            f"1. **HIGH PRIORITY:** Review {label_issues} suspect examples with potential label errors.",
             "   - See `suspect_examples.csv` for full list with confidence scores.",
             "   - Focus on examples with `label_score < 0.5` (lowest confidence).",
             "",
@@ -212,7 +212,7 @@ def _create_markdown_report(
 
     if near_duplicate_issues > 0:
         lines.extend([
-            f"3. **LOW PRIORITY:** Check {near_duplicate_pairs} near-duplicate pairs for label consistency.",
+            f"3. **LOW PRIORITY:** Check {near_duplicate_issues} near-duplicate pairs for label consistency.",
             "   - Similar examples with different labels may indicate annotation inconsistency.",
             "   - See `near_duplicate_pairs.csv` for full list.",
             "",
