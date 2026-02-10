@@ -3,12 +3,16 @@ from __future__ import annotations
 from typing import Any
 
 import pandas as pd
+import torch
+import transformers
 from sklearn.decomposition import TruncatedSVD
 from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, Trainer, TrainingArguments
+from transformers.trainer_utils import set_seed
 
 
 class ModelWrapper:
@@ -199,4 +203,214 @@ def train_tree_or_boosting(
         "vectorizer_params": vectorizer_params,
         "estimator_params": estimator_params,
         "split_metadata": split_metadata,
+    }
+
+
+def train_transformer(
+    frame: pd.DataFrame,
+    *,
+    target_col: str = "label",
+    random_state: int = 42,
+    test_size: float = 0.2,
+    model_name: str = "distilbert-base-uncased",
+    max_epochs: int = 3,
+    learning_rate: float = 2e-5,
+    max_length: int = 512,
+) -> dict[str, Any]:
+    """Train a transformer model (DistilBERT) for binary classification.
+
+    Args:
+        frame: Input DataFrame with question, answer, and target columns
+        target_col: Name of the target column (default: "label")
+        random_state: Random seed for reproducibility
+        test_size: Fraction of data for testing
+        model_name: Hugging Face model name (default: distilbert-base-uncased)
+        max_epochs: Maximum training epochs
+        learning_rate: Learning rate for optimizer
+        max_length: Maximum sequence length for tokenization
+
+    Returns:
+        Dictionary containing model, tokenizer, trainer, predictions, and metadata
+    """
+    # Set random seeds for reproducibility
+    set_seed(random_state)
+    torch.manual_seed(random_state)
+
+    # Prepare features (Q + A text)
+    if "question" not in frame.columns or "answer" not in frame.columns:
+        raise ValueError("DataFrame must contain 'question' and 'answer' columns")
+
+    if target_col not in frame.columns:
+        raise ValueError(f"DataFrame must contain target column: {target_col}")
+
+    # Combine question and answer
+    frame["text"] = (
+        frame["question"].fillna("").astype(str) + " [SEP] " + frame["answer"].fillna("").astype(str)
+    )
+
+    # Encode labels to integers
+    unique_labels = sorted(frame[target_col].dropna().unique().tolist())
+    if len(unique_labels) != 2:
+        raise ValueError(f"Expected exactly 2 unique labels, found {len(unique_labels)}")
+
+    label2id = {label: idx for idx, label in enumerate(unique_labels)}
+    id2label = {idx: label for label, idx in label2id.items()}
+
+    frame["label_id"] = frame[target_col].map(label2id)
+
+    # Split data
+    stratify = frame["label_id"] if min(frame["label_id"].value_counts()) >= 2 else None
+    train_df, test_df = train_test_split(
+        frame,
+        test_size=test_size,
+        random_state=random_state,
+        stratify=stratify,
+    )
+
+    # Load tokenizer and model
+    tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
+
+    model = AutoModelForSequenceClassification.from_pretrained(
+        model_name,
+        num_labels=2,
+        id2label=id2label,
+        label2id=label2id,
+    )
+
+    # Tokenize datasets
+    def tokenize_function(examples):
+        return tokenizer(
+            examples["text"],
+            padding="max_length",
+            truncation=True,
+            max_length=max_length,
+        )
+
+    # Convert to Hugging Face datasets
+    train_dataset = transformers.Dataset.from_pandas(train_df)
+    test_dataset = transformers.Dataset.from_pandas(test_df)
+
+    train_dataset = train_dataset.map(tokenize_function, batched=True)
+    test_dataset = test_dataset.map(tokenize_function, batched=True)
+
+    # Remove columns we don't need
+    train_dataset = train_dataset.remove_columns(
+        [col for col in train_dataset.column_names if col not in ["input_ids", "attention_mask", "label_id"]]
+    )
+    test_dataset = test_dataset.remove_columns(
+        [col for col in test_dataset.column_names if col not in ["input_ids", "attention_mask", "label_id"]]
+    )
+
+    # Rename label_id to labels
+    train_dataset = train_dataset.rename_column("label_id", "labels")
+    test_dataset = test_dataset.rename_column("label_id", "labels")
+
+    # Set format for PyTorch
+    train_dataset.set_format("torch")
+    test_dataset.set_format("torch")
+
+    # Detect hardware and adjust batch size
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    if device == "cuda":
+        per_device_batch_size = 16
+        fp16 = True
+        gradient_checkpointing = False
+    else:
+        per_device_batch_size = 4
+        fp16 = False
+        gradient_checkpointing = True
+
+    # Define compute_metrics function
+    def compute_metrics(eval_pred):
+        logits, labels = eval_pred
+        predictions = logits.argmax(axis=-1)
+
+        from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+
+        accuracy = accuracy_score(labels, predictions)
+        f1 = f1_score(labels, predictions, average="macro", zero_division=0)
+        precision = precision_score(labels, predictions, average="macro", zero_division=0)
+        recall = recall_score(labels, predictions, average="macro", zero_division=0)
+
+        return {
+            "accuracy": accuracy,
+            "f1_macro": f1,
+            "precision_macro": precision,
+            "recall_macro": recall,
+        }
+
+    # Training arguments
+    training_args = TrainingArguments(
+        output_dir="./tmp_transformer_output",
+        overwrite_output_dir=True,
+        evaluation_strategy="epoch",
+        save_strategy="epoch",
+        learning_rate=learning_rate,
+        per_device_train_batch_size=per_device_batch_size,
+        per_device_eval_batch_size=per_device_batch_size * 2,
+        num_train_epochs=max_epochs,
+        weight_decay=0.01,
+        load_best_model_at_end=True,
+        metric_for_best_model="f1_macro",
+        logging_dir="./tmp_transformer_logs",
+        logging_strategy="epoch",
+        save_total_limit=1,
+        fp16=fp16,
+        gradient_checkpointing=gradient_checkpointing,
+        report_to="none",  # Disable default logging
+        seed=random_state,
+    )
+
+    # Create trainer
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=train_dataset,
+        eval_dataset=test_dataset,
+        compute_metrics=compute_metrics,
+    )
+
+    # Train model
+    trainer.train()
+
+    # Evaluate
+    eval_results = trainer.evaluate()
+
+    # Get predictions
+    predictions = trainer.predict(test_dataset)
+    y_pred = predictions.predictions.argmax(axis=-1)
+    y_true = predictions.label_ids
+
+    # Convert predictions back to string labels
+    y_pred_labels = [id2label[int(idx)] for idx in y_pred]
+    y_true_labels = [id2label[int(idx)] for idx in y_true]
+
+    return {
+        "model": model,
+        "tokenizer": tokenizer,
+        "trainer": trainer,
+        "y_pred": y_pred_labels,
+        "y_true": y_true_labels,
+        "eval_results": eval_results,
+        "split_metadata": {
+            "method": "train_test_split",
+            "stratify": stratify is not None,
+            "random_state": random_state,
+            "test_size": test_size,
+            "train_rows": len(train_df),
+            "test_rows": len(test_df),
+        },
+        "model_config": {
+            "model_name": model_name,
+            "num_labels": 2,
+            "max_length": max_length,
+            "learning_rate": learning_rate,
+            "num_epochs": max_epochs,
+            "per_device_batch_size": per_device_batch_size,
+            "fp16": fp16,
+            "gradient_checkpointing": gradient_checkpointing,
+            "device": device,
+        },
+        "label2id": label2id,
+        "id2label": id2label,
     }
