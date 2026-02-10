@@ -152,7 +152,7 @@ def explain_classical_model(
 
     # Select representative samples for local explanations
     sample_indices = _select_representative_samples(
-        shap_values, labels, n_samples=samples_per_class * 2 if labels else n_samples
+        shap_values, labels, n_samples=samples_per_class * 2 if labels is not None else n_samples
     )
 
     local_explanations = {
