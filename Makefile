@@ -55,3 +55,8 @@ model-phase6:
 
 xai-classical:
 	python scripts/run_explainability_analysis.py --data data/processed/evasionbench_prepared.parquet --models-root artifacts/models/phase5 --output-root artifacts/explainability/phase6 --families all
+
+xai-transformer:
+	python scripts/run_transformer_explainability.py --model-path artifacts/models/phase6/transformer/model --data-path data/processed/evasionbench_prepared.parquet --output-root artifacts/explainability/phase6/transformer --n-samples 20
+
+xai-all: xai-classical xai-transformer

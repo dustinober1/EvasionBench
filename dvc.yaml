@@ -191,3 +191,15 @@ stages:
       - data/processed/evasionbench_prepared.parquet
     outs:
       - artifacts/explainability/phase6/xai_summary.json
+
+  phase6_xai_transformer:
+    cmd: python scripts/run_transformer_explainability.py --model-path artifacts/models/phase6/transformer/model --data-path data/processed/evasionbench_prepared.parquet --output-root artifacts/explainability/phase6/transformer --n-samples 20
+    deps:
+      - scripts/run_transformer_explainability.py
+      - src/explainability.py
+      - artifacts/models/phase6/transformer
+      - data/processed/evasionbench_prepared.parquet
+    outs:
+      - artifacts/explainability/phase6/transformer/transformer_xai.json
+      - artifacts/explainability/phase6/transformer/transformer_xai_summary.json
+      - artifacts/explainability/phase6/transformer/transformer_xai.html
