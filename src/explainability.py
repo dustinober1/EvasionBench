@@ -1,4 +1,4 @@
-"""SHAP explainability utilities for classical baseline models."""
+"""Explainability utilities for classical and transformer models."""
 
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import shap
+import torch
 from sklearn.ensemble import RandomForestClassifier, HistGradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
@@ -312,3 +313,409 @@ def _select_representative_samples(
     else:
         # Random selection if no labels
         return np.random.choice(total_samples, min(n_samples, total_samples), replace=False)
+
+
+# =============================================================================
+# Transformer Explainability with Captum
+# =============================================================================
+
+def explain_transformer_instance(
+    model: Any,
+    tokenizer: Any,
+    text: str,
+    true_label: str,
+    *,
+    device: str = "cpu",
+) -> dict[str, Any]:
+    """Generate Captum attributions for a single transformer prediction.
+
+    Args:
+        model: Trained transformer model (must be in eval mode)
+        tokenizer: Tokenizer matching the model
+        text: Input text to explain
+        true_label: Ground truth label
+        device: Device to run attribution on
+
+    Returns:
+        Dictionary with:
+            - tokens: list of token strings (special tokens filtered)
+            - attributions: numpy array of attribution scores
+            - predicted_label: string (evasive/non_evasive)
+            - attribution_sum: sum of attributions (sanity check)
+            - true_label: ground truth label
+
+    Raises:
+        ValueError: If model doesn't have embedding layer or prediction fails
+    """
+    try:
+        from captum.attr import LayerIntegratedGradients
+    except ImportError:
+        raise ImportError(
+            "Captum is required for transformer explainability. "
+            "Install with: pip install captum"
+        )
+
+    # Ensure model is in eval mode
+    model.eval()
+    model = model.to(device)
+
+    # Tokenize input
+    inputs = tokenizer(
+        text,
+        return_tensors="pt",
+        truncation=True,
+        padding=True,
+        max_length=512,
+    )
+    input_ids = inputs["input_ids"].to(device)
+    attention_mask = inputs["attention_mask"].to(device)
+
+    # Get prediction
+    with torch.no_grad():
+        outputs = model(input_ids=input_ids, attention_mask=attention_mask)
+        logits = outputs.logits
+        predicted_class_id = logits.argmax(dim=-1).item()
+
+    # Get label mapping from model config
+    if hasattr(model, "config") and hasattr(model.config, "id2label"):
+        id2label = model.config.id2label
+        predicted_label = id2label.get(predicted_class_id, f"class_{predicted_class_id}")
+    else:
+        predicted_label = f"class_{predicted_class_id}"
+
+    # Find embedding layer for DistilBERT/BERT-like models
+    if hasattr(model, "distilbert"):
+        target_layer = model.distilbert.embeddings
+    elif hasattr(model, "bert"):
+        target_layer = model.bert.embeddings
+    elif hasattr(model, "roberta"):
+        target_layer = model.roberta.embeddings
+    else:
+        raise ValueError(
+            "Unsupported model architecture. "
+            "Expected DistilBERT, BERT, or RoBERTa-like model with embedding layer."
+        )
+
+    # Create LayerIntegratedGradients explainer
+    def forward_func(input_ids, attention_mask=None):
+        outputs = model(input_ids=input_ids, attention_mask=attention_mask)
+        return outputs.logits
+
+    lig = LayerIntegratedGradients(forward_func, target_layer)
+
+    # Generate attributions for the predicted class
+    with torch.no_grad():
+        # Use zero tensor as baseline for IG
+        baseline = torch.zeros_like(input_ids)
+
+    # Compute attributions
+    attributions = lig.attribute(
+        inputs=input_ids,
+        baselines=baseline,
+        additional_forward_args=(attention_mask,),
+        target=predicted_class_id,
+        return_convergence_delta=False,
+    )
+
+    # Convert to numpy and squeeze batch dimension
+    attributions_np = attributions.squeeze().cpu().detach().numpy()
+
+    # Get tokens (remove special tokens for interpretability)
+    tokens = tokenizer.convert_ids_to_tokens(input_ids.squeeze().cpu().tolist())
+
+    # Filter out special tokens ([CLS], [SEP], [PAD])
+    special_tokens = {"[CLS]", "[SEP]", "[PAD]", "<s>", "</s>", "<pad>"}
+    filtered_tokens = []
+    filtered_attributions = []
+
+    for token, attr in zip(tokens, attributions_np):
+        if token not in special_tokens:
+            filtered_tokens.append(token)
+            # Handle both scalar and array attributions
+            attr_value = float(attr) if np.isscalar(attr) else float(np.sum(attr))
+            filtered_attributions.append(attr_value)
+
+    # Sanity check: attribution sum should be close to logit difference
+    attribution_sum = float(np.sum(filtered_attributions))
+
+    return {
+        "tokens": filtered_tokens,
+        "attributions": np.array(filtered_attributions),
+        "predicted_label": predicted_label,
+        "attribution_sum": attribution_sum,
+        "true_label": true_label,
+    }
+
+
+def explain_transformer_batch(
+    model: Any,
+    tokenizer: Any,
+    data: pd.DataFrame,
+    output_dir: str | Path,
+    *,
+    text_col: str = "text",
+    label_col: str = "label",
+    n_samples: int = 20,
+    random_state: int = 42,
+    device: str = "cpu",
+) -> dict[str, Any]:
+    """Generate Captum attributions for representative samples.
+
+    Args:
+        model: Trained transformer model
+        tokenizer: Tokenizer matching the model
+        data: DataFrame with text and label columns
+        output_dir: Directory to write XAI artifacts
+        text_col: Column name containing text
+        label_col: Column name containing labels
+        n_samples: Number of samples to explain
+        random_state: Random seed for sample selection
+        device: Device to run attribution on
+
+    Returns:
+        Dictionary with sample explanations and metadata
+
+    Raises:
+        ValueError: If required columns missing or model prediction fails
+    """
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Validate input
+    if text_col not in data.columns:
+        raise ValueError(f"Text column '{text_col}' not found in data")
+    if label_col not in data.columns:
+        raise ValueError(f"Label column '{label_col}' not found in data")
+
+    # Get model predictions for all samples
+    model.eval()
+    model = model.to(device)
+
+    texts = data[text_col].tolist()
+    true_labels = data[label_col].tolist()
+
+    # Predict on all samples to identify correct/incorrect predictions
+    predicted_labels = []
+    for text in texts:
+        inputs = tokenizer(
+            text,
+            return_tensors="pt",
+            truncation=True,
+            padding=True,
+            max_length=512,
+        )
+        input_ids = inputs["input_ids"].to(device)
+        attention_mask = inputs["attention_mask"].to(device)
+
+        with torch.no_grad():
+            outputs = model(input_ids=input_ids, attention_mask=attention_mask)
+            predicted_class_id = outputs.logits.argmax(dim=-1).item()
+
+        if hasattr(model, "config") and hasattr(model.config, "id2label"):
+            id2label = model.config.id2label
+            predicted_label = id2label.get(predicted_class_id, f"class_{predicted_class_id}")
+        else:
+            predicted_label = f"class_{predicted_class_id}"
+
+        predicted_labels.append(predicted_label)
+
+    # Select representative samples
+    np.random.seed(random_state)
+
+    # Group by (true_label, correct_prediction)
+    data_with_preds = data.copy()
+    data_with_preds["predicted_label"] = predicted_labels
+    data_with_preds["correct"] = data_with_preds[label_col] == data_with_preds["predicted_label"]
+
+    selected_indices = []
+
+    # Try to get balanced samples across groups
+    for true_label in data_with_preds[label_col].unique():
+        for correct in [True, False]:
+            group = data_with_preds[
+                (data_with_preds[label_col] == true_label) &
+                (data_with_preds["correct"] == correct)
+            ]
+
+            if len(group) > 0:
+                n_from_group = max(1, n_samples // (len(data_with_preds[label_col].unique()) * 2))
+                available = min(n_from_group, len(group))
+                selected = np.random.choice(group.index.tolist(), available, replace=False)
+                selected_indices.extend(selected)
+
+    # If we don't have enough samples, fill randomly
+    if len(selected_indices) < n_samples:
+        remaining = n_samples - len(selected_indices)
+        remaining_indices = [i for i in data_with_preds.index.tolist() if i not in selected_indices]
+        if remaining_indices:
+            additional = np.random.choice(remaining_indices, min(remaining, len(remaining_indices)), replace=False)
+            selected_indices.extend(additional.tolist())
+
+    # Truncate to n_samples
+    selected_indices = selected_indices[:n_samples]
+
+    # Generate attributions for selected samples
+    explanations = []
+    top_tokens_all = []
+
+    for idx in selected_indices:
+        text = data.loc[idx, text_col]
+        true_label = data.loc[idx, label_col]
+
+        result = explain_transformer_instance(
+            model=model,
+            tokenizer=tokenizer,
+            text=text,
+            true_label=true_label,
+            device=device,
+        )
+
+        result["sample_id"] = int(idx)
+        explanations.append(result)
+
+        # Track top tokens for summary
+        if len(result["tokens"]) > 0:
+            top_token_idx = int(np.argmax(np.abs(result["attributions"])))
+            top_tokens_all.append({
+                "token": result["tokens"][top_token_idx],
+                "attribution": float(result["attributions"][top_token_idx]),
+                "sample_id": int(idx),
+            })
+
+    # Compute summary statistics
+    attribution_sums = [exp["attribution_sum"] for exp in explanations]
+    avg_attribution_sum = float(np.mean(attribution_sums))
+
+    # Write JSON output
+    xai_json = output_dir / "transformer_xai.json"
+    serializable_explanations = []
+    for exp in explanations:
+        serializable_explanations.append({
+            "sample_id": exp["sample_id"],
+            "text": texts[exp["sample_id"]],
+            "true_label": exp["true_label"],
+            "predicted_label": exp["predicted_label"],
+            "tokens": exp["tokens"],
+            "attributions": exp["attributions"].tolist(),
+            "attribution_sum": exp["attribution_sum"],
+        })
+
+    xai_json.write_text(json.dumps(serializable_explanations, indent=2) + "\n", encoding="utf-8")
+
+    # Write summary
+    summary = {
+        "n_samples": len(explanations),
+        "avg_attribution_sum": avg_attribution_sum,
+        "top_tokens": top_tokens_all[:20],  # Top 20 tokens across all samples
+        "sample_indices": [int(idx) for idx in selected_indices],
+    }
+
+    summary_path = output_dir / "transformer_xai_summary.json"
+    summary_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
+
+    # Generate HTML visualization
+    _generate_transformer_html(explanations, output_dir)
+
+    return {
+        "explanations": explanations,
+        "summary": summary,
+        "n_samples": len(explanations),
+    }
+
+
+def _generate_transformer_html(explanations: list[dict], output_dir: Path) -> None:
+    """Generate HTML visualization with highlighted text by attribution strength.
+
+    Args:
+        explanations: List of explanation dictionaries from explain_transformer_instance
+        output_dir: Directory to write HTML file
+    """
+    html_parts = [
+        "<!DOCTYPE html>",
+        "<html>",
+        "<head>",
+        "  <meta charset='utf-8'>",
+        "  <title>Transformer Explainability - Captum Attributions</title>",
+        "  <style>",
+        "    body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }",
+        "    .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }",
+        "    h1 { color: #333; }",
+        "    .sample { margin-bottom: 30px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }",
+        "    .sample-header { font-weight: bold; margin-bottom: 10px; }",
+        "    .label-correct { color: green; }",
+        "    .label-incorrect { color: red; }",
+        "    .tokens { line-height: 1.8; }",
+        "    .token { margin-right: 4px; padding: 2px 4px; border-radius: 3px; display: inline-block; }",
+        "    .pos { background: linear-gradient(to right, rgba(255, 100, 100, 0.3), rgba(255, 100, 100, 0.8)); }",
+        "    .neg { background: linear-gradient(to right, rgba(100, 100, 255, 0.3), rgba(100, 100, 255, 0.8)); }",
+        "    .neutral { background: #f0f0f0; }",
+        "    .legend { margin: 20px 0; padding: 10px; background: #e8e8e8; border-radius: 5px; }",
+        "    .legend-item { display: inline-block; margin-right: 20px; }",
+        "    .attribution-info { font-size: 0.9em; color: #666; margin-top: 5px; }",
+        "  </style>",
+        "</head>",
+        "<body>",
+        "  <div class='container'>",
+        "    <h1>Transformer Explainability Analysis</h1>",
+        "    <p>Word-level attributions generated using Captum LayerIntegratedGradients.</p>",
+        "",
+        "    <div class='legend'>",
+        "      <div class='legend-item'>",
+        "        <span class='token pos' style='background: rgba(255, 100, 100, 0.5);'>Positive</span>: Pushes toward prediction",
+        "      </div>",
+        "      <div class='legend-item'>",
+        "        <span class='token neg' style='background: rgba(100, 100, 255, 0.5);'>Negative</span>: Pushes away from prediction",
+        "      </div>",
+        "    </div>",
+        "",
+    ]
+
+    for exp in explanations:
+        predicted = exp["predicted_label"]
+        true = exp["true_label"]
+        is_correct = predicted == true
+
+        # Generate HTML for highlighted tokens
+        tokens_html = []
+        for token, attr in zip(exp["tokens"], exp["attributions"]):
+            # Normalize attribution for color intensity
+            max_attr = max([abs(a) for e in explanations for a in e["attributions"]])
+            intensity = min(1.0, abs(attr) / (max_attr + 1e-9))
+
+            if attr > 0:
+                css_class = "pos"
+                style = f"background: rgba(255, 100, 100, {0.2 + intensity * 0.6});"
+            elif attr < 0:
+                css_class = "neg"
+                style = f"background: rgba(100, 100, 255, {0.2 + intensity * 0.6});"
+            else:
+                css_class = "neutral"
+                style = ""
+
+            # Handle special tokens that should stay together
+            display_token = token.replace("##", "") if token.startswith("##") else f" {token}"
+
+            tokens_html.append(
+                f"<span class='token {css_class}' style='{style}' title='Attribution: {attr:.4f}'>{display_token}</span>"
+            )
+
+        html_parts.extend([
+            "    <div class='sample'>",
+            f"      <div class='sample-header'>",
+            f"        Sample {exp['sample_id']} | ",
+            f"        True: <span class='{'label-correct' if is_correct else 'label-incorrect'}'>{true}</span> | ",
+            f"        Predicted: {predicted}",
+            f"      </div>",
+            f"      <div class='tokens'>{''.join(tokens_html)}</div>",
+            f"      <div class='attribution-info'>Attribution sum: {exp['attribution_sum']:.4f}</div>",
+            "    </div>",
+        ])
+
+    html_parts.extend([
+        "  </div>",
+        "</body>",
+        "</html>",
+    ])
+
+    html_path = output_dir / "transformer_xai.html"
+    html_path.write_text("\n".join(html_parts), encoding="utf-8")

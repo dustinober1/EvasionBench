@@ -15,6 +15,7 @@ nltk
 textstat
 shap
 lime
+captum
 mlflow
 dvc
 fastapi
