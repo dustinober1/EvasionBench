@@ -169,3 +169,13 @@ stages:
       - data/processed/evasionbench_prepared.parquet
     outs:
       - artifacts/models/phase5/run_summary.json
+
+  phase6_transformer:
+    cmd: python scripts/run_transformer_baselines.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase6/transformer --max-epochs 3 --learning-rate 2e-5
+    deps:
+      - scripts/run_transformer_baselines.py
+      - src/models.py
+      - src/evaluation.py
+      - data/processed/evasionbench_prepared.parquet
+    outs:
+      - artifacts/models/phase6/transformer

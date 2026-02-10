@@ -58,6 +58,7 @@ def _metadata(
     test_rows: int,
     model_config: dict,
     split_metadata: dict,
+    feature_config: dict,
 ) -> dict:
     return {
         "model_family": "transformer",
@@ -66,6 +67,7 @@ def _metadata(
         "test_size": test_size,
         "train_rows": train_rows,
         "test_rows": test_rows,
+        "feature_config": feature_config,
         "model_config": model_config,
         "split_metadata": split_metadata,
         "git_sha": _git_sha(),
@@ -117,6 +119,10 @@ def main() -> int:
             test_rows=trained["split_metadata"]["test_rows"],
             model_config=trained["model_config"],
             split_metadata=trained["split_metadata"],
+            feature_config={  # For transformer, this is tokenization config
+                "max_length": 512,
+                "model_name": args.model_name,
+            },
         )
         artifacts = write_evaluation_artifacts(
             output_root, trained["y_true"], trained["y_pred"], metrics, metadata

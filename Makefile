@@ -49,3 +49,6 @@ analysis-phase4:
 
 model-phase5:
 	python scripts/run_classical_baselines.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase5 --families all --compare
+
+model-phase6:
+	python scripts/run_transformer_baselines.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase6/transformer --max-epochs 3 --learning-rate 2e-5
