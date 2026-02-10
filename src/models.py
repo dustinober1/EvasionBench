@@ -5,6 +5,7 @@ from typing import Any
 import pandas as pd
 import torch
 import transformers
+from cleanlab import Datalab
 from sklearn.decomposition import TruncatedSVD
 from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -414,3 +415,116 @@ def train_transformer(
         "label2id": label2id,
         "id2label": id2label,
     }
+
+
+def compute_pred_probs_for_diagnostics(
+    frame: pd.DataFrame,
+    *,
+    random_state: int = 42,
+) -> tuple[Any, Any, TfidfVectorizer, LogisticRegression]:
+    """Compute prediction probabilities for Cleanlab label diagnostics.
+
+    Uses the same feature building and TF-IDF vectorization as Phase 5 classical baselines.
+    This ensures consistency between model training and label quality diagnostics.
+
+    Args:
+        frame: Input DataFrame with question, answer, and label columns
+        random_state: Random seed for reproducibility
+
+    Returns:
+        Tuple of (pred_probs, feature_matrix, vectorizer, model)
+        - pred_probs: Prediction probabilities from LogisticRegression (n_samples, n_classes)
+        - feature_matrix: TF-IDF feature matrix (sparse)
+        - vectorizer: Fitted TfidfVectorizer
+        - model: Fitted LogisticRegression model
+    """
+    # Build features using same approach as Phase 5
+    features = _build_features(frame)
+
+    # Create TF-IDF vectorizer with same params as logreg baseline
+    vectorizer = TfidfVectorizer(
+        ngram_range=(1, 2),
+        min_df=1,
+        max_features=5000,
+    )
+    X = vectorizer.fit_transform(features)
+
+    # Encode labels to integers
+    labels = frame["label"].fillna("unknown").astype(str)
+    unique_labels = sorted(labels.unique())
+    label2id = {label: idx for idx, label in enumerate(unique_labels)}
+    y = labels.map(label2id)
+
+    # Fit LogisticRegression with balanced class weight
+    model = LogisticRegression(
+        C=1.0,
+        class_weight="balanced",
+        solver="liblinear",
+        max_iter=1000,
+        random_state=random_state,
+    )
+    model.fit(X, y)
+
+    # Get prediction probabilities
+    pred_probs = model.predict_proba(X)
+
+    return pred_probs, X, vectorizer, model
+
+
+def run_label_diagnostics(
+    frame: pd.DataFrame,
+    *,
+    random_state: int = 42,
+) -> tuple[Datalab, pd.DataFrame]:
+    """Run Cleanlab label quality diagnostics on training data.
+
+    CRITICAL: This function runs diagnostics on TRAINING split only to prevent
+    test data contamination. The same split parameters as Phase 5 are used.
+
+    Args:
+        frame: Input DataFrame with question, answer, and label columns
+        random_state: Random seed for reproducibility (must match Phase 5)
+
+    Returns:
+        Tuple of (datalab, issue_summary)
+        - datalab: Cleanlab Datalab object with full diagnostic results
+        - issue_summary: DataFrame summarizing detected issues
+
+    Note:
+        This function does NOT modify original labels. It's for diagnostic purposes only.
+    """
+    # Split data using SAME parameters as Phase 5
+    X_train, X_test, y_train, y_test, split_metadata = _split_data(
+        frame,
+        target_col="label",
+        random_state=random_state,
+        test_size=0.2,
+    )
+
+    # Get training data as DataFrame for Cleanlab
+    train_indices = X_train.index
+    train_df = frame.loc[train_indices].copy()
+
+    # Compute prediction probabilities for diagnostics
+    pred_probs, X, vectorizer, model = compute_pred_probs_for_diagnostics(
+        train_df,
+        random_state=random_state,
+    )
+
+    # Encode labels to integers for Cleanlab
+    labels = train_df["label"].fillna("unknown").astype(str)
+    unique_labels = sorted(labels.unique())
+    label2id = {label: idx for idx, label in enumerate(unique_labels)}
+    train_df["label_int"] = labels.map(label2id)
+
+    # Initialize Cleanlab Datalab
+    datalab = Datalab(data=train_df, label_name="label_int")
+
+    # Run issue detection
+    # Note: X is sparse, convert to dense array for Cleanlab
+    datalab.find_issues(pred_probs=pred_probs, features=X.toarray())
+
+    # Extract issue summary
+    issue_summary = datalab.get_issues()
+
+    return datalab, issue_summary
