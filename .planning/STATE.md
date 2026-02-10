@@ -14,9 +14,9 @@ Plan: Planning complete, ready to execute
 Status: Phase 6 planned
 Last activity: 2026-02-09 — Phase 6 planning complete with 4 plans across 4 waves
 
-**Current Plan:** 2
+**Current Plan:** 3
 **Total Plans in Phase:** 4
-**Progress:** [█████████░] 86%
+**Progress:** [█████████░] 91%
 
 ## Artifacts
 
@@ -51,6 +51,7 @@ Last activity: 2026-02-09 — Phase 6 planning complete with 4 plans across 4 wa
 | Phase 05-classical-baseline-modeling P04 | 32 min | 3 tasks | 4 files |
 | Phase 06-transformer-explainability-label-diagnostics | Planned | 4 plans | 4 waves |
 | Phase 06-transformer-explainability-label-diagnostics P01 | 27 | 3 tasks | 9 files |
+| Phase 06-transformer-explainability-label-diagnostics P02 | 30m 15s | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -60,6 +61,8 @@ Last activity: 2026-02-09 — Phase 6 planning complete with 4 plans across 4 wa
 - [Phase 05-classical-baseline-modeling]: None - followed plan as specified
 - [Phase 06]: Use DistilBERT for transformer training (M1 compatibility), SHAP for classical XAI, Captum for transformer XAI, Cleanlab for label diagnostics
 - [Phase 06]: Use DistilBERT for transformer training (M1 CPU compatibility), hardware-aware batch sizing (16 GPU / 4 CPU), PyTorch MLflow flavor instead of transformers flavor (stability)
+- [Phase 06]: Added model persistence to Phase 5 runner (Rule 2: Missing Critical) - models saved as pickle files for downstream XAI
+- [Phase 06]: SHAP explainer selection: LinearExplainer for logreg, TreeExplainer for tree/boosting. Compute on training data only to prevent leakage.
 
 ### Pending Todos
 
@@ -71,8 +74,8 @@ None yet.
 
 ## Session Continuity
 
-**Last session:** 2026-02-10T01:37:11.803Z
-**Stopped At:** Completed 06-01-PLAN.md: DistilBERT transformer baseline training
+**Last session:** 2026-02-10T11:29:09.862Z
+**Stopped At:** Completed 06-02-PLAN.md: Classical model SHAP explainability
 **Resume file:** None
 
 ---
