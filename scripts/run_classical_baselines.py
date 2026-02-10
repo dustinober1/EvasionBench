@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import pickle
 import subprocess
 import sys
 from pathlib import Path
@@ -119,6 +120,7 @@ def _run_logreg(frame: pd.DataFrame, args: argparse.Namespace, output_root: Path
     metrics = compute_classification_metrics(trained["y_test"], y_pred)
 
     family_dir = output_root / _family_to_dir_name("logreg")
+    family_dir.mkdir(parents=True, exist_ok=True)
     metadata = _metadata(
         family="logreg",
         random_state=args.random_state,
@@ -129,7 +131,14 @@ def _run_logreg(frame: pd.DataFrame, args: argparse.Namespace, output_root: Path
         model_config=trained["classifier_params"],
         split_metadata=trained["split_metadata"],
     )
+
+    # Save model for downstream use (e.g., explainability)
+    model_path = family_dir / "model.pkl"
+    with open(model_path, "wb") as f:
+        pickle.dump(trained["model"], f)
+
     artifacts = write_evaluation_artifacts(family_dir, trained["y_test"], y_pred, metrics, metadata)
+    artifacts.append(model_path)
 
     with mlflow.start_run(run_name="phase5-logreg"):
         mlflow.log_params(
@@ -188,6 +197,7 @@ def _run_tree_or_boosting(
     metrics = compute_classification_metrics(trained["y_test"], trained["predictions"])
 
     family_dir = output_root / _family_to_dir_name(family)
+    family_dir.mkdir(parents=True, exist_ok=True)
     metadata = _metadata(
         family=family,
         random_state=args.random_state,
@@ -198,6 +208,19 @@ def _run_tree_or_boosting(
         model_config=trained["estimator_params"],
         split_metadata=trained["split_metadata"],
     )
+
+    # Save model bundle for downstream use (includes vectorizer, model, and SVD if applicable)
+    model_bundle_path = family_dir / "model_bundle.pkl"
+    with open(model_bundle_path, "wb") as f:
+        pickle.dump(
+            {
+                "model": trained["model"],
+                "vectorizer": trained["vectorizer"],
+                "svd": trained.get("svd"),  # Only for boosting
+            },
+            f,
+        )
+
     artifacts = write_evaluation_artifacts(
         family_dir,
         trained["y_test"],
@@ -205,6 +228,7 @@ def _run_tree_or_boosting(
         metrics,
         metadata,
     )
+    artifacts.append(model_bundle_path)
 
     with mlflow.start_run(run_name=f"phase5-{family}"):
         mlflow.log_params(
