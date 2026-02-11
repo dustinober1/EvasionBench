@@ -1,4 +1,4 @@
-.PHONY: env install test lint format verify-structure ci-check run-api run-dashboard data-fetch data-validate data-prepare run-experiment analysis-phase3 analysis-phase4 model-phase5 label-diagnostics
+.PHONY: env install test lint format verify-structure ci-check run-api run-dashboard data-fetch data-validate data-prepare run-experiment analysis-phase3 analysis-phase4 model-phase5 label-diagnostics report-phase7
 
 env:
 	python -m venv .venv
@@ -63,3 +63,6 @@ xai-all: xai-classical xai-transformer
 
 label-diagnostics:
 	python scripts/run_label_diagnostics.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/diagnostics/phase6 --random-state 42
+
+report-phase7:
+	python3 scripts/run_research_pipeline.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/reports/phase7 --skip-existing
