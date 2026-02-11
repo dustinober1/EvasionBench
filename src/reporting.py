@@ -22,6 +22,10 @@ class ManifestValidationError(ValueError):
     """Raised when the phase-7 report manifest contract is invalid."""
 
 
+class ReportContextError(ValueError):
+    """Raised when report generation context cannot be derived from manifest."""
+
+
 def utc_now_iso() -> str:
     """Return current UTC timestamp in ISO-8601 format with ``Z`` suffix."""
     return (
@@ -249,3 +253,143 @@ def build_traceability_map(manifest: Mapping[str, Any]) -> dict[str, dict[str, A
             }
 
     return dict(sorted(traceability.items(), key=lambda row: row[0]))
+
+
+def resolve_artifact_path(
+    artifact_path: str | Path, *, project_root: str | Path
+) -> Path:
+    """Resolve manifest artifact path relative to ``project_root``."""
+    candidate = Path(artifact_path)
+    if candidate.is_absolute():
+        return candidate
+    return Path(project_root) / candidate
+
+
+def _load_json_if_exists(path: Path) -> dict[str, Any] | None:
+    if not path.exists():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def _select_entry(
+    entries: Iterable[Mapping[str, Any]],
+    *,
+    suffix: str,
+    stage: str | None = None,
+) -> dict[str, Any] | None:
+    for entry in entries:
+        if stage and entry.get("stage") != stage:
+            continue
+        if str(entry.get("artifact_path", "")).endswith(suffix):
+            return dict(entry)
+    return None
+
+
+def build_report_context(
+    manifest: Mapping[str, Any], *, project_root: str | Path
+) -> dict[str, Any]:
+    """Build normalized report context from validated manifest content."""
+    validate_report_manifest(manifest)
+
+    sections = manifest["sections"]
+    missing_segments = [
+        segment for segment in REQUIRED_MANIFEST_SECTIONS if len(sections[segment]) == 0
+    ]
+    if missing_segments:
+        raise ReportContextError(
+            "Manifest has empty required sections: " + ", ".join(missing_segments)
+        )
+
+    dataset_entries = get_section_entries(manifest, "dataset")
+    analyses_entries = get_section_entries(manifest, "analyses")
+    model_entries = get_section_entries(manifest, "models")
+    explainability_entries = get_section_entries(manifest, "explainability")
+    diagnostics_entries = get_section_entries(manifest, "diagnostics")
+
+    phase5_summary_entry = _select_entry(
+        model_entries, suffix="artifacts/models/phase5/run_summary.json"
+    )
+    phase5_summary: dict[str, Any] = {}
+    if phase5_summary_entry is not None:
+        loaded = _load_json_if_exists(
+            resolve_artifact_path(
+                phase5_summary_entry["artifact_path"], project_root=project_root
+            )
+        )
+        if loaded:
+            phase5_summary = loaded
+
+    best_classical_family = "unknown"
+    best_classical_metrics: dict[str, Any] = {}
+    if phase5_summary:
+        sorted_families = sorted(
+            phase5_summary.items(),
+            key=lambda row: float(row[1].get("f1_macro", 0.0)),
+            reverse=True,
+        )
+        best_classical_family, best_classical_metrics = sorted_families[0]
+
+    transformer_metrics_entry = _select_entry(
+        model_entries,
+        suffix="artifacts/models/phase6/transformer/metrics.json",
+        stage="phase6_transformer_baselines",
+    )
+    transformer_metrics = {}
+    if transformer_metrics_entry is not None:
+        loaded = _load_json_if_exists(
+            resolve_artifact_path(
+                transformer_metrics_entry["artifact_path"], project_root=project_root
+            )
+        )
+        if loaded:
+            transformer_metrics = loaded
+
+    xai_summary_entry = _select_entry(
+        explainability_entries,
+        suffix="artifacts/explainability/phase6/xai_summary.json",
+        stage="phase6_xai_classical",
+    )
+    xai_summary = {}
+    if xai_summary_entry is not None:
+        loaded = _load_json_if_exists(
+            resolve_artifact_path(
+                xai_summary_entry["artifact_path"], project_root=project_root
+            )
+        )
+        if loaded:
+            xai_summary = loaded
+
+    diagnostics_summary_entry = _select_entry(
+        diagnostics_entries,
+        suffix="artifacts/diagnostics/phase6/label_diagnostics_summary.json",
+        stage="phase6_label_diagnostics",
+    )
+    diagnostics_summary = {}
+    if diagnostics_summary_entry is not None:
+        loaded = _load_json_if_exists(
+            resolve_artifact_path(
+                diagnostics_summary_entry["artifact_path"], project_root=project_root
+            )
+        )
+        if loaded:
+            diagnostics_summary = loaded
+
+    return {
+        "manifest_version": manifest["manifest_version"],
+        "manifest_generated_at": manifest["generated_at"],
+        "dataset_entries": dataset_entries,
+        "analyses_entries": analyses_entries,
+        "analysis_figures": [
+            row for row in analyses_entries if row.get("kind") == "figure"
+        ],
+        "analysis_tables": [row for row in analyses_entries if row.get("kind") == "table"],
+        "model_entries": model_entries,
+        "best_classical_family": best_classical_family,
+        "best_classical_metrics": best_classical_metrics,
+        "transformer_metrics": transformer_metrics,
+        "explainability_entries": explainability_entries,
+        "xai_summary": xai_summary,
+        "diagnostics_entries": diagnostics_entries,
+        "diagnostics_summary": diagnostics_summary,
+        "traceability": build_traceability_map(manifest),
+    }
