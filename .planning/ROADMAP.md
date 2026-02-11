@@ -33,8 +33,9 @@
 | 3 | Complete | 2026-02-08 |
 | 4 | Complete | 2026-02-08 |
 | 5 | Complete | 2026-02-09 |
-| 6 | Planning | 2026-02-09 |
-| 7-9 | Pending | - |
+| 6 | Complete | 2026-02-10 |
+| 7 | Planning | 2026-02-11 |
+| 8-9 | Pending | - |
 
 ## Phase Details
 
@@ -130,6 +131,12 @@
 4. Every report figure/table includes source stage metadata for reproducibility.
 5. Pipeline failures are surfaced with actionable logs and non-zero exit status.
 
+**Plans:**
+- [ ] 07-01-PLAN.md — Report manifest contract and provenance schema
+- [ ] 07-02-PLAN.md — One-command orchestration with Make/DVC wiring
+- [ ] 07-03-PLAN.md — Manifest-driven Markdown report generation
+- [ ] 07-04-PLAN.md — HTML/PDF rendering and traceability verification
+
 ### Phase 8: FastAPI + React Research Experience
 
 **Goal:** Expose inference and research outputs through API and professional React UI.
@@ -156,4 +163,4 @@
 4. CI gating incorporates relevant test suites for merge confidence.
 
 ---
-*Last updated: 2026-02-09 after planning Phase 6*
+*Last updated: 2026-02-11 after planning Phase 7*
