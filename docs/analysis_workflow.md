@@ -127,3 +127,27 @@ Key phase-5 stages:
 - `phase5_boosting`
 - `phase5_compare`
 - `phase5`
+
+## Phase 7 Manifest Contract
+
+Phase-7 reporting starts by building a deterministic provenance manifest:
+
+- `python scripts/build_report_manifest.py --output artifacts/reports/phase7/provenance_manifest.json`
+
+The manifest includes required report sections and provenance for each entry:
+
+- `dataset`
+- `analyses`
+- `models`
+- `explainability`
+- `diagnostics`
+
+Each entry carries:
+
+- `stage`
+- `script`
+- `artifact_path`
+- `generated_at`
+
+If required upstream artifacts are missing, the script exits non-zero and lists
+the exact missing paths plus the stage script to run next.
