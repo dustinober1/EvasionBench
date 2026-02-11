@@ -1,0 +1,777 @@
+{
+  "generated_at": "2026-02-11T00:21:36Z",
+  "generated_by": "scripts/build_report_manifest.py",
+  "manifest_version": "phase7-report-manifest-v1",
+  "sections": {
+    "analyses": [
+      {
+        "artifact_path": "artifacts/analysis/phase3/artifact_index.json",
+        "generated_at": "2026-02-11T00:21:07Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_artifact_index_json",
+        "kind": "table",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/core_stats/answer_length_by_label.png",
+        "generated_at": "2026-02-11T00:20:59Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_core_stats_answer_length_by_label_png",
+        "kind": "figure",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/core_stats/class_distribution.csv",
+        "generated_at": "2026-02-11T00:20:57Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_core_stats_class_distribution_csv",
+        "kind": "table",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/core_stats/class_distribution.json",
+        "generated_at": "2026-02-11T00:20:57Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_core_stats_class_distribution_json",
+        "kind": "table",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/core_stats/class_distribution.png",
+        "generated_at": "2026-02-11T00:20:57Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_core_stats_class_distribution_png",
+        "kind": "figure",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/core_stats/length_interpretation.md",
+        "generated_at": "2026-02-11T00:20:58Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_core_stats_length_interpretation_md",
+        "kind": "artifact",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/core_stats/length_summary.csv",
+        "generated_at": "2026-02-11T00:20:58Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_core_stats_length_summary_csv",
+        "kind": "table",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/core_stats/length_summary.json",
+        "generated_at": "2026-02-11T00:20:58Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_core_stats_length_summary_json",
+        "kind": "table",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/core_stats/length_tests.json",
+        "generated_at": "2026-02-11T00:20:58Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_core_stats_length_tests_json",
+        "kind": "table",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/core_stats/quality_metrics.csv",
+        "generated_at": "2026-02-11T00:20:57Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_core_stats_quality_metrics_csv",
+        "kind": "table",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/core_stats/quality_metrics.json",
+        "generated_at": "2026-02-11T00:20:57Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_core_stats_quality_metrics_json",
+        "kind": "table",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/core_stats/question_length_by_label.png",
+        "generated_at": "2026-02-11T00:20:58Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_core_stats_question_length_by_label_png",
+        "kind": "figure",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/lexical/lexical_summary.csv",
+        "generated_at": "2026-02-11T00:21:03Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_lexical_lexical_summary_csv",
+        "kind": "table",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/lexical/lexical_summary.json",
+        "generated_at": "2026-02-11T00:21:03Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_lexical_lexical_summary_json",
+        "kind": "table",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/lexical/top_bigrams_evasive.csv",
+        "generated_at": "2026-02-11T00:21:03Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_lexical_top_bigrams_evasive_csv",
+        "kind": "table",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/lexical/top_bigrams_evasive.png",
+        "generated_at": "2026-02-11T00:21:05Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_lexical_top_bigrams_evasive_png",
+        "kind": "figure",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/lexical/top_bigrams_non_evasive.csv",
+        "generated_at": "2026-02-11T00:21:05Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_lexical_top_bigrams_non_evasive_csv",
+        "kind": "table",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/lexical/top_bigrams_non_evasive.png",
+        "generated_at": "2026-02-11T00:21:07Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_lexical_top_bigrams_non_evasive_png",
+        "kind": "figure",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/lexical/top_ngrams.json",
+        "generated_at": "2026-02-11T00:21:07Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_lexical_top_ngrams_json",
+        "kind": "table",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/lexical/top_unigrams_evasive.csv",
+        "generated_at": "2026-02-11T00:21:03Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_lexical_top_unigrams_evasive_csv",
+        "kind": "table",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/lexical/top_unigrams_evasive.png",
+        "generated_at": "2026-02-11T00:21:04Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_lexical_top_unigrams_evasive_png",
+        "kind": "figure",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/lexical/top_unigrams_non_evasive.csv",
+        "generated_at": "2026-02-11T00:21:05Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_lexical_top_unigrams_non_evasive_csv",
+        "kind": "table",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase3/lexical/top_unigrams_non_evasive.png",
+        "generated_at": "2026-02-11T00:21:06Z",
+        "id": "analyze_phase3:artifacts_analysis_phase3_lexical_top_unigrams_non_evasive_png",
+        "kind": "figure",
+        "script": "scripts/run_phase3_analyses.py",
+        "stage": "analyze_phase3"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/artifact_index.json",
+        "generated_at": "2026-02-11T00:21:09Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_artifact_index_json",
+        "kind": "table",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/question_behavior/question_behavior_by_label.png",
+        "generated_at": "2026-02-11T00:21:08Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_question_behavior_question_behavior_by_label_png",
+        "kind": "figure",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/question_behavior/question_behavior_comparison.csv",
+        "generated_at": "2026-02-11T00:21:08Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_question_behavior_question_behavior_comparison_csv",
+        "kind": "table",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/question_behavior/question_behavior_metrics.csv",
+        "generated_at": "2026-02-11T00:21:08Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_question_behavior_question_behavior_metrics_csv",
+        "kind": "table",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/question_behavior/question_behavior_summary.json",
+        "generated_at": "2026-02-11T00:21:09Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_question_behavior_question_behavior_summary_json",
+        "kind": "table",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/question_behavior/question_behavior_summary.md",
+        "generated_at": "2026-02-11T00:21:09Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_question_behavior_question_behavior_summary_md",
+        "kind": "artifact",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/question_behavior/taxonomy_metadata.json",
+        "generated_at": "2026-02-11T00:21:09Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_question_behavior_taxonomy_metadata_json",
+        "kind": "table",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/semantic_similarity/hypothesis_summary.json",
+        "generated_at": "2026-02-11T00:20:58Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_semantic_similarity_hypothesis_summary_json",
+        "kind": "table",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/semantic_similarity/hypothesis_summary.md",
+        "generated_at": "2026-02-11T00:20:58Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_semantic_similarity_hypothesis_summary_md",
+        "kind": "artifact",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/semantic_similarity/qa_similarity_rows.parquet",
+        "generated_at": "2026-02-11T00:20:57Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_semantic_similarity_qa_similarity_rows_parquet",
+        "kind": "table",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/semantic_similarity/semantic_similarity_by_label.csv",
+        "generated_at": "2026-02-11T00:20:57Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_semantic_similarity_semantic_similarity_by_label_csv",
+        "kind": "table",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/semantic_similarity/semantic_similarity_by_label.json",
+        "generated_at": "2026-02-11T00:20:57Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_semantic_similarity_semantic_similarity_by_label_json",
+        "kind": "table",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/semantic_similarity/semantic_similarity_by_label.png",
+        "generated_at": "2026-02-11T00:20:58Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_semantic_similarity_semantic_similarity_by_label_png",
+        "kind": "figure",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/topic_modeling/document_topics.parquet",
+        "generated_at": "2026-02-11T00:21:03Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_topic_modeling_document_topics_parquet",
+        "kind": "table",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/topic_modeling/model_config.json",
+        "generated_at": "2026-02-11T00:21:04Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_topic_modeling_model_config_json",
+        "kind": "table",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/topic_modeling/topic_prevalence_by_label.csv",
+        "generated_at": "2026-02-11T00:21:03Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_topic_modeling_topic_prevalence_by_label_csv",
+        "kind": "table",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/topic_modeling/topic_prevalence_by_label.png",
+        "generated_at": "2026-02-11T00:21:04Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_topic_modeling_topic_prevalence_by_label_png",
+        "kind": "figure",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/topic_modeling/topic_summary.json",
+        "generated_at": "2026-02-11T00:21:04Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_topic_modeling_topic_summary_json",
+        "kind": "table",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/topic_modeling/topic_summary.md",
+        "generated_at": "2026-02-11T00:21:04Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_topic_modeling_topic_summary_md",
+        "kind": "artifact",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      },
+      {
+        "artifact_path": "artifacts/analysis/phase4/topic_modeling/topic_top_terms.csv",
+        "generated_at": "2026-02-11T00:21:03Z",
+        "id": "analyze_phase4:artifacts_analysis_phase4_topic_modeling_topic_top_terms_csv",
+        "kind": "table",
+        "script": "scripts/run_phase4_analyses.py",
+        "stage": "analyze_phase4"
+      }
+    ],
+    "dataset": [
+      {
+        "artifact_path": "data/processed/evasionbench_prepared.parquet",
+        "generated_at": "2026-02-10T01:17:37Z",
+        "id": "prepare_data:data_processed_evasionbench_prepared_parquet",
+        "kind": "table",
+        "script": "scripts/prepare_data.py",
+        "stage": "prepare_data"
+      }
+    ],
+    "diagnostics": [
+      {
+        "artifact_path": "artifacts/diagnostics/phase6/label_diagnostics_report.md",
+        "generated_at": "2026-02-10T11:56:12Z",
+        "id": "phase6_label_diagnostics:artifacts_diagnostics_phase6_label_diagnostics_report_md",
+        "kind": "artifact",
+        "script": "scripts/run_label_diagnostics.py",
+        "stage": "phase6_label_diagnostics"
+      },
+      {
+        "artifact_path": "artifacts/diagnostics/phase6/label_diagnostics_summary.json",
+        "generated_at": "2026-02-10T11:56:12Z",
+        "id": "phase6_label_diagnostics:artifacts_diagnostics_phase6_label_diagnostics_summary_json",
+        "kind": "table",
+        "script": "scripts/run_label_diagnostics.py",
+        "stage": "phase6_label_diagnostics"
+      },
+      {
+        "artifact_path": "artifacts/diagnostics/phase6/near_duplicate_pairs.csv",
+        "generated_at": "2026-02-10T11:56:12Z",
+        "id": "phase6_label_diagnostics:artifacts_diagnostics_phase6_near_duplicate_pairs_csv",
+        "kind": "table",
+        "script": "scripts/run_label_diagnostics.py",
+        "stage": "phase6_label_diagnostics"
+      },
+      {
+        "artifact_path": "artifacts/diagnostics/phase6/outlier_examples.csv",
+        "generated_at": "2026-02-10T11:56:12Z",
+        "id": "phase6_label_diagnostics:artifacts_diagnostics_phase6_outlier_examples_csv",
+        "kind": "table",
+        "script": "scripts/run_label_diagnostics.py",
+        "stage": "phase6_label_diagnostics"
+      },
+      {
+        "artifact_path": "artifacts/diagnostics/phase6/suspect_examples.csv",
+        "generated_at": "2026-02-10T11:56:12Z",
+        "id": "phase6_label_diagnostics:artifacts_diagnostics_phase6_suspect_examples_csv",
+        "kind": "table",
+        "script": "scripts/run_label_diagnostics.py",
+        "stage": "phase6_label_diagnostics"
+      }
+    ],
+    "explainability": [
+      {
+        "artifact_path": "artifacts/explainability/phase6/boosting/shap_samples.json",
+        "generated_at": "2026-02-10T11:28:09Z",
+        "id": "phase6_xai_classical:artifacts_explainability_phase6_boosting_shap_samples_json",
+        "kind": "table",
+        "script": "scripts/run_explainability_analysis.py",
+        "stage": "phase6_xai_classical"
+      },
+      {
+        "artifact_path": "artifacts/explainability/phase6/boosting/shap_summary.json",
+        "generated_at": "2026-02-10T11:28:09Z",
+        "id": "phase6_xai_classical:artifacts_explainability_phase6_boosting_shap_summary_json",
+        "kind": "table",
+        "script": "scripts/run_explainability_analysis.py",
+        "stage": "phase6_xai_classical"
+      },
+      {
+        "artifact_path": "artifacts/explainability/phase6/boosting/shap_summary.png",
+        "generated_at": "2026-02-10T11:28:09Z",
+        "id": "phase6_xai_classical:artifacts_explainability_phase6_boosting_shap_summary_png",
+        "kind": "figure",
+        "script": "scripts/run_explainability_analysis.py",
+        "stage": "phase6_xai_classical"
+      },
+      {
+        "artifact_path": "artifacts/explainability/phase6/logreg/shap_samples.json",
+        "generated_at": "2026-02-10T11:28:08Z",
+        "id": "phase6_xai_classical:artifacts_explainability_phase6_logreg_shap_samples_json",
+        "kind": "table",
+        "script": "scripts/run_explainability_analysis.py",
+        "stage": "phase6_xai_classical"
+      },
+      {
+        "artifact_path": "artifacts/explainability/phase6/logreg/shap_summary.json",
+        "generated_at": "2026-02-10T11:28:08Z",
+        "id": "phase6_xai_classical:artifacts_explainability_phase6_logreg_shap_summary_json",
+        "kind": "table",
+        "script": "scripts/run_explainability_analysis.py",
+        "stage": "phase6_xai_classical"
+      },
+      {
+        "artifact_path": "artifacts/explainability/phase6/logreg/shap_summary.png",
+        "generated_at": "2026-02-10T11:28:08Z",
+        "id": "phase6_xai_classical:artifacts_explainability_phase6_logreg_shap_summary_png",
+        "kind": "figure",
+        "script": "scripts/run_explainability_analysis.py",
+        "stage": "phase6_xai_classical"
+      },
+      {
+        "artifact_path": "artifacts/explainability/phase6/transformer/run_summary.json",
+        "generated_at": "2026-02-10T12:00:50Z",
+        "id": "phase6_xai_classical:artifacts_explainability_phase6_transformer_run_summary_json",
+        "kind": "table",
+        "script": "scripts/run_explainability_analysis.py",
+        "stage": "phase6_xai_classical"
+      },
+      {
+        "artifact_path": "artifacts/explainability/phase6/transformer/transformer_xai.html",
+        "generated_at": "2026-02-10T12:00:50Z",
+        "id": "phase6_xai_classical:artifacts_explainability_phase6_transformer_transformer_xai_html",
+        "kind": "artifact",
+        "script": "scripts/run_explainability_analysis.py",
+        "stage": "phase6_xai_classical"
+      },
+      {
+        "artifact_path": "artifacts/explainability/phase6/transformer/transformer_xai.json",
+        "generated_at": "2026-02-10T12:00:50Z",
+        "id": "phase6_xai_classical:artifacts_explainability_phase6_transformer_transformer_xai_json",
+        "kind": "table",
+        "script": "scripts/run_explainability_analysis.py",
+        "stage": "phase6_xai_classical"
+      },
+      {
+        "artifact_path": "artifacts/explainability/phase6/transformer/transformer_xai_summary.json",
+        "generated_at": "2026-02-10T12:00:50Z",
+        "id": "phase6_xai_classical:artifacts_explainability_phase6_transformer_transformer_xai_summary_json",
+        "kind": "table",
+        "script": "scripts/run_explainability_analysis.py",
+        "stage": "phase6_xai_classical"
+      },
+      {
+        "artifact_path": "artifacts/explainability/phase6/tree/shap_samples.json",
+        "generated_at": "2026-02-10T11:28:08Z",
+        "id": "phase6_xai_classical:artifacts_explainability_phase6_tree_shap_samples_json",
+        "kind": "table",
+        "script": "scripts/run_explainability_analysis.py",
+        "stage": "phase6_xai_classical"
+      },
+      {
+        "artifact_path": "artifacts/explainability/phase6/tree/shap_summary.json",
+        "generated_at": "2026-02-10T11:28:08Z",
+        "id": "phase6_xai_classical:artifacts_explainability_phase6_tree_shap_summary_json",
+        "kind": "table",
+        "script": "scripts/run_explainability_analysis.py",
+        "stage": "phase6_xai_classical"
+      },
+      {
+        "artifact_path": "artifacts/explainability/phase6/tree/shap_summary.png",
+        "generated_at": "2026-02-10T11:28:08Z",
+        "id": "phase6_xai_classical:artifacts_explainability_phase6_tree_shap_summary_png",
+        "kind": "figure",
+        "script": "scripts/run_explainability_analysis.py",
+        "stage": "phase6_xai_classical"
+      },
+      {
+        "artifact_path": "artifacts/explainability/phase6/xai_summary.json",
+        "generated_at": "2026-02-10T11:28:09Z",
+        "id": "phase6_xai_classical:artifacts_explainability_phase6_xai_summary_json",
+        "kind": "table",
+        "script": "scripts/run_explainability_analysis.py",
+        "stage": "phase6_xai_classical"
+      },
+      {
+        "artifact_path": "artifacts/explainability/phase6/transformer/run_summary.json",
+        "generated_at": "2026-02-10T12:00:50Z",
+        "id": "phase6_xai_transformer:artifacts_explainability_phase6_transformer_run_summary_json",
+        "kind": "table",
+        "script": "scripts/run_transformer_explainability.py",
+        "stage": "phase6_xai_transformer"
+      },
+      {
+        "artifact_path": "artifacts/explainability/phase6/transformer/transformer_xai.html",
+        "generated_at": "2026-02-10T12:00:50Z",
+        "id": "phase6_xai_transformer:artifacts_explainability_phase6_transformer_transformer_xai_html",
+        "kind": "artifact",
+        "script": "scripts/run_transformer_explainability.py",
+        "stage": "phase6_xai_transformer"
+      },
+      {
+        "artifact_path": "artifacts/explainability/phase6/transformer/transformer_xai.json",
+        "generated_at": "2026-02-10T12:00:50Z",
+        "id": "phase6_xai_transformer:artifacts_explainability_phase6_transformer_transformer_xai_json",
+        "kind": "table",
+        "script": "scripts/run_transformer_explainability.py",
+        "stage": "phase6_xai_transformer"
+      },
+      {
+        "artifact_path": "artifacts/explainability/phase6/transformer/transformer_xai_summary.json",
+        "generated_at": "2026-02-10T12:00:50Z",
+        "id": "phase6_xai_transformer:artifacts_explainability_phase6_transformer_transformer_xai_summary_json",
+        "kind": "table",
+        "script": "scripts/run_transformer_explainability.py",
+        "stage": "phase6_xai_transformer"
+      }
+    ],
+    "models": [
+      {
+        "artifact_path": "artifacts/models/phase5/boosting/classification_report.json",
+        "generated_at": "2026-02-10T01:46:08Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_boosting_classification_report_json",
+        "kind": "table",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/boosting/confusion_matrix.json",
+        "generated_at": "2026-02-10T01:46:08Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_boosting_confusion_matrix_json",
+        "kind": "table",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/boosting/metrics.json",
+        "generated_at": "2026-02-10T01:46:08Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_boosting_metrics_json",
+        "kind": "table",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/boosting/model_bundle.pkl",
+        "generated_at": "2026-02-10T01:46:08Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_boosting_model_bundle_pkl",
+        "kind": "artifact",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/boosting/run_metadata.json",
+        "generated_at": "2026-02-10T01:46:08Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_boosting_run_metadata_json",
+        "kind": "table",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/logreg/classification_report.json",
+        "generated_at": "2026-02-10T01:46:07Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_logreg_classification_report_json",
+        "kind": "table",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/logreg/confusion_matrix.json",
+        "generated_at": "2026-02-10T01:46:07Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_logreg_confusion_matrix_json",
+        "kind": "table",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/logreg/metrics.json",
+        "generated_at": "2026-02-10T01:46:07Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_logreg_metrics_json",
+        "kind": "table",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/logreg/model.pkl",
+        "generated_at": "2026-02-10T01:46:07Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_logreg_model_pkl",
+        "kind": "artifact",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/logreg/run_metadata.json",
+        "generated_at": "2026-02-10T01:46:07Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_logreg_run_metadata_json",
+        "kind": "table",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/run_summary.json",
+        "generated_at": "2026-02-10T01:46:08Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_run_summary_json",
+        "kind": "table",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/tree/classification_report.json",
+        "generated_at": "2026-02-10T01:46:07Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_tree_classification_report_json",
+        "kind": "table",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/tree/confusion_matrix.json",
+        "generated_at": "2026-02-10T01:46:07Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_tree_confusion_matrix_json",
+        "kind": "table",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/tree/metrics.json",
+        "generated_at": "2026-02-10T01:46:07Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_tree_metrics_json",
+        "kind": "table",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/tree/model_bundle.pkl",
+        "generated_at": "2026-02-10T01:46:07Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_tree_model_bundle_pkl",
+        "kind": "artifact",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/tree/run_metadata.json",
+        "generated_at": "2026-02-10T01:46:07Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_tree_run_metadata_json",
+        "kind": "table",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/tree_boosting/classification_report.json",
+        "generated_at": "2026-02-10T00:40:47Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_tree_boosting_classification_report_json",
+        "kind": "table",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/tree_boosting/confusion_matrix.json",
+        "generated_at": "2026-02-10T00:40:47Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_tree_boosting_confusion_matrix_json",
+        "kind": "table",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/tree_boosting/metrics.json",
+        "generated_at": "2026-02-10T00:40:47Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_tree_boosting_metrics_json",
+        "kind": "table",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase5/tree_boosting/run_metadata.json",
+        "generated_at": "2026-02-10T00:40:47Z",
+        "id": "phase5_classical_baselines:artifacts_models_phase5_tree_boosting_run_metadata_json",
+        "kind": "table",
+        "script": "scripts/run_classical_baselines.py",
+        "stage": "phase5_classical_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase6/transformer/classification_report.json",
+        "generated_at": "2026-02-10T11:41:14Z",
+        "id": "phase6_transformer_baselines:artifacts_models_phase6_transformer_classification_report_json",
+        "kind": "table",
+        "script": "scripts/run_transformer_baselines.py",
+        "stage": "phase6_transformer_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase6/transformer/confusion_matrix.json",
+        "generated_at": "2026-02-10T11:41:14Z",
+        "id": "phase6_transformer_baselines:artifacts_models_phase6_transformer_confusion_matrix_json",
+        "kind": "table",
+        "script": "scripts/run_transformer_baselines.py",
+        "stage": "phase6_transformer_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase6/transformer/metrics.json",
+        "generated_at": "2026-02-10T11:41:14Z",
+        "id": "phase6_transformer_baselines:artifacts_models_phase6_transformer_metrics_json",
+        "kind": "table",
+        "script": "scripts/run_transformer_baselines.py",
+        "stage": "phase6_transformer_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase6/transformer/model/config.json",
+        "generated_at": "2026-02-10T11:41:14Z",
+        "id": "phase6_transformer_baselines:artifacts_models_phase6_transformer_model_config_json",
+        "kind": "table",
+        "script": "scripts/run_transformer_baselines.py",
+        "stage": "phase6_transformer_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase6/transformer/model/model.safetensors",
+        "generated_at": "2026-02-10T11:41:15Z",
+        "id": "phase6_transformer_baselines:artifacts_models_phase6_transformer_model_model_safetensors",
+        "kind": "artifact",
+        "script": "scripts/run_transformer_baselines.py",
+        "stage": "phase6_transformer_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase6/transformer/model/tokenizer.json",
+        "generated_at": "2026-02-10T11:41:15Z",
+        "id": "phase6_transformer_baselines:artifacts_models_phase6_transformer_model_tokenizer_json",
+        "kind": "table",
+        "script": "scripts/run_transformer_baselines.py",
+        "stage": "phase6_transformer_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase6/transformer/model/tokenizer_config.json",
+        "generated_at": "2026-02-10T11:41:15Z",
+        "id": "phase6_transformer_baselines:artifacts_models_phase6_transformer_model_tokenizer_config_json",
+        "kind": "table",
+        "script": "scripts/run_transformer_baselines.py",
+        "stage": "phase6_transformer_baselines"
+      },
+      {
+        "artifact_path": "artifacts/models/phase6/transformer/run_metadata.json",
+        "generated_at": "2026-02-10T11:41:14Z",
+        "id": "phase6_transformer_baselines:artifacts_models_phase6_transformer_run_metadata_json",
+        "kind": "table",
+        "script": "scripts/run_transformer_baselines.py",
+        "stage": "phase6_transformer_baselines"
+      }
+    ]
+  }
+}
