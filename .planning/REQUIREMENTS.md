@@ -37,10 +37,10 @@
 
 ### Report Generation
 
-- [ ] **RPT-01**: User can run one command that executes the full pipeline from data through reporting
-- [ ] **RPT-02**: User can generate a structured Markdown research report with charts and methodological explanations
-- [ ] **RPT-03**: User can generate HTML/PDF outputs from the same report source
-- [ ] **RPT-04**: User can trace every figure/table in the report back to a reproducible script stage
+- [x] **RPT-01**: User can run one command that executes the full pipeline from data through reporting
+- [x] **RPT-02**: User can generate a structured Markdown research report with charts and methodological explanations
+- [x] **RPT-03**: User can generate HTML/PDF outputs from the same report source
+- [x] **RPT-04**: User can trace every figure/table in the report back to a reproducible script stage
 
 ### Serving & Visualization
 
@@ -102,10 +102,10 @@
 | XAI-01 | Phase 6 | Pending |
 | XAI-02 | Phase 6 | Pending |
 | XAI-03 | Phase 6 | Pending |
-| RPT-01 | Phase 7 | Pending |
-| RPT-02 | Phase 7 | Pending |
-| RPT-03 | Phase 7 | Pending |
-| RPT-04 | Phase 7 | Pending |
+| RPT-01 | Phase 7 | Complete |
+| RPT-02 | Phase 7 | Complete |
+| RPT-03 | Phase 7 | Complete |
+| RPT-04 | Phase 7 | Complete |
 | API-01 | Phase 8 | Pending |
 | API-02 | Phase 8 | Pending |
 | API-03 | Phase 8 | Pending |
@@ -123,8 +123,9 @@
 
 **Phase Status:**
 - Phase 5: Complete (MODL-01, MODL-02, MODL-04)
-- Phase 6: Planned (MODL-03, MODL-05, XAI-01, XAI-02, XAI-03)
+- Phase 6: Complete (MODL-03, MODL-05, XAI-01, XAI-02, XAI-03)
+- Phase 7: Complete (RPT-01, RPT-02, RPT-03, RPT-04)
 
 ---
 *Requirements defined: 2026-02-08*
-*Last updated: 2026-02-09 after completing Phase 5 and planning Phase 6*
+*Last updated: 2026-02-11 after completing Phase 7*
