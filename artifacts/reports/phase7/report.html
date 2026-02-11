@@ -1,0 +1,247 @@
+<!doctype html>
+<html><head><meta charset='utf-8'><title>EvasionBench Research Report</title><style>body {
+  font-family: "Georgia", "Times New Roman", serif;
+  color: #20222a;
+  line-height: 1.55;
+  margin: 2.2rem auto;
+  max-width: 900px;
+  padding: 0 1.5rem;
+}
+h1, h2, h3 {
+  color: #1f2d3d;
+}
+code {
+  background: #f3f4f8;
+  border-radius: 4px;
+  padding: 0.1rem 0.3rem;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+}
+th, td {
+  border: 1px solid #d5d8e0;
+  padding: 0.45rem;
+  text-align: left;
+  font-size: 0.95rem;
+}</style></head><body><h1>EvasionBench Research Report</h1>
+<p>Generated at: `2026-02-11T00:27:30Z`</p>
+<p>Git SHA: `ae71544`</p>
+<p>Pipeline run id: `phase7-20260211-002445-ae71544`</p>
+<h2>Methodology</h2>
+<p>This report is generated from a deterministic manifest (`phase7-report-manifest-v1`) and includes only script-produced artifacts.</p>
+<ul>
+<li>Manifest generated at: `2026-02-11T00:21:36Z`</li>
+<li>Dataset artifacts tracked: 1</li>
+<li>Analysis artifacts tracked: 43</li>
+<li>Model artifacts tracked: 28</li>
+</ul>
+<h2>Core Analyses</h2>
+<p>Phase-3 and phase-4 outputs are referenced directly from the manifest.</p>
+<h3>Figures</h3>
+<ul>
+<li>`analyze_phase3:artifacts_analysis_phase3_core_stats_answer_length_by_label_png` — `artifacts/analysis/phase3/core_stats/answer_length_by_label.png` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_core_stats_class_distribution_png` — `artifacts/analysis/phase3/core_stats/class_distribution.png` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_core_stats_question_length_by_label_png` — `artifacts/analysis/phase3/core_stats/question_length_by_label.png` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_lexical_top_bigrams_evasive_png` — `artifacts/analysis/phase3/lexical/top_bigrams_evasive.png` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_lexical_top_bigrams_non_evasive_png` — `artifacts/analysis/phase3/lexical/top_bigrams_non_evasive.png` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_lexical_top_unigrams_evasive_png` — `artifacts/analysis/phase3/lexical/top_unigrams_evasive.png` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_lexical_top_unigrams_non_evasive_png` — `artifacts/analysis/phase3/lexical/top_unigrams_non_evasive.png` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase4:artifacts_analysis_phase4_question_behavior_question_behavior_by_label_png` — `artifacts/analysis/phase4/question_behavior/question_behavior_by_label.png` (stage: `analyze_phase4`)</li>
+<li>`analyze_phase4:artifacts_analysis_phase4_semantic_similarity_semantic_similarity_by_label_png` — `artifacts/analysis/phase4/semantic_similarity/semantic_similarity_by_label.png` (stage: `analyze_phase4`)</li>
+<li>`analyze_phase4:artifacts_analysis_phase4_topic_modeling_topic_prevalence_by_label_png` — `artifacts/analysis/phase4/topic_modeling/topic_prevalence_by_label.png` (stage: `analyze_phase4`)</li>
+</ul>
+<h3>Tables</h3>
+<ul>
+<li>`analyze_phase3:artifacts_analysis_phase3_artifact_index_json` — `artifacts/analysis/phase3/artifact_index.json` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_core_stats_class_distribution_csv` — `artifacts/analysis/phase3/core_stats/class_distribution.csv` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_core_stats_class_distribution_json` — `artifacts/analysis/phase3/core_stats/class_distribution.json` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_core_stats_length_summary_csv` — `artifacts/analysis/phase3/core_stats/length_summary.csv` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_core_stats_length_summary_json` — `artifacts/analysis/phase3/core_stats/length_summary.json` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_core_stats_length_tests_json` — `artifacts/analysis/phase3/core_stats/length_tests.json` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_core_stats_quality_metrics_csv` — `artifacts/analysis/phase3/core_stats/quality_metrics.csv` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_core_stats_quality_metrics_json` — `artifacts/analysis/phase3/core_stats/quality_metrics.json` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_lexical_lexical_summary_csv` — `artifacts/analysis/phase3/lexical/lexical_summary.csv` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_lexical_lexical_summary_json` — `artifacts/analysis/phase3/lexical/lexical_summary.json` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_lexical_top_bigrams_evasive_csv` — `artifacts/analysis/phase3/lexical/top_bigrams_evasive.csv` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_lexical_top_bigrams_non_evasive_csv` — `artifacts/analysis/phase3/lexical/top_bigrams_non_evasive.csv` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_lexical_top_ngrams_json` — `artifacts/analysis/phase3/lexical/top_ngrams.json` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_lexical_top_unigrams_evasive_csv` — `artifacts/analysis/phase3/lexical/top_unigrams_evasive.csv` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase3:artifacts_analysis_phase3_lexical_top_unigrams_non_evasive_csv` — `artifacts/analysis/phase3/lexical/top_unigrams_non_evasive.csv` (stage: `analyze_phase3`)</li>
+<li>`analyze_phase4:artifacts_analysis_phase4_artifact_index_json` — `artifacts/analysis/phase4/artifact_index.json` (stage: `analyze_phase4`)</li>
+<li>`analyze_phase4:artifacts_analysis_phase4_question_behavior_question_behavior_comparison_csv` — `artifacts/analysis/phase4/question_behavior/question_behavior_comparison.csv` (stage: `analyze_phase4`)</li>
+<li>`analyze_phase4:artifacts_analysis_phase4_question_behavior_question_behavior_metrics_csv` — `artifacts/analysis/phase4/question_behavior/question_behavior_metrics.csv` (stage: `analyze_phase4`)</li>
+<li>`analyze_phase4:artifacts_analysis_phase4_question_behavior_question_behavior_summary_json` — `artifacts/analysis/phase4/question_behavior/question_behavior_summary.json` (stage: `analyze_phase4`)</li>
+<li>`analyze_phase4:artifacts_analysis_phase4_question_behavior_taxonomy_metadata_json` — `artifacts/analysis/phase4/question_behavior/taxonomy_metadata.json` (stage: `analyze_phase4`)</li>
+<li>`analyze_phase4:artifacts_analysis_phase4_semantic_similarity_hypothesis_summary_json` — `artifacts/analysis/phase4/semantic_similarity/hypothesis_summary.json` (stage: `analyze_phase4`)</li>
+<li>`analyze_phase4:artifacts_analysis_phase4_semantic_similarity_qa_similarity_rows_parquet` — `artifacts/analysis/phase4/semantic_similarity/qa_similarity_rows.parquet` (stage: `analyze_phase4`)</li>
+<li>`analyze_phase4:artifacts_analysis_phase4_semantic_similarity_semantic_similarity_by_label_csv` — `artifacts/analysis/phase4/semantic_similarity/semantic_similarity_by_label.csv` (stage: `analyze_phase4`)</li>
+<li>`analyze_phase4:artifacts_analysis_phase4_semantic_similarity_semantic_similarity_by_label_json` — `artifacts/analysis/phase4/semantic_similarity/semantic_similarity_by_label.json` (stage: `analyze_phase4`)</li>
+<li>`analyze_phase4:artifacts_analysis_phase4_topic_modeling_document_topics_parquet` — `artifacts/analysis/phase4/topic_modeling/document_topics.parquet` (stage: `analyze_phase4`)</li>
+<li>`analyze_phase4:artifacts_analysis_phase4_topic_modeling_model_config_json` — `artifacts/analysis/phase4/topic_modeling/model_config.json` (stage: `analyze_phase4`)</li>
+<li>`analyze_phase4:artifacts_analysis_phase4_topic_modeling_topic_prevalence_by_label_csv` — `artifacts/analysis/phase4/topic_modeling/topic_prevalence_by_label.csv` (stage: `analyze_phase4`)</li>
+<li>`analyze_phase4:artifacts_analysis_phase4_topic_modeling_topic_summary_json` — `artifacts/analysis/phase4/topic_modeling/topic_summary.json` (stage: `analyze_phase4`)</li>
+<li>`analyze_phase4:artifacts_analysis_phase4_topic_modeling_topic_top_terms_csv` — `artifacts/analysis/phase4/topic_modeling/topic_top_terms.csv` (stage: `analyze_phase4`)</li>
+</ul>
+<h2>Modeling</h2>
+<ul>
+<li>Best classical family (macro F1): `boosting`</li>
+<li>Classical metrics snapshot: `{'accuracy': 1.0, 'f1_macro': 1.0, 'precision_macro': 1.0, 'recall_macro': 1.0}`</li>
+<li>Transformer metrics snapshot: `{'accuracy': 0.5, 'f1_macro': 0.3333333333333333, 'precision_macro': 0.25, 'recall_macro': 0.5}`</li>
+</ul>
+<p>Model artifacts used:</p>
+<ul>
+<li>`phase5_classical_baselines:artifacts_models_phase5_boosting_classification_report_json` — `artifacts/models/phase5/boosting/classification_report.json`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_boosting_confusion_matrix_json` — `artifacts/models/phase5/boosting/confusion_matrix.json`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_boosting_metrics_json` — `artifacts/models/phase5/boosting/metrics.json`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_boosting_model_bundle_pkl` — `artifacts/models/phase5/boosting/model_bundle.pkl`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_boosting_run_metadata_json` — `artifacts/models/phase5/boosting/run_metadata.json`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_logreg_classification_report_json` — `artifacts/models/phase5/logreg/classification_report.json`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_logreg_confusion_matrix_json` — `artifacts/models/phase5/logreg/confusion_matrix.json`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_logreg_metrics_json` — `artifacts/models/phase5/logreg/metrics.json`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_logreg_model_pkl` — `artifacts/models/phase5/logreg/model.pkl`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_logreg_run_metadata_json` — `artifacts/models/phase5/logreg/run_metadata.json`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_run_summary_json` — `artifacts/models/phase5/run_summary.json`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_tree_classification_report_json` — `artifacts/models/phase5/tree/classification_report.json`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_tree_confusion_matrix_json` — `artifacts/models/phase5/tree/confusion_matrix.json`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_tree_metrics_json` — `artifacts/models/phase5/tree/metrics.json`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_tree_model_bundle_pkl` — `artifacts/models/phase5/tree/model_bundle.pkl`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_tree_run_metadata_json` — `artifacts/models/phase5/tree/run_metadata.json`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_tree_boosting_classification_report_json` — `artifacts/models/phase5/tree_boosting/classification_report.json`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_tree_boosting_confusion_matrix_json` — `artifacts/models/phase5/tree_boosting/confusion_matrix.json`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_tree_boosting_metrics_json` — `artifacts/models/phase5/tree_boosting/metrics.json`</li>
+<li>`phase5_classical_baselines:artifacts_models_phase5_tree_boosting_run_metadata_json` — `artifacts/models/phase5/tree_boosting/run_metadata.json`</li>
+<li>`phase6_transformer_baselines:artifacts_models_phase6_transformer_classification_report_json` — `artifacts/models/phase6/transformer/classification_report.json`</li>
+<li>`phase6_transformer_baselines:artifacts_models_phase6_transformer_confusion_matrix_json` — `artifacts/models/phase6/transformer/confusion_matrix.json`</li>
+<li>`phase6_transformer_baselines:artifacts_models_phase6_transformer_metrics_json` — `artifacts/models/phase6/transformer/metrics.json`</li>
+<li>`phase6_transformer_baselines:artifacts_models_phase6_transformer_model_config_json` — `artifacts/models/phase6/transformer/model/config.json`</li>
+<li>`phase6_transformer_baselines:artifacts_models_phase6_transformer_model_model_safetensors` — `artifacts/models/phase6/transformer/model/model.safetensors`</li>
+<li>`phase6_transformer_baselines:artifacts_models_phase6_transformer_model_tokenizer_json` — `artifacts/models/phase6/transformer/model/tokenizer.json`</li>
+<li>`phase6_transformer_baselines:artifacts_models_phase6_transformer_model_tokenizer_config_json` — `artifacts/models/phase6/transformer/model/tokenizer_config.json`</li>
+<li>`phase6_transformer_baselines:artifacts_models_phase6_transformer_run_metadata_json` — `artifacts/models/phase6/transformer/run_metadata.json`</li>
+</ul>
+<h2>Explainability</h2>
+<p>Classical and transformer explainability artifacts linked from the manifest:</p>
+<ul>
+<li>XAI summary families: `['boosting', 'logreg', 'tree']`</li>
+</ul>
+<ul>
+<li>`phase6_xai_classical:artifacts_explainability_phase6_boosting_shap_samples_json` — `artifacts/explainability/phase6/boosting/shap_samples.json` (stage: `phase6_xai_classical`)</li>
+<li>`phase6_xai_classical:artifacts_explainability_phase6_boosting_shap_summary_json` — `artifacts/explainability/phase6/boosting/shap_summary.json` (stage: `phase6_xai_classical`)</li>
+<li>`phase6_xai_classical:artifacts_explainability_phase6_boosting_shap_summary_png` — `artifacts/explainability/phase6/boosting/shap_summary.png` (stage: `phase6_xai_classical`)</li>
+<li>`phase6_xai_classical:artifacts_explainability_phase6_logreg_shap_samples_json` — `artifacts/explainability/phase6/logreg/shap_samples.json` (stage: `phase6_xai_classical`)</li>
+<li>`phase6_xai_classical:artifacts_explainability_phase6_logreg_shap_summary_json` — `artifacts/explainability/phase6/logreg/shap_summary.json` (stage: `phase6_xai_classical`)</li>
+<li>`phase6_xai_classical:artifacts_explainability_phase6_logreg_shap_summary_png` — `artifacts/explainability/phase6/logreg/shap_summary.png` (stage: `phase6_xai_classical`)</li>
+<li>`phase6_xai_classical:artifacts_explainability_phase6_transformer_run_summary_json` — `artifacts/explainability/phase6/transformer/run_summary.json` (stage: `phase6_xai_classical`)</li>
+<li>`phase6_xai_classical:artifacts_explainability_phase6_transformer_transformer_xai_html` — `artifacts/explainability/phase6/transformer/transformer_xai.html` (stage: `phase6_xai_classical`)</li>
+<li>`phase6_xai_classical:artifacts_explainability_phase6_transformer_transformer_xai_json` — `artifacts/explainability/phase6/transformer/transformer_xai.json` (stage: `phase6_xai_classical`)</li>
+<li>`phase6_xai_classical:artifacts_explainability_phase6_transformer_transformer_xai_summary_json` — `artifacts/explainability/phase6/transformer/transformer_xai_summary.json` (stage: `phase6_xai_classical`)</li>
+<li>`phase6_xai_classical:artifacts_explainability_phase6_tree_shap_samples_json` — `artifacts/explainability/phase6/tree/shap_samples.json` (stage: `phase6_xai_classical`)</li>
+<li>`phase6_xai_classical:artifacts_explainability_phase6_tree_shap_summary_json` — `artifacts/explainability/phase6/tree/shap_summary.json` (stage: `phase6_xai_classical`)</li>
+<li>`phase6_xai_classical:artifacts_explainability_phase6_tree_shap_summary_png` — `artifacts/explainability/phase6/tree/shap_summary.png` (stage: `phase6_xai_classical`)</li>
+<li>`phase6_xai_classical:artifacts_explainability_phase6_xai_summary_json` — `artifacts/explainability/phase6/xai_summary.json` (stage: `phase6_xai_classical`)</li>
+<li>`phase6_xai_transformer:artifacts_explainability_phase6_transformer_run_summary_json` — `artifacts/explainability/phase6/transformer/run_summary.json` (stage: `phase6_xai_transformer`)</li>
+<li>`phase6_xai_transformer:artifacts_explainability_phase6_transformer_transformer_xai_html` — `artifacts/explainability/phase6/transformer/transformer_xai.html` (stage: `phase6_xai_transformer`)</li>
+<li>`phase6_xai_transformer:artifacts_explainability_phase6_transformer_transformer_xai_json` — `artifacts/explainability/phase6/transformer/transformer_xai.json` (stage: `phase6_xai_transformer`)</li>
+<li>`phase6_xai_transformer:artifacts_explainability_phase6_transformer_transformer_xai_summary_json` — `artifacts/explainability/phase6/transformer/transformer_xai_summary.json` (stage: `phase6_xai_transformer`)</li>
+</ul>
+<h2>Label Quality</h2>
+<ul>
+<li>Diagnostics summary: `{'git_sha': '2be7541', 'label_issues': 0, 'near_duplicate_issues': 80, 'outlier_issues': 0, 'quality_score': 100.0, 'random_state': 42, 'training_size': 80}`</li>
+</ul>
+<ul>
+<li>`phase6_label_diagnostics:artifacts_diagnostics_phase6_label_diagnostics_report_md` — `artifacts/diagnostics/phase6/label_diagnostics_report.md`</li>
+<li>`phase6_label_diagnostics:artifacts_diagnostics_phase6_label_diagnostics_summary_json` — `artifacts/diagnostics/phase6/label_diagnostics_summary.json`</li>
+<li>`phase6_label_diagnostics:artifacts_diagnostics_phase6_near_duplicate_pairs_csv` — `artifacts/diagnostics/phase6/near_duplicate_pairs.csv`</li>
+<li>`phase6_label_diagnostics:artifacts_diagnostics_phase6_outlier_examples_csv` — `artifacts/diagnostics/phase6/outlier_examples.csv`</li>
+<li>`phase6_label_diagnostics:artifacts_diagnostics_phase6_suspect_examples_csv` — `artifacts/diagnostics/phase6/suspect_examples.csv`</li>
+</ul>
+<h2>Reproducibility</h2>
+<p>All figure/table lineage is encoded below for traceability.</p>
+<p>| Traceability ID | Stage | Script | Artifact Path |</p>
+<p>|---|---|---|---|</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_artifact_index_json` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/artifact_index.json` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_core_stats_answer_length_by_label_png` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/core_stats/answer_length_by_label.png` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_core_stats_class_distribution_csv` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/core_stats/class_distribution.csv` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_core_stats_class_distribution_json` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/core_stats/class_distribution.json` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_core_stats_class_distribution_png` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/core_stats/class_distribution.png` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_core_stats_length_summary_csv` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/core_stats/length_summary.csv` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_core_stats_length_summary_json` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/core_stats/length_summary.json` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_core_stats_length_tests_json` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/core_stats/length_tests.json` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_core_stats_quality_metrics_csv` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/core_stats/quality_metrics.csv` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_core_stats_quality_metrics_json` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/core_stats/quality_metrics.json` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_core_stats_question_length_by_label_png` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/core_stats/question_length_by_label.png` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_lexical_lexical_summary_csv` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/lexical/lexical_summary.csv` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_lexical_lexical_summary_json` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/lexical/lexical_summary.json` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_lexical_top_bigrams_evasive_csv` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/lexical/top_bigrams_evasive.csv` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_lexical_top_bigrams_evasive_png` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/lexical/top_bigrams_evasive.png` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_lexical_top_bigrams_non_evasive_csv` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/lexical/top_bigrams_non_evasive.csv` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_lexical_top_bigrams_non_evasive_png` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/lexical/top_bigrams_non_evasive.png` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_lexical_top_ngrams_json` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/lexical/top_ngrams.json` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_lexical_top_unigrams_evasive_csv` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/lexical/top_unigrams_evasive.csv` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_lexical_top_unigrams_evasive_png` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/lexical/top_unigrams_evasive.png` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_lexical_top_unigrams_non_evasive_csv` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/lexical/top_unigrams_non_evasive.csv` |</p>
+<p>| `analyze_phase3:artifacts_analysis_phase3_lexical_top_unigrams_non_evasive_png` | `analyze_phase3` | `scripts/run_phase3_analyses.py` | `artifacts/analysis/phase3/lexical/top_unigrams_non_evasive.png` |</p>
+<p>| `analyze_phase4:artifacts_analysis_phase4_artifact_index_json` | `analyze_phase4` | `scripts/run_phase4_analyses.py` | `artifacts/analysis/phase4/artifact_index.json` |</p>
+<p>| `analyze_phase4:artifacts_analysis_phase4_question_behavior_question_behavior_by_label_png` | `analyze_phase4` | `scripts/run_phase4_analyses.py` | `artifacts/analysis/phase4/question_behavior/question_behavior_by_label.png` |</p>
+<p>| `analyze_phase4:artifacts_analysis_phase4_question_behavior_question_behavior_comparison_csv` | `analyze_phase4` | `scripts/run_phase4_analyses.py` | `artifacts/analysis/phase4/question_behavior/question_behavior_comparison.csv` |</p>
+<p>| `analyze_phase4:artifacts_analysis_phase4_question_behavior_question_behavior_metrics_csv` | `analyze_phase4` | `scripts/run_phase4_analyses.py` | `artifacts/analysis/phase4/question_behavior/question_behavior_metrics.csv` |</p>
+<p>| `analyze_phase4:artifacts_analysis_phase4_question_behavior_question_behavior_summary_json` | `analyze_phase4` | `scripts/run_phase4_analyses.py` | `artifacts/analysis/phase4/question_behavior/question_behavior_summary.json` |</p>
+<p>| `analyze_phase4:artifacts_analysis_phase4_question_behavior_taxonomy_metadata_json` | `analyze_phase4` | `scripts/run_phase4_analyses.py` | `artifacts/analysis/phase4/question_behavior/taxonomy_metadata.json` |</p>
+<p>| `analyze_phase4:artifacts_analysis_phase4_semantic_similarity_hypothesis_summary_json` | `analyze_phase4` | `scripts/run_phase4_analyses.py` | `artifacts/analysis/phase4/semantic_similarity/hypothesis_summary.json` |</p>
+<p>| `analyze_phase4:artifacts_analysis_phase4_semantic_similarity_qa_similarity_rows_parquet` | `analyze_phase4` | `scripts/run_phase4_analyses.py` | `artifacts/analysis/phase4/semantic_similarity/qa_similarity_rows.parquet` |</p>
+<p>| `analyze_phase4:artifacts_analysis_phase4_semantic_similarity_semantic_similarity_by_label_csv` | `analyze_phase4` | `scripts/run_phase4_analyses.py` | `artifacts/analysis/phase4/semantic_similarity/semantic_similarity_by_label.csv` |</p>
+<p>| `analyze_phase4:artifacts_analysis_phase4_semantic_similarity_semantic_similarity_by_label_json` | `analyze_phase4` | `scripts/run_phase4_analyses.py` | `artifacts/analysis/phase4/semantic_similarity/semantic_similarity_by_label.json` |</p>
+<p>| `analyze_phase4:artifacts_analysis_phase4_semantic_similarity_semantic_similarity_by_label_png` | `analyze_phase4` | `scripts/run_phase4_analyses.py` | `artifacts/analysis/phase4/semantic_similarity/semantic_similarity_by_label.png` |</p>
+<p>| `analyze_phase4:artifacts_analysis_phase4_topic_modeling_document_topics_parquet` | `analyze_phase4` | `scripts/run_phase4_analyses.py` | `artifacts/analysis/phase4/topic_modeling/document_topics.parquet` |</p>
+<p>| `analyze_phase4:artifacts_analysis_phase4_topic_modeling_model_config_json` | `analyze_phase4` | `scripts/run_phase4_analyses.py` | `artifacts/analysis/phase4/topic_modeling/model_config.json` |</p>
+<p>| `analyze_phase4:artifacts_analysis_phase4_topic_modeling_topic_prevalence_by_label_csv` | `analyze_phase4` | `scripts/run_phase4_analyses.py` | `artifacts/analysis/phase4/topic_modeling/topic_prevalence_by_label.csv` |</p>
+<p>| `analyze_phase4:artifacts_analysis_phase4_topic_modeling_topic_prevalence_by_label_png` | `analyze_phase4` | `scripts/run_phase4_analyses.py` | `artifacts/analysis/phase4/topic_modeling/topic_prevalence_by_label.png` |</p>
+<p>| `analyze_phase4:artifacts_analysis_phase4_topic_modeling_topic_summary_json` | `analyze_phase4` | `scripts/run_phase4_analyses.py` | `artifacts/analysis/phase4/topic_modeling/topic_summary.json` |</p>
+<p>| `analyze_phase4:artifacts_analysis_phase4_topic_modeling_topic_top_terms_csv` | `analyze_phase4` | `scripts/run_phase4_analyses.py` | `artifacts/analysis/phase4/topic_modeling/topic_top_terms.csv` |</p>
+<p>| `phase5_classical_baselines:artifacts_models_phase5_boosting_classification_report_json` | `phase5_classical_baselines` | `scripts/run_classical_baselines.py` | `artifacts/models/phase5/boosting/classification_report.json` |</p>
+<p>| `phase5_classical_baselines:artifacts_models_phase5_boosting_confusion_matrix_json` | `phase5_classical_baselines` | `scripts/run_classical_baselines.py` | `artifacts/models/phase5/boosting/confusion_matrix.json` |</p>
+<p>| `phase5_classical_baselines:artifacts_models_phase5_boosting_metrics_json` | `phase5_classical_baselines` | `scripts/run_classical_baselines.py` | `artifacts/models/phase5/boosting/metrics.json` |</p>
+<p>| `phase5_classical_baselines:artifacts_models_phase5_boosting_run_metadata_json` | `phase5_classical_baselines` | `scripts/run_classical_baselines.py` | `artifacts/models/phase5/boosting/run_metadata.json` |</p>
+<p>| `phase5_classical_baselines:artifacts_models_phase5_logreg_classification_report_json` | `phase5_classical_baselines` | `scripts/run_classical_baselines.py` | `artifacts/models/phase5/logreg/classification_report.json` |</p>
+<p>| `phase5_classical_baselines:artifacts_models_phase5_logreg_confusion_matrix_json` | `phase5_classical_baselines` | `scripts/run_classical_baselines.py` | `artifacts/models/phase5/logreg/confusion_matrix.json` |</p>
+<p>| `phase5_classical_baselines:artifacts_models_phase5_logreg_metrics_json` | `phase5_classical_baselines` | `scripts/run_classical_baselines.py` | `artifacts/models/phase5/logreg/metrics.json` |</p>
+<p>| `phase5_classical_baselines:artifacts_models_phase5_logreg_run_metadata_json` | `phase5_classical_baselines` | `scripts/run_classical_baselines.py` | `artifacts/models/phase5/logreg/run_metadata.json` |</p>
+<p>| `phase5_classical_baselines:artifacts_models_phase5_run_summary_json` | `phase5_classical_baselines` | `scripts/run_classical_baselines.py` | `artifacts/models/phase5/run_summary.json` |</p>
+<p>| `phase5_classical_baselines:artifacts_models_phase5_tree_boosting_classification_report_json` | `phase5_classical_baselines` | `scripts/run_classical_baselines.py` | `artifacts/models/phase5/tree_boosting/classification_report.json` |</p>
+<p>| `phase5_classical_baselines:artifacts_models_phase5_tree_boosting_confusion_matrix_json` | `phase5_classical_baselines` | `scripts/run_classical_baselines.py` | `artifacts/models/phase5/tree_boosting/confusion_matrix.json` |</p>
+<p>| `phase5_classical_baselines:artifacts_models_phase5_tree_boosting_metrics_json` | `phase5_classical_baselines` | `scripts/run_classical_baselines.py` | `artifacts/models/phase5/tree_boosting/metrics.json` |</p>
+<p>| `phase5_classical_baselines:artifacts_models_phase5_tree_boosting_run_metadata_json` | `phase5_classical_baselines` | `scripts/run_classical_baselines.py` | `artifacts/models/phase5/tree_boosting/run_metadata.json` |</p>
+<p>| `phase5_classical_baselines:artifacts_models_phase5_tree_classification_report_json` | `phase5_classical_baselines` | `scripts/run_classical_baselines.py` | `artifacts/models/phase5/tree/classification_report.json` |</p>
+<p>| `phase5_classical_baselines:artifacts_models_phase5_tree_confusion_matrix_json` | `phase5_classical_baselines` | `scripts/run_classical_baselines.py` | `artifacts/models/phase5/tree/confusion_matrix.json` |</p>
+<p>| `phase5_classical_baselines:artifacts_models_phase5_tree_metrics_json` | `phase5_classical_baselines` | `scripts/run_classical_baselines.py` | `artifacts/models/phase5/tree/metrics.json` |</p>
+<p>| `phase5_classical_baselines:artifacts_models_phase5_tree_run_metadata_json` | `phase5_classical_baselines` | `scripts/run_classical_baselines.py` | `artifacts/models/phase5/tree/run_metadata.json` |</p>
+<p>| `phase6_label_diagnostics:artifacts_diagnostics_phase6_label_diagnostics_summary_json` | `phase6_label_diagnostics` | `scripts/run_label_diagnostics.py` | `artifacts/diagnostics/phase6/label_diagnostics_summary.json` |</p>
+<p>| `phase6_label_diagnostics:artifacts_diagnostics_phase6_near_duplicate_pairs_csv` | `phase6_label_diagnostics` | `scripts/run_label_diagnostics.py` | `artifacts/diagnostics/phase6/near_duplicate_pairs.csv` |</p>
+<p>| `phase6_label_diagnostics:artifacts_diagnostics_phase6_outlier_examples_csv` | `phase6_label_diagnostics` | `scripts/run_label_diagnostics.py` | `artifacts/diagnostics/phase6/outlier_examples.csv` |</p>
+<p>| `phase6_label_diagnostics:artifacts_diagnostics_phase6_suspect_examples_csv` | `phase6_label_diagnostics` | `scripts/run_label_diagnostics.py` | `artifacts/diagnostics/phase6/suspect_examples.csv` |</p>
+<p>| `phase6_transformer_baselines:artifacts_models_phase6_transformer_classification_report_json` | `phase6_transformer_baselines` | `scripts/run_transformer_baselines.py` | `artifacts/models/phase6/transformer/classification_report.json` |</p>
+<p>| `phase6_transformer_baselines:artifacts_models_phase6_transformer_confusion_matrix_json` | `phase6_transformer_baselines` | `scripts/run_transformer_baselines.py` | `artifacts/models/phase6/transformer/confusion_matrix.json` |</p>
+<p>| `phase6_transformer_baselines:artifacts_models_phase6_transformer_metrics_json` | `phase6_transformer_baselines` | `scripts/run_transformer_baselines.py` | `artifacts/models/phase6/transformer/metrics.json` |</p>
+<p>| `phase6_transformer_baselines:artifacts_models_phase6_transformer_model_config_json` | `phase6_transformer_baselines` | `scripts/run_transformer_baselines.py` | `artifacts/models/phase6/transformer/model/config.json` |</p>
+<p>| `phase6_transformer_baselines:artifacts_models_phase6_transformer_model_tokenizer_config_json` | `phase6_transformer_baselines` | `scripts/run_transformer_baselines.py` | `artifacts/models/phase6/transformer/model/tokenizer_config.json` |</p>
+<p>| `phase6_transformer_baselines:artifacts_models_phase6_transformer_model_tokenizer_json` | `phase6_transformer_baselines` | `scripts/run_transformer_baselines.py` | `artifacts/models/phase6/transformer/model/tokenizer.json` |</p>
+<p>| `phase6_transformer_baselines:artifacts_models_phase6_transformer_run_metadata_json` | `phase6_transformer_baselines` | `scripts/run_transformer_baselines.py` | `artifacts/models/phase6/transformer/run_metadata.json` |</p>
+<p>| `phase6_xai_classical:artifacts_explainability_phase6_boosting_shap_samples_json` | `phase6_xai_classical` | `scripts/run_explainability_analysis.py` | `artifacts/explainability/phase6/boosting/shap_samples.json` |</p>
+<p>| `phase6_xai_classical:artifacts_explainability_phase6_boosting_shap_summary_json` | `phase6_xai_classical` | `scripts/run_explainability_analysis.py` | `artifacts/explainability/phase6/boosting/shap_summary.json` |</p>
+<p>| `phase6_xai_classical:artifacts_explainability_phase6_boosting_shap_summary_png` | `phase6_xai_classical` | `scripts/run_explainability_analysis.py` | `artifacts/explainability/phase6/boosting/shap_summary.png` |</p>
+<p>| `phase6_xai_classical:artifacts_explainability_phase6_logreg_shap_samples_json` | `phase6_xai_classical` | `scripts/run_explainability_analysis.py` | `artifacts/explainability/phase6/logreg/shap_samples.json` |</p>
+<p>| `phase6_xai_classical:artifacts_explainability_phase6_logreg_shap_summary_json` | `phase6_xai_classical` | `scripts/run_explainability_analysis.py` | `artifacts/explainability/phase6/logreg/shap_summary.json` |</p>
+<p>| `phase6_xai_classical:artifacts_explainability_phase6_logreg_shap_summary_png` | `phase6_xai_classical` | `scripts/run_explainability_analysis.py` | `artifacts/explainability/phase6/logreg/shap_summary.png` |</p>
+<p>| `phase6_xai_classical:artifacts_explainability_phase6_transformer_run_summary_json` | `phase6_xai_classical` | `scripts/run_explainability_analysis.py` | `artifacts/explainability/phase6/transformer/run_summary.json` |</p>
+<p>| `phase6_xai_classical:artifacts_explainability_phase6_transformer_transformer_xai_json` | `phase6_xai_classical` | `scripts/run_explainability_analysis.py` | `artifacts/explainability/phase6/transformer/transformer_xai.json` |</p>
+<p>| `phase6_xai_classical:artifacts_explainability_phase6_transformer_transformer_xai_summary_json` | `phase6_xai_classical` | `scripts/run_explainability_analysis.py` | `artifacts/explainability/phase6/transformer/transformer_xai_summary.json` |</p>
+<p>| `phase6_xai_classical:artifacts_explainability_phase6_tree_shap_samples_json` | `phase6_xai_classical` | `scripts/run_explainability_analysis.py` | `artifacts/explainability/phase6/tree/shap_samples.json` |</p>
+<p>| `phase6_xai_classical:artifacts_explainability_phase6_tree_shap_summary_json` | `phase6_xai_classical` | `scripts/run_explainability_analysis.py` | `artifacts/explainability/phase6/tree/shap_summary.json` |</p>
+<p>| `phase6_xai_classical:artifacts_explainability_phase6_tree_shap_summary_png` | `phase6_xai_classical` | `scripts/run_explainability_analysis.py` | `artifacts/explainability/phase6/tree/shap_summary.png` |</p>
+<p>| `phase6_xai_classical:artifacts_explainability_phase6_xai_summary_json` | `phase6_xai_classical` | `scripts/run_explainability_analysis.py` | `artifacts/explainability/phase6/xai_summary.json` |</p>
+<p>| `phase6_xai_transformer:artifacts_explainability_phase6_transformer_run_summary_json` | `phase6_xai_transformer` | `scripts/run_transformer_explainability.py` | `artifacts/explainability/phase6/transformer/run_summary.json` |</p>
+<p>| `phase6_xai_transformer:artifacts_explainability_phase6_transformer_transformer_xai_json` | `phase6_xai_transformer` | `scripts/run_transformer_explainability.py` | `artifacts/explainability/phase6/transformer/transformer_xai.json` |</p>
+<p>| `phase6_xai_transformer:artifacts_explainability_phase6_transformer_transformer_xai_summary_json` | `phase6_xai_transformer` | `scripts/run_transformer_explainability.py` | `artifacts/explainability/phase6/transformer/transformer_xai_summary.json` |</p>
+<p>| `prepare_data:data_processed_evasionbench_prepared_parquet` | `prepare_data` | `scripts/prepare_data.py` | `data/processed/evasionbench_prepared.parquet` |</p></body></html>

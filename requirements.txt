@@ -30,5 +30,8 @@ cleanlab
 huggingface_hub
 rich
 pyyaml
+jinja2
+markdown
+weasyprint
 
 setuptools<81

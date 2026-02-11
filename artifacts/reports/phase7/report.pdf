@@ -1,0 +1,278 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 17102 >>
+stream
+BT
+/F1 10 Tf
+50 800 Td
+12 TL
+(EvasionBench Research Report) Tj
+T*
+(Generated at: 2026-02-11T00:27:30Z) Tj
+T*
+(Git SHA: ae71544) Tj
+T*
+(Pipeline run id: phase7-20260211-002445-ae71544) Tj
+T*
+(Methodology) Tj
+T*
+(This report is generated from a deterministic manifest \(phase7-report-manifest-v1\) and includes only script-produced artifacts.) Tj
+T*
+(- Manifest generated at: 2026-02-11T00:21:36Z) Tj
+T*
+(- Dataset artifacts tracked: 1) Tj
+T*
+(- Analysis artifacts tracked: 43) Tj
+T*
+(- Model artifacts tracked: 28) Tj
+T*
+(Core Analyses) Tj
+T*
+(Phase-3 and phase-4 outputs are referenced directly from the manifest.) Tj
+T*
+(Figures) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_core_stats_answer_length_by_label_png ? artifacts/analysis/phase3/core_stats/answer_length_by_label.png \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_core_stats_class_distribution_png ? artifacts/analysis/phase3/core_stats/class_distribution.png \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_core_stats_question_length_by_label_png ? artifacts/analysis/phase3/core_stats/question_length_by_label.png \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_lexical_top_bigrams_evasive_png ? artifacts/analysis/phase3/lexical/top_bigrams_evasive.png \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_lexical_top_bigrams_non_evasive_png ? artifacts/analysis/phase3/lexical/top_bigrams_non_evasive.png \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_lexical_top_unigrams_evasive_png ? artifacts/analysis/phase3/lexical/top_unigrams_evasive.png \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_lexical_top_unigrams_non_evasive_png ? artifacts/analysis/phase3/lexical/top_unigrams_non_evasive.png \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase4:artifacts_analysis_phase4_question_behavior_question_behavior_by_label_png ? artifacts/analysis/phase4/question_behavior/question_behavior_by_label.png \(stage: analyze_phase4\)) Tj
+T*
+(- analyze_phase4:artifacts_analysis_phase4_semantic_similarity_semantic_similarity_by_label_png ? artifacts/analysis/phase4/semantic_similarity/semantic_similarity_by_label.png \(stage: analyze_phase4\)) Tj
+T*
+(- analyze_phase4:artifacts_analysis_phase4_topic_modeling_topic_prevalence_by_label_png ? artifacts/analysis/phase4/topic_modeling/topic_prevalence_by_label.png \(stage: analyze_phase4\)) Tj
+T*
+(Tables) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_artifact_index_json ? artifacts/analysis/phase3/artifact_index.json \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_core_stats_class_distribution_csv ? artifacts/analysis/phase3/core_stats/class_distribution.csv \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_core_stats_class_distribution_json ? artifacts/analysis/phase3/core_stats/class_distribution.json \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_core_stats_length_summary_csv ? artifacts/analysis/phase3/core_stats/length_summary.csv \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_core_stats_length_summary_json ? artifacts/analysis/phase3/core_stats/length_summary.json \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_core_stats_length_tests_json ? artifacts/analysis/phase3/core_stats/length_tests.json \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_core_stats_quality_metrics_csv ? artifacts/analysis/phase3/core_stats/quality_metrics.csv \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_core_stats_quality_metrics_json ? artifacts/analysis/phase3/core_stats/quality_metrics.json \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_lexical_lexical_summary_csv ? artifacts/analysis/phase3/lexical/lexical_summary.csv \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_lexical_lexical_summary_json ? artifacts/analysis/phase3/lexical/lexical_summary.json \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_lexical_top_bigrams_evasive_csv ? artifacts/analysis/phase3/lexical/top_bigrams_evasive.csv \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_lexical_top_bigrams_non_evasive_csv ? artifacts/analysis/phase3/lexical/top_bigrams_non_evasive.csv \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_lexical_top_ngrams_json ? artifacts/analysis/phase3/lexical/top_ngrams.json \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_lexical_top_unigrams_evasive_csv ? artifacts/analysis/phase3/lexical/top_unigrams_evasive.csv \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase3:artifacts_analysis_phase3_lexical_top_unigrams_non_evasive_csv ? artifacts/analysis/phase3/lexical/top_unigrams_non_evasive.csv \(stage: analyze_phase3\)) Tj
+T*
+(- analyze_phase4:artifacts_analysis_phase4_artifact_index_json ? artifacts/analysis/phase4/artifact_index.json \(stage: analyze_phase4\)) Tj
+T*
+(- analyze_phase4:artifacts_analysis_phase4_question_behavior_question_behavior_comparison_csv ? artifacts/analysis/phase4/question_behavior/question_behavior_comparison.csv \(stage: analyze_phase4\)) Tj
+T*
+(- analyze_phase4:artifacts_analysis_phase4_question_behavior_question_behavior_metrics_csv ? artifacts/analysis/phase4/question_behavior/question_behavior_metrics.csv \(stage: analyze_phase4\)) Tj
+T*
+(- analyze_phase4:artifacts_analysis_phase4_question_behavior_question_behavior_summary_json ? artifacts/analysis/phase4/question_behavior/question_behavior_summary.json \(stage: analyze_phase4\)) Tj
+T*
+(- analyze_phase4:artifacts_analysis_phase4_question_behavior_taxonomy_metadata_json ? artifacts/analysis/phase4/question_behavior/taxonomy_metadata.json \(stage: analyze_phase4\)) Tj
+T*
+(- analyze_phase4:artifacts_analysis_phase4_semantic_similarity_hypothesis_summary_json ? artifacts/analysis/phase4/semantic_similarity/hypothesis_summary.json \(stage: analyze_phase4\)) Tj
+T*
+(- analyze_phase4:artifacts_analysis_phase4_semantic_similarity_qa_similarity_rows_parquet ? artifacts/analysis/phase4/semantic_similarity/qa_similarity_rows.parquet \(stage: analyze_phase4\)) Tj
+T*
+(- analyze_phase4:artifacts_analysis_phase4_semantic_similarity_semantic_similarity_by_label_csv ? artifacts/analysis/phase4/semantic_similarity/semantic_similarity_by_label.csv \(stage: analyze_phase4\)) Tj
+T*
+(- analyze_phase4:artifacts_analysis_phase4_semantic_similarity_semantic_similarity_by_label_json ? artifacts/analysis/phase4/semantic_similarity/semantic_similarity_by_label.json \(stage: analyze_phase4\)) Tj
+T*
+(- analyze_phase4:artifacts_analysis_phase4_topic_modeling_document_topics_parquet ? artifacts/analysis/phase4/topic_modeling/document_topics.parquet \(stage: analyze_phase4\)) Tj
+T*
+(- analyze_phase4:artifacts_analysis_phase4_topic_modeling_model_config_json ? artifacts/analysis/phase4/topic_modeling/model_config.json \(stage: analyze_phase4\)) Tj
+T*
+(- analyze_phase4:artifacts_analysis_phase4_topic_modeling_topic_prevalence_by_label_csv ? artifacts/analysis/phase4/topic_modeling/topic_prevalence_by_label.csv \(stage: analyze_phase4\)) Tj
+T*
+(- analyze_phase4:artifacts_analysis_phase4_topic_modeling_topic_summary_json ? artifacts/analysis/phase4/topic_modeling/topic_summary.json \(stage: analyze_phase4\)) Tj
+T*
+(- analyze_phase4:artifacts_analysis_phase4_topic_modeling_topic_top_terms_csv ? artifacts/analysis/phase4/topic_modeling/topic_top_terms.csv \(stage: analyze_phase4\)) Tj
+T*
+(Modeling) Tj
+T*
+(- Best classical family \(macro F1\): boosting) Tj
+T*
+(- Classical metrics snapshot: {'accuracy': 1.0, 'f1_macro': 1.0, 'precision_macro': 1.0, 'recall_macro': 1.0}) Tj
+T*
+(- Transformer metrics snapshot: {'accuracy': 0.5, 'f1_macro': 0.3333333333333333, 'precision_macro': 0.25, 'recall_macro': 0.5}) Tj
+T*
+(Model artifacts used:) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_boosting_classification_report_json ? artifacts/models/phase5/boosting/classification_report.json) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_boosting_confusion_matrix_json ? artifacts/models/phase5/boosting/confusion_matrix.json) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_boosting_metrics_json ? artifacts/models/phase5/boosting/metrics.json) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_boosting_model_bundle_pkl ? artifacts/models/phase5/boosting/model_bundle.pkl) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_boosting_run_metadata_json ? artifacts/models/phase5/boosting/run_metadata.json) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_logreg_classification_report_json ? artifacts/models/phase5/logreg/classification_report.json) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_logreg_confusion_matrix_json ? artifacts/models/phase5/logreg/confusion_matrix.json) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_logreg_metrics_json ? artifacts/models/phase5/logreg/metrics.json) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_logreg_model_pkl ? artifacts/models/phase5/logreg/model.pkl) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_logreg_run_metadata_json ? artifacts/models/phase5/logreg/run_metadata.json) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_run_summary_json ? artifacts/models/phase5/run_summary.json) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_tree_classification_report_json ? artifacts/models/phase5/tree/classification_report.json) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_tree_confusion_matrix_json ? artifacts/models/phase5/tree/confusion_matrix.json) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_tree_metrics_json ? artifacts/models/phase5/tree/metrics.json) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_tree_model_bundle_pkl ? artifacts/models/phase5/tree/model_bundle.pkl) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_tree_run_metadata_json ? artifacts/models/phase5/tree/run_metadata.json) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_tree_boosting_classification_report_json ? artifacts/models/phase5/tree_boosting/classification_report.json) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_tree_boosting_confusion_matrix_json ? artifacts/models/phase5/tree_boosting/confusion_matrix.json) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_tree_boosting_metrics_json ? artifacts/models/phase5/tree_boosting/metrics.json) Tj
+T*
+(- phase5_classical_baselines:artifacts_models_phase5_tree_boosting_run_metadata_json ? artifacts/models/phase5/tree_boosting/run_metadata.json) Tj
+T*
+(- phase6_transformer_baselines:artifacts_models_phase6_transformer_classification_report_json ? artifacts/models/phase6/transformer/classification_report.json) Tj
+T*
+(- phase6_transformer_baselines:artifacts_models_phase6_transformer_confusion_matrix_json ? artifacts/models/phase6/transformer/confusion_matrix.json) Tj
+T*
+(- phase6_transformer_baselines:artifacts_models_phase6_transformer_metrics_json ? artifacts/models/phase6/transformer/metrics.json) Tj
+T*
+(- phase6_transformer_baselines:artifacts_models_phase6_transformer_model_config_json ? artifacts/models/phase6/transformer/model/config.json) Tj
+T*
+(- phase6_transformer_baselines:artifacts_models_phase6_transformer_model_model_safetensors ? artifacts/models/phase6/transformer/model/model.safetensors) Tj
+T*
+(- phase6_transformer_baselines:artifacts_models_phase6_transformer_model_tokenizer_json ? artifacts/models/phase6/transformer/model/tokenizer.json) Tj
+T*
+(- phase6_transformer_baselines:artifacts_models_phase6_transformer_model_tokenizer_config_json ? artifacts/models/phase6/transformer/model/tokenizer_config.json) Tj
+T*
+(- phase6_transformer_baselines:artifacts_models_phase6_transformer_run_metadata_json ? artifacts/models/phase6/transformer/run_metadata.json) Tj
+T*
+(Explainability) Tj
+T*
+(Classical and transformer explainability artifacts linked from the manifest:) Tj
+T*
+(- XAI summary families: ['boosting', 'logreg', 'tree']) Tj
+T*
+(- phase6_xai_classical:artifacts_explainability_phase6_boosting_shap_samples_json ? artifacts/explainability/phase6/boosting/shap_samples.json \(stage: phase6_xai_classical\)) Tj
+T*
+(- phase6_xai_classical:artifacts_explainability_phase6_boosting_shap_summary_json ? artifacts/explainability/phase6/boosting/shap_summary.json \(stage: phase6_xai_classical\)) Tj
+T*
+(- phase6_xai_classical:artifacts_explainability_phase6_boosting_shap_summary_png ? artifacts/explainability/phase6/boosting/shap_summary.png \(stage: phase6_xai_classical\)) Tj
+T*
+(- phase6_xai_classical:artifacts_explainability_phase6_logreg_shap_samples_json ? artifacts/explainability/phase6/logreg/shap_samples.json \(stage: phase6_xai_classical\)) Tj
+T*
+(- phase6_xai_classical:artifacts_explainability_phase6_logreg_shap_summary_json ? artifacts/explainability/phase6/logreg/shap_summary.json \(stage: phase6_xai_classical\)) Tj
+T*
+(- phase6_xai_classical:artifacts_explainability_phase6_logreg_shap_summary_png ? artifacts/explainability/phase6/logreg/shap_summary.png \(stage: phase6_xai_classical\)) Tj
+T*
+(- phase6_xai_classical:artifacts_explainability_phase6_transformer_run_summary_json ? artifacts/explainability/phase6/transformer/run_summary.json \(stage: phase6_xai_classical\)) Tj
+T*
+(- phase6_xai_classical:artifacts_explainability_phase6_transformer_transformer_xai_html ? artifacts/explainability/phase6/transformer/transformer_xai.html \(stage: phase6_xai_classical\)) Tj
+T*
+(- phase6_xai_classical:artifacts_explainability_phase6_transformer_transformer_xai_json ? artifacts/explainability/phase6/transformer/transformer_xai.json \(stage: phase6_xai_classical\)) Tj
+T*
+(- phase6_xai_classical:artifacts_explainability_phase6_transformer_transformer_xai_summary_json ? artifacts/explainability/phase6/transformer/transformer_xai_summary.json \(stage: phase6_xai_classical\)) Tj
+T*
+(- phase6_xai_classical:artifacts_explainability_phase6_tree_shap_samples_json ? artifacts/explainability/phase6/tree/shap_samples.json \(stage: phase6_xai_classical\)) Tj
+T*
+(- phase6_xai_classical:artifacts_explainability_phase6_tree_shap_summary_json ? artifacts/explainability/phase6/tree/shap_summary.json \(stage: phase6_xai_classical\)) Tj
+T*
+(- phase6_xai_classical:artifacts_explainability_phase6_tree_shap_summary_png ? artifacts/explainability/phase6/tree/shap_summary.png \(stage: phase6_xai_classical\)) Tj
+T*
+(- phase6_xai_classical:artifacts_explainability_phase6_xai_summary_json ? artifacts/explainability/phase6/xai_summary.json \(stage: phase6_xai_classical\)) Tj
+T*
+(- phase6_xai_transformer:artifacts_explainability_phase6_transformer_run_summary_json ? artifacts/explainability/phase6/transformer/run_summary.json \(stage: phase6_xai_transformer\)) Tj
+T*
+(- phase6_xai_transformer:artifacts_explainability_phase6_transformer_transformer_xai_html ? artifacts/explainability/phase6/transformer/transformer_xai.html \(stage: phase6_xai_transformer\)) Tj
+T*
+(- phase6_xai_transformer:artifacts_explainability_phase6_transformer_transformer_xai_json ? artifacts/explainability/phase6/transformer/transformer_xai.json \(stage: phase6_xai_transformer\)) Tj
+T*
+(- phase6_xai_transformer:artifacts_explainability_phase6_transformer_transformer_xai_summary_json ? artifacts/explainability/phase6/transformer/transformer_xai_summary.json \(stage: phase6_xai_transformer\)) Tj
+T*
+(Label Quality) Tj
+T*
+(- Diagnostics summary: {'git_sha': '2be7541', 'label_issues': 0, 'near_duplicate_issues': 80, 'outlier_issues': 0, 'quality_score': 100.0, 'random_state': 42, 'training_size': 80}) Tj
+T*
+(- phase6_label_diagnostics:artifacts_diagnostics_phase6_label_diagnostics_report_md ? artifacts/diagnostics/phase6/label_diagnostics_report.md) Tj
+T*
+(- phase6_label_diagnostics:artifacts_diagnostics_phase6_label_diagnostics_summary_json ? artifacts/diagnostics/phase6/label_diagnostics_summary.json) Tj
+T*
+(- phase6_label_diagnostics:artifacts_diagnostics_phase6_near_duplicate_pairs_csv ? artifacts/diagnostics/phase6/near_duplicate_pairs.csv) Tj
+T*
+(- phase6_label_diagnostics:artifacts_diagnostics_phase6_outlier_examples_csv ? artifacts/diagnostics/phase6/outlier_examples.csv) Tj
+T*
+(- phase6_label_diagnostics:artifacts_diagnostics_phase6_suspect_examples_csv ? artifacts/diagnostics/phase6/suspect_examples.csv) Tj
+T*
+(Reproducibility) Tj
+T*
+(All figure/table lineage is encoded below for traceability.) Tj
+T*
+(| Traceability ID | Stage | Script | Artifact Path |) Tj
+T*
+(|---|---|---|---|) Tj
+T*
+(| analyze_phase3:artifacts_analysis_phase3_artifact_index_json | analyze_phase3 | scripts/run_phase3_analyses.py | artifacts/analysis/phase3/artifact_index.json |) Tj
+T*
+(| analyze_phase3:artifacts_analysis_phase3_core_stats_answer_length_by_label_png | analyze_phase3 | scripts/run_phase3_analyses.py | artifacts/analysis/phase3/core_stats/answer_length_by_label.png |) Tj
+T*
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000017396 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+17466
+%%EOF
+
+% Pipeline run id: `phase7-20260211-002445-ae71544`
