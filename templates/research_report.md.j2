@@ -1,0 +1,67 @@
+# EvasionBench Research Report
+
+Generated at: `{{ metadata.generated_at }}`  
+Git SHA: `{{ metadata.git_sha }}`  
+Pipeline run id: `{{ metadata.pipeline_run_id }}`
+
+## Methodology
+
+This report is generated from a deterministic manifest (`{{ report.manifest_version }}`) and includes only script-produced artifacts.
+
+- Manifest generated at: `{{ report.manifest_generated_at }}`
+- Dataset artifacts tracked: {{ report.dataset_entries | length }}
+- Analysis artifacts tracked: {{ report.analyses_entries | length }}
+- Model artifacts tracked: {{ report.model_entries | length }}
+
+## Core Analyses
+
+Phase-3 and phase-4 outputs are referenced directly from the manifest.
+
+### Figures
+{% for entry in report.analysis_figures %}
+- `{{ entry.id }}` — `{{ entry.artifact_path }}` (stage: `{{ entry.stage }}`)
+{% endfor %}
+
+### Tables
+{% for entry in report.analysis_tables %}
+- `{{ entry.id }}` — `{{ entry.artifact_path }}` (stage: `{{ entry.stage }}`)
+{% endfor %}
+
+## Modeling
+
+- Best classical family (macro F1): `{{ report.best_classical_family }}`
+- Classical metrics snapshot: `{{ report.best_classical_metrics }}`
+- Transformer metrics snapshot: `{{ report.transformer_metrics }}`
+
+Model artifacts used:
+{% for entry in report.model_entries %}
+- `{{ entry.id }}` — `{{ entry.artifact_path }}`
+{% endfor %}
+
+## Explainability
+
+Classical and transformer explainability artifacts linked from the manifest:
+
+- XAI summary families: `{{ report.xai_summary.keys() | list }}`
+
+{% for entry in report.explainability_entries %}
+- `{{ entry.id }}` — `{{ entry.artifact_path }}` (stage: `{{ entry.stage }}`)
+{% endfor %}
+
+## Label Quality
+
+- Diagnostics summary: `{{ report.diagnostics_summary }}`
+
+{% for entry in report.diagnostics_entries %}
+- `{{ entry.id }}` — `{{ entry.artifact_path }}`
+{% endfor %}
+
+## Reproducibility
+
+All figure/table lineage is encoded below for traceability.
+
+| Traceability ID | Stage | Script | Artifact Path |
+|---|---|---|---|
+{% for trace_id, trace in report.traceability.items() %}
+| `{{ trace_id }}` | `{{ trace.stage }}` | `{{ trace.script }}` | `{{ trace.artifact_path }}` |
+{% endfor %}
