@@ -201,6 +201,38 @@ def build_default_stages(input_path: str | Path, output_root: str | Path) -> lis
             outputs=(report_root / "provenance_manifest.json",),
             hint="Resolve missing artifact prerequisites reported by manifest builder.",
         ),
+        PipelineStage(
+            key="report_markdown",
+            command=(
+                sys.executable,
+                "scripts/generate_research_report.py",
+                "--manifest",
+                str(report_root / "provenance_manifest.json"),
+                "--output",
+                str(report_root / "report.md"),
+            ),
+            outputs=(report_root / "report.md",),
+            hint="Inspect markdown report generation logs and validate manifest context.",
+        ),
+        PipelineStage(
+            key="report_render",
+            command=(
+                sys.executable,
+                "scripts/render_research_report.py",
+                "--input",
+                str(report_root / "report.md"),
+                "--manifest",
+                str(report_root / "provenance_manifest.json"),
+                "--output-root",
+                str(report_root),
+            ),
+            outputs=(
+                report_root / "report.html",
+                report_root / "report.pdf",
+                report_root / "report_traceability.json",
+            ),
+            hint="Check rendering dependencies and manifest traceability mapping.",
+        ),
     ]
 
 
