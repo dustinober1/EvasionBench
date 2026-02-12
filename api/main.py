@@ -33,12 +33,15 @@ class PredictionResponse(BaseModel):
     prediction: str
     confidence: float
     probabilities: dict[str, float]
+    model_name: Optional[str] = None  # noqa: UP045
     explanation: Optional[list] = None  # noqa: UP045
 
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "model": "boosting"}
+    predictor = get_predictor()
+    model_name = getattr(predictor, "model_type", type(predictor).__name__)
+    return {"status": "ok", "model": model_name}
 
 
 @app.post("/predict", response_model=PredictionResponse)
@@ -50,4 +53,5 @@ async def predict(pair: QAPair):
         prediction=result["prediction"],
         confidence=result["confidence"],
         probabilities=result["probabilities"],
+        model_name=result.get("model_name"),
     )

@@ -10,7 +10,7 @@ sys.path.insert(0, str(ROOT))
 from src.evaluation import validate_evaluation_contract
 
 
-def test_transformer_baseline_contract(output_root: Path) -> None:
+def validate_transformer_baseline_contract(output_root: Path) -> bool:
     """Validate transformer baseline produces required artifacts."""
     print(f"Testing transformer contract with output_root: {output_root}")
 
@@ -91,5 +91,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     output_root = Path(args.output_root)
-    success = test_transformer_baseline_contract(output_root)
+    success = validate_transformer_baseline_contract(output_root)
     sys.exit(0 if success else 1)

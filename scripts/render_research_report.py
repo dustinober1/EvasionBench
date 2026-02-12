@@ -213,10 +213,11 @@ def _render_pdf(html_document: str, markdown_text: str, output_path: Path) -> li
 
         HTML(string=html_document, base_url=str(ROOT)).write_pdf(str(output_path))
         return warnings
-    except ImportError:
+    except (ImportError, OSError) as exc:
         warnings.append(
-            "Dependency 'weasyprint' not installed. Using minimal PDF fallback; run `pip install weasyprint`."
+            "WeasyPrint unavailable in this environment; using minimal PDF fallback."
         )
+        warnings.append(f"WeasyPrint detail: {exc}")
         _write_minimal_pdf(_strip_markdown(markdown_text), output_path)
         return warnings
 

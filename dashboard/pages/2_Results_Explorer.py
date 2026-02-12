@@ -4,6 +4,7 @@ import json
 import sys
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import streamlit as st
 
@@ -105,6 +106,7 @@ with tab2:
 
         # Load SHAP summary JSON
         shap_summary_json = model_xai_path / "shap_summary.json"
+        feature_names: list[str] = []
         if shap_summary_json.exists():
             with open(shap_summary_json) as f:
                 shap_data = json.load(f)
@@ -118,6 +120,21 @@ with tab2:
                     "mean_abs_shap", ascending=False
                 ).head(20)
                 st.bar_chart(df_importance["mean_abs_shap"])
+            elif "importance_ranking" in shap_data and "mean_abs_shap" in shap_data:
+                ranking = shap_data.get("importance_ranking", [])
+                values = shap_data.get("mean_abs_shap", [])
+                if isinstance(ranking, list) and isinstance(values, list):
+                    top_n = min(len(ranking), len(values), 20)
+                    df_importance = pd.DataFrame(
+                        {
+                            "feature": ranking[:top_n],
+                            "mean_abs_shap": values[:top_n],
+                        }
+                    ).set_index("feature")
+                    st.bar_chart(df_importance["mean_abs_shap"])
+
+            if isinstance(shap_data.get("feature_names"), list):
+                feature_names = [str(name) for name in shap_data["feature_names"]]
 
         # Load sample explanations
         shap_samples = model_xai_path / "shap_samples.json"
@@ -127,15 +144,63 @@ with tab2:
 
             st.subheader("Sample Explanations")
             st.markdown("Top features influencing predictions for sample instances.")
+            normalized_samples: list[dict] = []
 
-            for i, sample in enumerate(samples[:3], 1):
+            if isinstance(samples, list):
+                normalized_samples = samples
+            elif isinstance(samples, dict):
+                indices = samples.get("indices", [])
+                shap_values = samples.get("shap_values", [])
+                true_labels = samples.get("true_labels", [])
+                total = min(len(indices), len(shap_values), len(true_labels))
+
+                for idx in range(total):
+                    values = np.array(shap_values[idx], dtype=float)
+                    if values.size == 0:
+                        top_features = []
+                    else:
+                        # Some artifacts store per-class SHAP arrays (2D); reduce to per-feature magnitude.
+                        if values.ndim > 1:
+                            values_1d = np.mean(np.abs(values), axis=0)
+                        else:
+                            values_1d = np.abs(values)
+
+                        top_k_idx = np.argsort(values_1d)[-10:][::-1]
+                        top_features = []
+                        for feat_idx in top_k_idx:
+                            feat_idx = int(feat_idx)
+                            feat_name = (
+                                feature_names[feat_idx]
+                                if feat_idx < len(feature_names)
+                                else f"feature_{feat_idx}"
+                            )
+                            top_features.append(
+                                {
+                                    "feature": feat_name,
+                                    "shap_value": float(values_1d[feat_idx]),
+                                }
+                            )
+
+                    normalized_samples.append(
+                        {
+                            "true_label": true_labels[idx],
+                            "predicted_label": "unknown",
+                            "top_features": top_features,
+                            "sample_index": indices[idx],
+                        }
+                    )
+
+            for i, sample in enumerate(normalized_samples[:3], 1):
+                sample_idx = sample.get("sample_index", "n/a")
                 with st.expander(
-                    f"Sample {i}: {sample.get('true_label', 'unknown')} → {sample.get('predicted_label', 'unknown')}"
+                    f"Sample {i} (idx={sample_idx}): {sample.get('true_label', 'unknown')} → {sample.get('predicted_label', 'unknown')}"
                 ):
                     top_features = sample.get("top_features", [])
                     if top_features:
                         df_sample = pd.DataFrame(top_features)
                         st.dataframe(df_sample, use_container_width=True)
+                    else:
+                        st.info("No feature-level explanation available for this sample.")
     else:
         st.warning("No explainability artifacts found.")
 

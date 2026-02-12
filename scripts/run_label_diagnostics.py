@@ -349,10 +349,17 @@ def main() -> int:
     # Get training data info (issue_summary only contains training data)
     train_size = len(issue_summary)
 
+    source_idx = (
+        issue_summary["source_index"].astype(int)
+        if "source_index" in issue_summary.columns
+        else issue_summary.index
+    )
+
     # Extract suspect examples (label issues)
     if "is_label_issue" in issue_summary.columns:
         suspect_mask = issue_summary["is_label_issue"]
-        suspect_examples = frame.loc[issue_summary[suspect_mask].index].copy()
+        suspect_indices = source_idx[suspect_mask]
+        suspect_examples = frame.loc[suspect_indices].copy()
         suspect_examples["label_score"] = issue_summary.loc[suspect_mask, "label_score"]
         suspect_examples["is_label_issue"] = True
         suspect_examples["is_outlier_issue"] = (
@@ -372,7 +379,8 @@ def main() -> int:
     # Extract outlier examples
     if "is_outlier_issue" in issue_summary.columns:
         outlier_mask = issue_summary["is_outlier_issue"]
-        outlier_examples = frame.loc[issue_summary[outlier_mask].index].copy()
+        outlier_indices = source_idx[outlier_mask]
+        outlier_examples = frame.loc[outlier_indices].copy()
         outlier_examples["outlier_score"] = issue_summary.loc[
             outlier_mask, "outlier_score"
         ]
@@ -388,7 +396,8 @@ def main() -> int:
         duplicate_mask = issue_summary["is_near_duplicate_issue"]
         if duplicate_mask.sum() > 0:
             # Get examples with near-duplicate issues
-            duplicate_examples = frame.loc[issue_summary[duplicate_mask].index].copy()
+            duplicate_indices = source_idx[duplicate_mask]
+            duplicate_examples = frame.loc[duplicate_indices].copy()
             # Pair up similar examples (simplified approach)
             near_duplicate_pairs = duplicate_examples.head(
                 100

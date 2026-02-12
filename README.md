@@ -10,6 +10,15 @@
 
 ---
 
+## 3-Minute Reviewer Path
+
+If you're reviewing this project for an ML Engineer role:
+
+1. Run `make run-dashboard` and test a Q&A pair in the live classifier
+2. Open the Results Explorer page to inspect model comparison + diagnostics
+3. Read [Case Study](docs/case_study.md) for modeling decisions and error analysis
+4. Read [Hiring Manager Brief](docs/hiring_manager_brief.md) for impact summary
+
 ## What is EvasionBench?
 
 Corporate executives sometimes evade analyst questions during earnings calls — providing indirect, vague, or off-topic responses instead of direct answers. EvasionBench is an end-to-end NLP pipeline that classifies Q&A pairs from earnings-call transcripts into three categories:
@@ -126,6 +135,8 @@ EvasionBench/
 
 - [Architecture & Design](docs/architecture.md) — Pipeline architecture, technology choices, design decisions
 - [Research Summary](docs/research_summary.md) — Research question, methodology, findings, limitations
+- [Case Study](docs/case_study.md) — Model selection rationale, failure modes, and lessons learned
+- [Hiring Manager Brief](docs/hiring_manager_brief.md) — Interview-ready summary of impact and engineering scope
 - [Script-First Workflow](docs/script_first_workflow.md) — Development workflow and migration policy
 - [DVC Guide](docs/dvc_guide.md) — Pipeline reproduction and data versioning
 - [Explainability Guide](docs/explainability_guide.md) — SHAP/LIME analysis walkthrough
