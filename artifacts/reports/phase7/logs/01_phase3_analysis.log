@@ -1,0 +1,106 @@
+$ /usr/bin/python3 scripts/run_phase3_analyses.py --input /home/dusitnober/Projects/EvasionBench/data/processed/evasionbench_prepared.parquet --output-root artifacts/analysis/phase3 --families all
+
+Generated 12 core-stats artifacts
+/home/dusitnober/.local/lib/python3.10/site-packages/joblib/_multiprocessing_helpers.py:44: UserWarning: [Errno 13] Permission denied.  joblib will operate in serial mode
+  warnings.warn("%s.  joblib will operate in serial mode" % (e,))
+Generated 12 lexical artifacts
+/home/dusitnober/.local/lib/python3.10/site-packages/torch/cuda/__init__.py:1007: UserWarning: Can't initialize NVML
+  raw_cnt = _raw_device_count_nvml()
+/home/dusitnober/.local/lib/python3.10/site-packages/torch/cuda/__init__.py:1059: UserWarning: CUDA initialization: Unexpected error from cudaGetDeviceCount(). Did you run some cuda functions before calling NumCudaDevices() that might have already set an error? Error 304: OS call failed or operation not supported on this OS (Triggered internally at /pytorch/c10/cuda/CUDAFunctions.cpp:119.)
+  r = torch._C._cuda_getDeviceCount() if nvml_count < 0 else nvml_count
+/home/dusitnober/.local/lib/python3.10/site-packages/joblib/_multiprocessing_helpers.py:44: UserWarning: [Errno 13] Permission denied.  joblib will operate in serial mode
+  warnings.warn("%s.  joblib will operate in serial mode" % (e,))
+[nltk_data] Error loading cmudict: <urlopen error [Errno -2] Name or
+[nltk_data]     service not known>
+Traceback (most recent call last):
+  File "/home/dusitnober/.local/lib/python3.10/site-packages/nltk/corpus/util.py", line 84, in __load
+    root = nltk.data.find(f"{self.subdir}/{zip_name}")
+  File "/home/dusitnober/.local/lib/python3.10/site-packages/nltk/data.py", line 579, in find
+    raise LookupError(resource_not_found)
+LookupError: 
+**********************************************************************
+  Resource [93mcmudict[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('cmudict')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93mcorpora/cmudict.zip/cmudict/[0m
+
+  Searched in:
+    - '/home/dusitnober/nltk_data'
+    - '/usr/nltk_data'
+    - '/usr/share/nltk_data'
+    - '/usr/lib/nltk_data'
+    - '/usr/share/nltk_data'
+    - '/usr/local/share/nltk_data'
+    - '/usr/lib/nltk_data'
+    - '/usr/local/lib/nltk_data'
+**********************************************************************
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/dusitnober/Projects/EvasionBench/scripts/analyze_linguistic_quality.py", line 45, in <module>
+    raise SystemExit(main())
+  File "/home/dusitnober/Projects/EvasionBench/scripts/analyze_linguistic_quality.py", line 34, in main
+    generated = run_linguistic_quality(
+  File "/home/dusitnober/Projects/EvasionBench/src/analysis/linguistic_quality.py", line 159, in run_linguistic_quality
+    raw, agg = _readability(frame)
+  File "/home/dusitnober/Projects/EvasionBench/src/analysis/linguistic_quality.py", line 60, in _readability
+    "flesch_reading_ease": float(textstat.flesch_reading_ease(text)),
+  File "/home/dusitnober/.local/lib/python3.10/site-packages/textstat/textstat.py", line 560, in flesch_reading_ease
+    return self._legacy_round(metrics.flesch_reading_ease(text, self.__lang))
+  File "/home/dusitnober/.local/lib/python3.10/site-packages/textstat/backend/metrics/_flesch_reading_ease.py", line 28, in flesch_reading_ease
+    syllables = syllables_per_word(text, lang)
+  File "/home/dusitnober/.local/lib/python3.10/site-packages/textstat/backend/metrics/_syllables_per_word.py", line 26, in syllables_per_word
+    return count_syllables(text, lang) / count_words(text)
+  File "/home/dusitnober/.local/lib/python3.10/site-packages/textstat/backend/counts/_count_syllables.py", line 25, in count_syllables
+    cmu_dict = get_cmudict(lang)
+  File "/home/dusitnober/.local/lib/python3.10/site-packages/textstat/backend/utils/_get_cmudict.py", line 26, in get_cmudict
+    return nltk.corpus.cmudict.dict()
+  File "/home/dusitnober/.local/lib/python3.10/site-packages/nltk/corpus/util.py", line 120, in __getattr__
+    self.__load()
+  File "/home/dusitnober/.local/lib/python3.10/site-packages/nltk/corpus/util.py", line 86, in __load
+    raise e
+  File "/home/dusitnober/.local/lib/python3.10/site-packages/nltk/corpus/util.py", line 81, in __load
+    root = nltk.data.find(f"{self.subdir}/{self.__name}")
+  File "/home/dusitnober/.local/lib/python3.10/site-packages/nltk/data.py", line 579, in find
+    raise LookupError(resource_not_found)
+LookupError: 
+**********************************************************************
+  Resource [93mcmudict[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('cmudict')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93mcorpora/cmudict[0m
+
+  Searched in:
+    - '/home/dusitnober/nltk_data'
+    - '/usr/nltk_data'
+    - '/usr/share/nltk_data'
+    - '/usr/lib/nltk_data'
+    - '/usr/share/nltk_data'
+    - '/usr/local/share/nltk_data'
+    - '/usr/lib/nltk_data'
+    - '/usr/local/lib/nltk_data'
+**********************************************************************
+
+[phase3] running core_stats: /usr/bin/python3 scripts/analyze_core_stats.py --input /home/dusitnober/Projects/EvasionBench/data/processed/evasionbench_prepared.parquet --output-root artifacts/analysis/phase3
+[phase3] running lexical: /usr/bin/python3 scripts/analyze_lexical.py --input /home/dusitnober/Projects/EvasionBench/data/processed/evasionbench_prepared.parquet --output-root artifacts/analysis/phase3
+[phase3] running linguistic_quality: /usr/bin/python3 scripts/analyze_linguistic_quality.py --input /home/dusitnober/Projects/EvasionBench/data/processed/evasionbench_prepared.parquet --output-root artifacts/analysis/phase3
+Traceback (most recent call last):
+  File "/home/dusitnober/Projects/EvasionBench/scripts/run_phase3_analyses.py", line 80, in <module>
+    raise SystemExit(run())
+  File "/home/dusitnober/Projects/EvasionBench/scripts/run_phase3_analyses.py", line 73, in run
+    subprocess.run(command, check=True)
+  File "/usr/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/usr/bin/python3', 'scripts/analyze_linguistic_quality.py', '--input', '/home/dusitnober/Projects/EvasionBench/data/processed/evasionbench_prepared.parquet', '--output-root', 'artifacts/analysis/phase3']' returned non-zero exit status 1.

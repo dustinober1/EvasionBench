@@ -1,0 +1,31 @@
+{
+  "completed_at": "2026-02-11T00:32:49Z",
+  "failure": {
+    "exit_code": 1,
+    "hint": "Run missing NLP prerequisites and retry phase3 analysis.",
+    "log": "artifacts/reports/phase7/logs/01_phase3_analysis.log",
+    "outputs": [
+      "artifacts/analysis/phase3/artifact_index.json"
+    ],
+    "stage": "phase3_analysis",
+    "status": "failed"
+  },
+  "from_stage": null,
+  "git_sha": "678faa5",
+  "pipeline": "phase7_research_reporting",
+  "skip_existing": false,
+  "stages": [
+    {
+      "exit_code": 1,
+      "hint": "Run missing NLP prerequisites and retry phase3 analysis.",
+      "log": "artifacts/reports/phase7/logs/01_phase3_analysis.log",
+      "outputs": [
+        "artifacts/analysis/phase3/artifact_index.json"
+      ],
+      "stage": "phase3_analysis",
+      "status": "failed"
+    }
+  ],
+  "started_at": "2026-02-11T00:32:24Z",
+  "status": "failed"
+}

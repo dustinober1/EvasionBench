@@ -1,0 +1,7 @@
+$ /usr/bin/python3 scripts/render_research_report.py --input /home/dusitnober/Projects/EvasionBench/artifacts/reports/phase7/report.md --manifest /home/dusitnober/Projects/EvasionBench/artifacts/reports/phase7/provenance_manifest.json --output-root /home/dusitnober/Projects/EvasionBench/artifacts/reports/phase7
+
+warning: Dependency 'markdown' not installed. Falling back to minimal renderer; run `pip install markdown`.
+warning: Dependency 'weasyprint' not installed. Using minimal PDF fallback; run `pip install weasyprint`.
+wrote html: artifacts/reports/phase7/report.html
+wrote pdf: artifacts/reports/phase7/report.pdf
+wrote traceability: artifacts/reports/phase7/report_traceability.json
