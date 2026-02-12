@@ -1,8 +1,9 @@
+import sys
+from pathlib import Path
+from typing import Optional  # noqa: UP035
+
 from fastapi import FastAPI
 from pydantic import BaseModel
-from typing import Optional, Dict
-from pathlib import Path
-import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -31,8 +32,8 @@ class QAPair(BaseModel):
 class PredictionResponse(BaseModel):
     prediction: str
     confidence: float
-    probabilities: Dict[str, float]
-    explanation: Optional[list] = None
+    probabilities: dict[str, float]
+    explanation: Optional[list] = None  # noqa: UP045
 
 
 @app.get("/health")

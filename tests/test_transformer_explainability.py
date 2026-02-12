@@ -8,7 +8,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
-import torch
 from transformers import AutoTokenizer
 
 from src.explainability import explain_transformer_batch, explain_transformer_instance
@@ -102,7 +101,7 @@ def test_captum_batch_output(tmp_path: Path) -> None:
     )
 
     output_dir = tmp_path / "xai_output"
-    result = explain_transformer_batch(
+    _result = explain_transformer_batch(  # noqa: F841
         model=model,
         tokenizer=tokenizer,
         data=test_data,

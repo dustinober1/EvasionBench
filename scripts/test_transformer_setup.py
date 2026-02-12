@@ -12,7 +12,7 @@ print("Testing imports...")
 try:
     import torch
     import transformers
-    from transformers import AutoTokenizer, AutoModelForSequenceClassification
+    from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
     print(f"✓ torch {torch.__version__}")
     print(f"✓ transformers {transformers.__version__}")

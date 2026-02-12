@@ -4,8 +4,8 @@ from typing import Any
 
 import pandas as pd
 import torch
-import transformers
 from cleanlab import Datalab
+from datasets import Dataset
 from sklearn.decomposition import TruncatedSVD
 from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -18,7 +18,6 @@ from transformers import (
     Trainer,
     TrainingArguments,
 )
-from datasets import Dataset
 from transformers.trainer_utils import set_seed
 
 

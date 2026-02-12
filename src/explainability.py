@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 import shap
 import torch
-from sklearn.ensemble import RandomForestClassifier, HistGradientBoostingClassifier
+from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 
@@ -205,9 +205,9 @@ def explain_classical_model(
 
     # Create SHAP Features object for plotting
     if hasattr(X_train, "toarray"):
-        X_plot = X_train.toarray()
+        _X_plot = X_train.toarray()  # noqa: F841
     else:
-        X_plot = X_train
+        _X_plot = X_train  # noqa: F841
 
     # Create a simplified summary plot using matplotlib directly
     # shap.summary_plot can be problematic in headless environments
@@ -369,11 +369,11 @@ def explain_transformer_instance(
     """
     try:
         from captum.attr import LayerIntegratedGradients
-    except ImportError:
+    except ImportError as err:
         raise ImportError(
             "Captum is required for transformer explainability. "
             "Install with: pip install captum"
-        )
+        ) from err
 
     # Ensure model is in eval mode
     model.eval()
@@ -514,7 +514,7 @@ def explain_transformer_batch(
     model = model.to(device)
 
     texts = data[text_col].tolist()
-    true_labels = data[label_col].tolist()
+    _true_labels = data[label_col].tolist()  # noqa: F841
 
     # Predict on all samples to identify correct/incorrect predictions
     predicted_labels = []
@@ -744,11 +744,11 @@ def _generate_transformer_html(explanations: list[dict], output_dir: Path) -> No
         html_parts.extend(
             [
                 "    <div class='sample'>",
-                f"      <div class='sample-header'>",
+                "      <div class='sample-header'>",
                 f"        Sample {exp['sample_id']} | ",
                 f"        True: <span class='{'label-correct' if is_correct else 'label-incorrect'}'>{true}</span> | ",
                 f"        Predicted: {predicted}",
-                f"      </div>",
+                "      </div>",
                 f"      <div class='tokens'>{''.join(tokens_html)}</div>",
                 f"      <div class='attribution-info'>Attribution sum: {exp['attribution_sum']:.4f}</div>",
                 "    </div>",

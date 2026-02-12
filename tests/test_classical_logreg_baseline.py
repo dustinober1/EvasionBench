@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 
 import pandas as pd
-import pytest
 
 from src.evaluation import compute_classification_metrics, validate_evaluation_contract
 from src.models import train_tfidf_logreg

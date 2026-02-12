@@ -7,7 +7,7 @@ import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 import pandas as pd
 
@@ -32,7 +32,7 @@ def generate_manifest(
     split: str,
     revision: str,
     generated_at_utc: str | None = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     frame = pd.read_parquet(data_path)
     manifest = {
         "dataset": {

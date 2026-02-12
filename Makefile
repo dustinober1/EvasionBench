@@ -1,4 +1,4 @@
-.PHONY: env install test lint format verify-structure ci-check run-api run-dashboard data-fetch data-validate data-prepare run-experiment analysis-phase3 analysis-phase4 model-phase5 label-diagnostics report-phase7
+.PHONY: env install test lint format verify-structure ci-check run-api run-dashboard data-fetch data-validate data-prepare run-experiment analysis-phase3 analysis-phase4 model-phase5 label-diagnostics report-phase7 docker-build docker-up docker-down
 
 env:
 	python -m venv .venv
@@ -8,7 +8,7 @@ install:
 	pip install -r requirements.txt
 
 test:
-	pytest -q
+	pytest -q --cov=src --cov-report=term-missing --cov-report=html:artifacts/coverage
 
 lint:
 	black --check .
@@ -66,3 +66,12 @@ label-diagnostics:
 
 report-phase7:
 	python3 scripts/run_research_pipeline.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/reports/phase7 --skip-existing
+
+docker-build:
+	docker compose build
+
+docker-up:
+	docker compose up -d
+
+docker-down:
+	docker compose down

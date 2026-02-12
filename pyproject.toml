@@ -2,7 +2,20 @@
 name = "evasionbench"
 version = "0.1.0"
 description = "EvasionBench data science portfolio"
-authors = ["Your Name <you@example.com>"]
+authors = ["Dustin Ober"]
 
 [tool.black]
 line-length = 88
+
+[tool.ruff]
+line-length = 88
+exclude = ["notebooks/"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E402", "E501", "B905"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+ignore_missing_imports = true

@@ -138,7 +138,7 @@ def test_diagnostics_issue_types(sample_dataframe):
 
     # Check that expected issue type columns exist
     # Note: Not all issue types may be detected in a small dataset
-    expected_issue_types = ["label", "outlier", "near_duplicate"]
+    _expected_issue_types = ["label", "outlier", "near_duplicate"]  # noqa: F841
 
     # Check that at least some issue types were checked
     found_issue_types = [col for col in issue_summary.columns if "issue" in col]

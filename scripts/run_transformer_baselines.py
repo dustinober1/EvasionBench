@@ -181,7 +181,6 @@ def main() -> int:
 
         # Log model explicitly with MLflow pytorch flavor (more stable than transformers flavor)
         import tempfile
-        import shutil
 
         # Create a temporary directory for model export
         with tempfile.TemporaryDirectory() as tmp_dir:

@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable, Mapping
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any
 
 MANIFEST_VERSION = "phase7-report-manifest-v1"
 REQUIRED_MANIFEST_SECTIONS = (

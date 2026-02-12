@@ -1,10 +1,11 @@
 """Results Explorer - Visualize EvasionBench analysis artifacts."""
 
-import streamlit as st
 import json
-import pandas as pd
-from pathlib import Path
 import sys
+from pathlib import Path
+
+import pandas as pd
+import streamlit as st
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:

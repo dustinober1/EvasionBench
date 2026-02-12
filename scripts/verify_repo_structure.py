@@ -7,7 +7,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-
 REQUIRED_DIRECTORIES = ["scripts", "src", "docs", "tests", ".github/workflows"]
 REQUIRED_FILES = ["Makefile", ".github/workflows/ci.yml", "scripts/ci_check.sh"]
 FORBIDDEN_PATHS = ["__pycache__", ".ipynb_checkpoints", ".DS_Store"]

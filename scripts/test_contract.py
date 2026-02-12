@@ -60,7 +60,7 @@ def test_transformer_baseline_contract(output_root: Path) -> None:
     if metadata["model_family"] != "transformer":
         print(f"✗ Expected model_family=transformer, got {metadata['model_family']}")
         return False
-    print(f"✓ Model family is transformer")
+    print("✓ Model family is transformer")
 
     if "model_name" not in metadata:
         print("✗ Model name not in metadata")
@@ -70,7 +70,7 @@ def test_transformer_baseline_contract(output_root: Path) -> None:
     if "model_config" not in metadata:
         print("✗ Model config not in metadata")
         return False
-    print(f"✓ Model config present")
+    print("✓ Model config present")
 
     if "device" not in metadata["model_config"]:
         print("✗ Device not in model config")

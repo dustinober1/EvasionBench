@@ -19,7 +19,6 @@ from src.reporting import (
     utc_now_iso,
 )
 
-
 BASE_CSS = """
 body {
   font-family: "Georgia", "Times New Roman", serif;

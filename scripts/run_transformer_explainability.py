@@ -132,7 +132,7 @@ def main() -> int:
     # Create text column from question + answer if it doesn't exist
     if args.text_col not in df.columns:
         if "question" in df.columns and "answer" in df.columns:
-            print(f"Creating 'text' column from question + answer...")
+            print("Creating 'text' column from question + answer...")
             df["text"] = (
                 df["question"].fillna("").astype(str)
                 + " [SEP] "
@@ -226,8 +226,8 @@ def main() -> int:
 
     print(f"✓ Explainability artifacts generated in {output_root}")
     print(f"  - transformer_xai.json: {summary['n_samples']} sample explanations")
-    print(f"  - transformer_xai_summary.json: aggregate statistics")
-    print(f"  - transformer_xai.html: interactive visualization")
+    print("  - transformer_xai_summary.json: aggregate statistics")
+    print("  - transformer_xai.html: interactive visualization")
     print(f"  - Avg attribution sum: {summary['avg_attribution_sum']:.4f}")
 
     # Output summary JSON

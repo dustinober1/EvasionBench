@@ -13,7 +13,6 @@ if str(ROOT) not in sys.path:
 
 from src.analysis.artifacts import PHASE3_FAMILIES, ensure_phase3_layout
 
-
 SCRIPT_BY_FAMILY = {
     "core_stats": Path("scripts/analyze_core_stats.py"),
     "lexical": Path("scripts/analyze_lexical.py"),

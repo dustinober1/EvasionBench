@@ -3,9 +3,9 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Iterable
-
+from typing import Any
 
 PHASE3_FAMILIES = ("core_stats", "lexical", "linguistic_quality")
 PHASE4_FAMILIES = ("semantic_similarity", "topic_modeling", "question_behavior")

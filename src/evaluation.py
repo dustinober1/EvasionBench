@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable, Sequence
 from pathlib import Path
-from typing import Any, Iterable, Sequence
+from typing import Any
 
 from sklearn.metrics import (
     accuracy_score,
@@ -12,7 +13,6 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
 )
-
 
 REQUIRED_EVAL_FILES = (
     "metrics.json",

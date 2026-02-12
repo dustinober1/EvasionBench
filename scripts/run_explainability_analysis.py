@@ -9,7 +9,6 @@ import sys
 from pathlib import Path
 
 import mlflow
-import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -128,7 +127,7 @@ def main() -> int:
             continue
 
         # Load metadata to get info
-        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        _metadata = json.loads(metadata_path.read_text(encoding="utf-8"))  # noqa: F841
 
         # Create output directory for this family
         family_output_dir = output_root / _family_to_dir_name(family)

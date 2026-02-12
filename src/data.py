@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import hashlib
-import os
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 from datasets import load_dataset
 
@@ -28,8 +27,8 @@ def download_evasionbench(
     dataset_id: str = DEFAULT_DATASET_ID,
     split: str = DEFAULT_SPLIT,
     revision: str = DEFAULT_REVISION,
-    cache_dir: Optional[str] = None,
-) -> Dict[str, Any]:
+    cache_dir: str | None = None,
+) -> dict[str, Any]:
     """Download EvasionBench split deterministically and persist parquet output."""
     output = Path(output_path)
     output.parent.mkdir(parents=True, exist_ok=True)
