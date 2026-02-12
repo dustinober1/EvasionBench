@@ -170,6 +170,15 @@ stages:
     outs:
       - artifacts/models/phase5/run_summary.json
 
+  phase8_optimize:
+    cmd: python scripts/run_model_optimization.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase8 --families all --cv-folds 5 --selection-metric f1_macro --accuracy-floor 0.6431560071727436
+    deps:
+      - scripts/run_model_optimization.py
+      - src/evaluation.py
+      - data/processed/evasionbench_prepared.parquet
+    outs:
+      - artifacts/models/phase8/selected_model.json
+
   phase6_transformer:
     cmd: python scripts/run_transformer_baselines.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase6/transformer --max-epochs 3 --learning-rate 2e-5
     deps:

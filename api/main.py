@@ -20,7 +20,7 @@ _predictor = None
 def get_predictor():
     global _predictor
     if _predictor is None:
-        _predictor = load_model("boosting")
+        _predictor = load_model()
     return _predictor
 
 
@@ -40,7 +40,11 @@ class PredictionResponse(BaseModel):
 @app.get("/health")
 async def health():
     predictor = get_predictor()
-    model_name = getattr(predictor, "model_type", type(predictor).__name__)
+    model_name = getattr(
+        predictor,
+        "model_name",
+        getattr(predictor, "model_type", type(predictor).__name__),
+    )
     return {"status": "ok", "model": model_name}
 
 

@@ -64,6 +64,35 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--tracking-uri", default="file:./mlruns")
     parser.add_argument("--experiment-name", default="evasionbench-classical-baselines")
     parser.add_argument(
+        "--cv-folds",
+        type=int,
+        default=5,
+        help="CV folds for optional hyperparameter search mode",
+    )
+    parser.add_argument(
+        "--enable-hparam-search",
+        action="store_true",
+        help="Run phase-8 optimization workflow instead of fixed phase-5 baselines",
+    )
+    parser.add_argument(
+        "--selection-metric",
+        choices=["f1_macro", "accuracy", "precision_macro", "recall_macro"],
+        default="f1_macro",
+        help="Primary metric for optional hyperparameter selection",
+    )
+    parser.add_argument(
+        "--accuracy-floor",
+        type=float,
+        default=0.6431560071727436,
+        help="Minimum holdout accuracy required for winner eligibility in search mode",
+    )
+    parser.add_argument(
+        "--holdout-size",
+        type=float,
+        default=0.2,
+        help="Holdout size for optional hyperparameter search mode",
+    )
+    parser.add_argument(
         "--compare",
         action="store_true",
         help="Run model comparison after families finish",
@@ -297,6 +326,40 @@ def main() -> int:
     args = parse_args()
     output_root = Path(args.output_root)
     output_root.mkdir(parents=True, exist_ok=True)
+
+    if args.enable_hparam_search:
+        subprocess.run(
+            [
+                sys.executable,
+                "scripts/run_model_optimization.py",
+                "--input",
+                args.input,
+                "--output-root",
+                str(output_root),
+                "--target-col",
+                args.target_col,
+                "--random-state",
+                str(args.random_state),
+                "--holdout-size",
+                str(args.holdout_size),
+                "--cv-folds",
+                str(args.cv_folds),
+                "--selection-metric",
+                args.selection_metric,
+                "--accuracy-floor",
+                str(args.accuracy_floor),
+                "--families",
+                args.families,
+                "--tracking-uri",
+                args.tracking_uri,
+                "--experiment-name",
+                args.experiment_name.replace(
+                    "classical-baselines", "model-optimization"
+                ),
+            ],
+            check=True,
+        )
+        return 0
 
     frame = pd.read_parquet(args.input)
 

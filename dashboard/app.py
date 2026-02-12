@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.inference import load_model
+from src.inference import load_model, load_selected_model_summary
 
 st.set_page_config(page_title="EvasionBench Demo", page_icon="🔍")
 
@@ -15,10 +15,16 @@ st.set_page_config(page_title="EvasionBench Demo", page_icon="🔍")
 # Load model at startup (cached)
 @st.cache_resource
 def get_predictor():
-    return load_model("boosting")
+    return load_model()
+
+
+@st.cache_data
+def get_selected_summary():
+    return load_selected_model_summary()
 
 
 predictor = get_predictor()
+selected_summary = get_selected_summary()
 
 st.title("EvasionBench — Evasion Detector Demo")
 
@@ -65,4 +71,13 @@ if st.button("Analyze", type="primary"):
             st.progress(prob, text=f"{label}: {prob:.2%}")
 
 st.markdown("---")
-st.caption("Powered by tree boosting model (F1: 0.45) | EvasionBench Research Project")
+if selected_summary and isinstance(selected_summary.get("metrics"), dict):
+    model_name = selected_summary.get("best_model_family", "auto")
+    metrics = selected_summary["metrics"]
+    st.caption(
+        "Powered by selected model "
+        f"({model_name}, F1: {metrics.get('f1_macro', 0.0):.3f}, "
+        f"Accuracy: {metrics.get('accuracy', 0.0):.3f}) | EvasionBench Research Project"
+    )
+else:
+    st.caption("Powered by auto-selected model | EvasionBench Research Project")

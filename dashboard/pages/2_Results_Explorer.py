@@ -200,7 +200,9 @@ with tab2:
                         df_sample = pd.DataFrame(top_features)
                         st.dataframe(df_sample, use_container_width=True)
                     else:
-                        st.info("No feature-level explanation available for this sample.")
+                        st.info(
+                            "No feature-level explanation available for this sample."
+                        )
     else:
         st.warning("No explainability artifacts found.")
 

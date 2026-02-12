@@ -130,6 +130,7 @@ EvasionBench/
 | `make run-dashboard` | Launch Streamlit dashboard |
 | `make run-api` | Launch FastAPI server |
 | `make docker-up` | Start all services via Docker Compose |
+| `make optimize-model` | Run phase-8 CV + holdout optimization and select serving winner |
 
 ## Documentation
 
@@ -140,6 +141,7 @@ EvasionBench/
 - [Script-First Workflow](docs/script_first_workflow.md) — Development workflow and migration policy
 - [DVC Guide](docs/dvc_guide.md) — Pipeline reproduction and data versioning
 - [Explainability Guide](docs/explainability_guide.md) — SHAP/LIME analysis walkthrough
+- [Model Optimization Guide](docs/model_optimization_guide.md) — Phase-8 tuning, selection, and serving defaults
 
 ## Dataset
 

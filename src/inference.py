@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+import json
+import os
 import pickle
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
+
+DEFAULT_MODEL_FALLBACK = "boosting"
 
 
 def _patch_numpy_pickle_compat() -> None:
@@ -24,40 +28,45 @@ def _patch_numpy_pickle_compat() -> None:
 class EvasionPredictor:
     """Load and run inference with trained EvasionBench models."""
 
-    def __init__(self, model_path: str | Path, model_type: str = "boosting"):
+    def __init__(
+        self,
+        model_path: str | Path,
+        model_type: str = "boosting",
+        model_name: str | None = None,
+    ):
         """
         Initialize predictor with a trained model.
 
         Args:
             model_path: Path to model pickle file
-            model_type: Model type - "logreg" or "boosting"/"tree" (has bundle)
+            model_type: "pipeline" for direct text models, otherwise bundle-based
+            model_name: Logical model family name
         """
         self.model_path = Path(model_path)
         self.model_type = model_type
+        self.model_name = model_name or model_type
 
         if not self.model_path.exists():
             raise FileNotFoundError(f"Model file not found: {self.model_path}")
 
         _patch_numpy_pickle_compat()
         with open(self.model_path, "rb") as f:
-            if model_type == "logreg":
-                # Logreg is a sklearn Pipeline (TfidfVectorizer + LogisticRegression)
+            if model_type == "pipeline":
                 self.model = pickle.load(f)
                 self.vectorizer = None
                 self.svd = None
             else:
-                # Tree/boosting models have a bundle
                 bundle = pickle.load(f)
                 self.model = bundle["model"]
                 self.vectorizer = bundle["vectorizer"]
-                self.svd = bundle.get("svd")  # Only for boosting
+                self.svd = bundle.get("svd")
 
-        # Get class labels from model
         if hasattr(self.model, "classes_"):
             self.classes_ = self.model.classes_
-        else:
-            # For pipeline models
+        elif hasattr(self.model, "steps"):
             self.classes_ = self.model.steps[-1][1].classes_
+        else:
+            raise ValueError("Loaded model does not expose class labels")
 
     def _build_features(self, questions: list[str], answers: list[str]) -> pd.Series:
         """Build features from question-answer pairs using [SEP] token."""
@@ -66,6 +75,36 @@ class EvasionPredictor:
         return pd.Series(
             [f"{q} [SEP] {a}" for q, a in zip(questions_clean, answers_clean)]
         )
+
+    def _predict_with_probabilities(
+        self, features: pd.Series
+    ) -> tuple[np.ndarray, np.ndarray]:
+        if self.vectorizer is None:
+            predictions = self.model.predict(features)
+            if hasattr(self.model, "predict_proba"):
+                probas = self.model.predict_proba(features)
+            else:
+                probas = self._fallback_proba(predictions)
+            return predictions, probas
+
+        X = self.vectorizer.transform(features)
+        if self.svd is not None:
+            X = self.svd.transform(X)
+
+        predictions = self.model.predict(X)
+        if hasattr(self.model, "predict_proba"):
+            probas = self.model.predict_proba(X)
+        else:
+            probas = self._fallback_proba(predictions)
+
+        return predictions, probas
+
+    def _fallback_proba(self, predictions: np.ndarray) -> np.ndarray:
+        class_to_idx = {label: idx for idx, label in enumerate(self.classes_)}
+        probs = np.zeros((len(predictions), len(self.classes_)), dtype=float)
+        for row_idx, pred in enumerate(predictions):
+            probs[row_idx, class_to_idx[pred]] = 1.0
+        return probs
 
     def predict(
         self,
@@ -82,12 +121,8 @@ class EvasionPredictor:
             return_proba: If True, return probability scores
 
         Returns:
-            Dictionary with:
-            - predictions: List of predicted labels
-            - probabilities: List of probability dicts (if return_proba=True)
-            - confidence: List of confidence scores (max probability)
+            Dictionary with predictions and optional confidence details.
         """
-        # Normalize inputs to lists
         if isinstance(questions, str):
             questions = [questions]
         if isinstance(answers, str):
@@ -96,31 +131,24 @@ class EvasionPredictor:
         if len(questions) != len(answers):
             raise ValueError("Number of questions and answers must match")
 
-        # Build features
         features = self._build_features(questions, answers)
 
-        # Make predictions based on model type
-        if self.model_type == "logreg":
-            # Pipeline handles everything
-            predictions = self.model.predict(features)
-            if return_proba:
-                probas = self.model.predict_proba(features)
+        if return_proba:
+            predictions, probas = self._predict_with_probabilities(features)
         else:
-            # Tree/boosting: need to vectorize manually
-            X = self.vectorizer.transform(features)
-            if self.svd is not None:
-                X = self.svd.transform(X.toarray())
-            predictions = self.model.predict(X)
-            if return_proba:
-                probas = self.model.predict_proba(X)
+            if self.vectorizer is None:
+                predictions = self.model.predict(features)
+            else:
+                X = self.vectorizer.transform(features)
+                if self.svd is not None:
+                    X = self.svd.transform(X)
+                predictions = self.model.predict(X)
 
-        # Format results
         result = {
             "predictions": predictions.tolist(),
         }
 
         if return_proba:
-            # Convert probabilities to list of dicts
             proba_dicts = []
             confidences = []
             for proba_row in probas:
@@ -150,15 +178,14 @@ class EvasionPredictor:
             return_proba: If True, return probability scores
 
         Returns:
-            Dictionary with:
-            - prediction: Predicted label
-            - probabilities: Probability dict (if return_proba=True)
-            - confidence: Confidence score (if return_proba=True)
+            Prediction dictionary for a single sample.
         """
         result = self.predict([question], [answer], return_proba=return_proba)
 
-        # Unpack single result
-        output = {"prediction": result["predictions"][0]}
+        output = {
+            "prediction": result["predictions"][0],
+            "model_name": self.model_name,
+        }
         if return_proba:
             output["probabilities"] = result["probabilities"][0]
             output["confidence"] = result["confidence"][0]
@@ -201,39 +228,109 @@ class HeuristicPredictor:
         }
 
 
+def _selected_model_path(artifacts_root: Path) -> Path:
+    return artifacts_root / "models" / "phase8" / "selected_model.json"
+
+
+def load_selected_model_summary(
+    artifacts_root: str | Path | None = None,
+) -> dict[str, Any] | None:
+    """Return selected model metadata if phase-8 artifacts exist."""
+    if artifacts_root is None:
+        root = Path(__file__).resolve().parents[1] / "artifacts"
+    else:
+        root = Path(artifacts_root)
+
+    selected_path = _selected_model_path(root)
+    if not selected_path.exists():
+        return None
+
+    try:
+        return json.loads(selected_path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+
+def _resolve_default_model_name(artifacts_root: Path) -> str:
+    env_name = os.getenv("EVASION_MODEL_NAME")
+    if env_name:
+        return env_name
+
+    selected = load_selected_model_summary(artifacts_root)
+    if selected:
+        for key in ("best_model_family", "model_family", "winner_family"):
+            value = selected.get(key)
+            if isinstance(value, str) and value:
+                return value
+
+    return DEFAULT_MODEL_FALLBACK
+
+
+def _resolve_model_dir(artifacts_root: Path, model_name: str) -> Path | None:
+    candidates = [
+        artifacts_root / "models" / "phase8" / model_name,
+        artifacts_root / "models" / "phase5" / model_name,
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    return None
+
+
 def load_model(
-    model_name: str = "boosting", artifacts_root: str | Path | None = None
+    model_name: str | None = None,
+    artifacts_root: str | Path | None = None,
 ) -> EvasionPredictor | HeuristicPredictor:
     """
     Load a trained EvasionBench model by name.
 
-    Args:
-        model_name: Model name - "boosting", "tree", or "logreg"
-        artifacts_root: Root directory for artifacts (defaults to project root / artifacts)
-
-    Returns:
-        EvasionPredictor instance
+    Resolution order:
+    1. Explicit `model_name` argument.
+    2. `EVASION_MODEL_NAME` environment variable.
+    3. `artifacts/models/phase8/selected_model.json` winner.
+    4. Fallback to boosting.
     """
     if artifacts_root is None:
-        # Default to project root / artifacts
-        artifacts_root = Path(__file__).resolve().parents[1] / "artifacts"
+        root = Path(__file__).resolve().parents[1] / "artifacts"
     else:
-        artifacts_root = Path(artifacts_root)
+        root = Path(artifacts_root)
 
-    model_dir = artifacts_root / "models" / "phase5" / model_name
+    requested_name = model_name or _resolve_default_model_name(root)
+    explicit_name = model_name is not None
 
-    if not model_dir.exists():
-        raise ValueError(f"Model directory not found: {model_dir}")
+    model_dir = _resolve_model_dir(root, requested_name)
 
-    # Determine model file and type
-    if model_name == "logreg":
-        model_path = model_dir / "model.pkl"
-        model_type = "logreg"
-    else:
+    if (
+        model_dir is None
+        and not explicit_name
+        and requested_name != DEFAULT_MODEL_FALLBACK
+    ):
+        requested_name = DEFAULT_MODEL_FALLBACK
+        model_dir = _resolve_model_dir(root, requested_name)
+
+    if model_dir is None:
+        if explicit_name:
+            raise ValueError(
+                f"Model directory not found for '{requested_name}' under {root / 'models'}"
+            )
+        return HeuristicPredictor()
+
+    model_path = model_dir / "model.pkl"
+    model_type = "pipeline"
+    if not model_path.exists():
         model_path = model_dir / "model_bundle.pkl"
-        model_type = model_name
+        model_type = requested_name
+
+    if not model_path.exists():
+        if explicit_name:
+            raise ValueError(f"Model file not found in {model_dir}")
+        return HeuristicPredictor()
 
     try:
-        return EvasionPredictor(model_path, model_type=model_type)
+        return EvasionPredictor(
+            model_path=model_path,
+            model_type=model_type,
+            model_name=requested_name,
+        )
     except Exception:
         return HeuristicPredictor()

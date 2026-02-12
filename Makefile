@@ -1,4 +1,4 @@
-.PHONY: env install test lint format verify-structure ci-check run-api run-dashboard data-fetch data-validate data-prepare run-experiment analysis-phase3 analysis-phase4 model-phase5 label-diagnostics report-phase7 docker-build docker-up docker-down
+.PHONY: env install test lint format verify-structure verify-artifacts ci-check run-api run-dashboard data-fetch data-validate data-prepare run-experiment analysis-phase3 analysis-phase4 model-phase5 optimize-model label-diagnostics report-phase7 docker-build docker-up docker-down
 
 env:
 	python -m venv .venv
@@ -49,6 +49,12 @@ analysis-phase4:
 
 model-phase5:
 	python scripts/run_classical_baselines.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase5 --families all --compare
+
+optimize-model:
+	python scripts/run_model_optimization.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase8 --families all --cv-folds 5 --selection-metric f1_macro --accuracy-floor 0.6431560071727436
+
+verify-artifacts:
+	python scripts/verify_artifact_integrity.py --phase5-root artifacts/models/phase5 --families logreg,tree,boosting --min-train-rows 1000 --expected-label-count 3
 
 model-phase6:
 	python scripts/run_transformer_baselines.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase6/transformer --max-epochs 3 --learning-rate 2e-5
