@@ -18,8 +18,15 @@ def _write(path: Path, content: str = "{}\n") -> None:
 def _manifest_fixture(project_root: Path) -> Path:
     # Backing artifact files referenced by manifest
     _write(project_root / "data/processed/evasionbench_prepared.parquet", "data\n")
-    _write(project_root / "artifacts/analysis/phase3/core_stats/class_distribution.png", "img\n")
-    _write(project_root / "artifacts/analysis/phase4/semantic_similarity/semantic_similarity_by_label.csv", "x,y\n")
+    _write(
+        project_root / "artifacts/analysis/phase3/core_stats/class_distribution.png",
+        "img\n",
+    )
+    _write(
+        project_root
+        / "artifacts/analysis/phase4/semantic_similarity/semantic_similarity_by_label.csv",
+        "x,y\n",
+    )
     _write(
         project_root / "artifacts/models/phase5/run_summary.json",
         '{"logreg": {"f1_macro": 0.7}, "tree": {"f1_macro": 0.8}}\n',

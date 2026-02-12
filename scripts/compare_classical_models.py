@@ -19,6 +19,7 @@ from src.visualization import plot_macro_f1_comparison, plot_per_class_delta_hea
 def _normalize_confusion_refs(refs: dict[str, str]) -> dict[str, str]:
     return {family: str(Path(path).resolve()) for family, path in refs.items()}
 
+
 FAMILIES = ("logreg", "tree", "boosting")
 
 
@@ -49,7 +50,11 @@ def run_comparison(input_root: str | Path, output_root: str | Path) -> dict:
         confusion_path = family_root / "confusion_matrix.json"
         metadata_path = family_root / "run_metadata.json"
 
-        if not metrics_path.exists() or not report_path.exists() or not confusion_path.exists():
+        if (
+            not metrics_path.exists()
+            or not report_path.exists()
+            or not confusion_path.exists()
+        ):
             continue
 
         metrics = _load_json(metrics_path)
@@ -139,7 +144,9 @@ def run_comparison(input_root: str | Path, output_root: str | Path) -> dict:
         "models": model_summary,
     }
     summary_path = output_path / "summary.json"
-    summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    summary_path.write_text(
+        json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
     return {
         "model_ranking": str(ranking_path),

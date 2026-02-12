@@ -12,7 +12,12 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
-from transformers import AutoModelForSequenceClassification, AutoTokenizer, Trainer, TrainingArguments
+from transformers import (
+    AutoModelForSequenceClassification,
+    AutoTokenizer,
+    Trainer,
+    TrainingArguments,
+)
 from datasets import Dataset
 from transformers.trainer_utils import set_seed
 
@@ -65,12 +70,18 @@ def _split_data(
         stratify=stratify,
     )
 
-    return X_train, X_test, y_train, y_test, {
-        "method": "train_test_split",
-        "stratify": stratify_used,
-        "random_state": random_state,
-        "test_size": test_size,
-    }
+    return (
+        X_train,
+        X_test,
+        y_train,
+        y_test,
+        {
+            "method": "train_test_split",
+            "stratify": stratify_used,
+            "random_state": random_state,
+            "test_size": test_size,
+        },
+    )
 
 
 def train_tfidf_logreg(
@@ -247,13 +258,17 @@ def train_transformer(
 
     # Combine question and answer
     frame["text"] = (
-        frame["question"].fillna("").astype(str) + " [SEP] " + frame["answer"].fillna("").astype(str)
+        frame["question"].fillna("").astype(str)
+        + " [SEP] "
+        + frame["answer"].fillna("").astype(str)
     )
 
     # Encode labels to integers
     unique_labels = sorted(frame[target_col].dropna().unique().tolist())
     if len(unique_labels) != 2:
-        raise ValueError(f"Expected exactly 2 unique labels, found {len(unique_labels)}")
+        raise ValueError(
+            f"Expected exactly 2 unique labels, found {len(unique_labels)}"
+        )
 
     label2id = {label: idx for idx, label in enumerate(unique_labels)}
     id2label = {idx: label for label, idx in label2id.items()}
@@ -297,10 +312,18 @@ def train_transformer(
 
     # Remove columns we don't need
     train_dataset = train_dataset.remove_columns(
-        [col for col in train_dataset.column_names if col not in ["input_ids", "attention_mask", "label_id"]]
+        [
+            col
+            for col in train_dataset.column_names
+            if col not in ["input_ids", "attention_mask", "label_id"]
+        ]
     )
     test_dataset = test_dataset.remove_columns(
-        [col for col in test_dataset.column_names if col not in ["input_ids", "attention_mask", "label_id"]]
+        [
+            col
+            for col in test_dataset.column_names
+            if col not in ["input_ids", "attention_mask", "label_id"]
+        ]
     )
 
     # Rename label_id to labels
@@ -327,11 +350,18 @@ def train_transformer(
         logits, labels = eval_pred
         predictions = logits.argmax(axis=-1)
 
-        from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+        from sklearn.metrics import (
+            accuracy_score,
+            f1_score,
+            precision_score,
+            recall_score,
+        )
 
         accuracy = accuracy_score(labels, predictions)
         f1 = f1_score(labels, predictions, average="macro", zero_division=0)
-        precision = precision_score(labels, predictions, average="macro", zero_division=0)
+        precision = precision_score(
+            labels, predictions, average="macro", zero_division=0
+        )
         recall = recall_score(labels, predictions, average="macro", zero_division=0)
 
         return {

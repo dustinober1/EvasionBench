@@ -50,4 +50,6 @@ def test_core_stats_is_deterministic(tmp_path):
 
 def test_core_stats_raises_on_missing_columns(tmp_path):
     with pytest.raises(ValueError, match="Missing required columns"):
-        run_core_stats(pd.DataFrame({"question": ["only"]}), tmp_path / "phase3", source_data="x")
+        run_core_stats(
+            pd.DataFrame({"question": ["only"]}), tmp_path / "phase3", source_data="x"
+        )

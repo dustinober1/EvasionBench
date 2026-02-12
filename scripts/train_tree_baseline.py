@@ -66,7 +66,9 @@ def main() -> int:
         metadata,
     )
 
-    print(json.dumps({"model_family": args.model_family, "output_root": str(output_root)}))
+    print(
+        json.dumps({"model_family": args.model_family, "output_root": str(output_root)})
+    )
     return 0
 
 

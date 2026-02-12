@@ -85,7 +85,9 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output-root", required=True, help="Path to transformer output artifacts")
+    parser.add_argument(
+        "--output-root", required=True, help="Path to transformer output artifacts"
+    )
     args = parser.parse_args()
 
     output_root = Path(args.output_root)

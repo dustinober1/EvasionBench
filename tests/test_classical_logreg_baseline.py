@@ -55,11 +55,15 @@ def test_logreg_baseline_writes_contract_artifacts(tmp_path: Path) -> None:
     metrics = json.loads((family_root / "metrics.json").read_text(encoding="utf-8"))
     assert 0.0 <= metrics["accuracy"] <= 1.0
 
-    report = json.loads((family_root / "classification_report.json").read_text(encoding="utf-8"))
+    report = json.loads(
+        (family_root / "classification_report.json").read_text(encoding="utf-8")
+    )
     assert "macro avg" in report
     assert "weighted avg" in report
 
-    metadata = json.loads((family_root / "run_metadata.json").read_text(encoding="utf-8"))
+    metadata = json.loads(
+        (family_root / "run_metadata.json").read_text(encoding="utf-8")
+    )
     assert metadata["model_family"] == "logreg"
     assert metadata["split_seed"] == 42
     assert "feature_config" in metadata
@@ -124,7 +128,9 @@ def test_logreg_baseline_deterministic_metrics() -> None:
         solver="liblinear",
     )
     preds_first = training_first["model"].predict(training_first["X_test"])
-    metrics_first = compute_classification_metrics(training_first["y_test"], preds_first)
+    metrics_first = compute_classification_metrics(
+        training_first["y_test"], preds_first
+    )
 
     training_second = train_tfidf_logreg(
         frame,
@@ -140,6 +146,8 @@ def test_logreg_baseline_deterministic_metrics() -> None:
         solver="liblinear",
     )
     preds_second = training_second["model"].predict(training_second["X_test"])
-    metrics_second = compute_classification_metrics(training_second["y_test"], preds_second)
+    metrics_second = compute_classification_metrics(
+        training_second["y_test"], preds_second
+    )
 
     assert metrics_first == metrics_second

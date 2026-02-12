@@ -382,7 +382,9 @@ def build_report_context(
         "analysis_figures": [
             row for row in analyses_entries if row.get("kind") == "figure"
         ],
-        "analysis_tables": [row for row in analyses_entries if row.get("kind") == "table"],
+        "analysis_tables": [
+            row for row in analyses_entries if row.get("kind") == "table"
+        ],
         "model_entries": model_entries,
         "best_classical_family": best_classical_family,
         "best_classical_metrics": best_classical_metrics,

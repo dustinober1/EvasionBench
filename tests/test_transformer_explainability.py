@@ -20,9 +20,7 @@ def test_captum_single_sample() -> None:
     from transformers import AutoModelForSequenceClassification
 
     model_name = "distilbert-base-uncased"
-    model = AutoModelForSequenceClassification.from_pretrained(
-        model_name, num_labels=2
-    )
+    model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     # Test with sample text
@@ -66,9 +64,7 @@ def test_captum_token_alignment() -> None:
     from transformers import AutoModelForSequenceClassification
 
     model_name = "distilbert-base-uncased"
-    model = AutoModelForSequenceClassification.from_pretrained(
-        model_name, num_labels=2
-    )
+    model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     text = "Another test with different words here."
@@ -90,20 +86,20 @@ def test_captum_batch_output(tmp_path: Path) -> None:
     from transformers import AutoModelForSequenceClassification
 
     model_name = "distilbert-base-uncased"
-    model = AutoModelForSequenceClassification.from_pretrained(
-        model_name, num_labels=2
-    )
+    model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     # Create test data
-    test_data = pd.DataFrame({
-        "text": [
-            "Test question one about programming.",
-            "Test question two about security.",
-            "Test question three about algorithms.",
-        ],
-        "label": ["evasive", "non_evasive", "evasive"],
-    })
+    test_data = pd.DataFrame(
+        {
+            "text": [
+                "Test question one about programming.",
+                "Test question two about security.",
+                "Test question three about algorithms.",
+            ],
+            "label": ["evasive", "non_evasive", "evasive"],
+        }
+    )
 
     output_dir = tmp_path / "xai_output"
     result = explain_transformer_batch(
@@ -152,18 +148,18 @@ def test_captum_html_output(tmp_path: Path) -> None:
     from transformers import AutoModelForSequenceClassification
 
     model_name = "distilbert-base-uncased"
-    model = AutoModelForSequenceClassification.from_pretrained(
-        model_name, num_labels=2
-    )
+    model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-    test_data = pd.DataFrame({
-        "text": [
-            "Test question for HTML generation.",
-            "Another question for visualization.",
-        ],
-        "label": ["evasive", "non_evasive"],
-    })
+    test_data = pd.DataFrame(
+        {
+            "text": [
+                "Test question for HTML generation.",
+                "Another question for visualization.",
+            ],
+            "label": ["evasive", "non_evasive"],
+        }
+    )
 
     output_dir = tmp_path / "xai_html"
     explain_transformer_batch(
@@ -194,9 +190,7 @@ def test_captum_reproducibility(tmp_path: Path) -> None:
     set_seed(42)
 
     # Load model
-    model = AutoModelForSequenceClassification.from_pretrained(
-        model_name, num_labels=2
-    )
+    model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2)
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     text = "Reproducibility test question."

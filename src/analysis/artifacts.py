@@ -107,7 +107,9 @@ def write_artifact_index(
     entries.append(entry)
     payload["entries"] = sorted(entries, key=lambda item: str(item["stage"]))
 
-    index_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    index_path.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     return index_path
 
 
@@ -152,5 +154,7 @@ def write_phase4_artifact_index(
     payload["entries"] = sorted(entries, key=lambda item: str(item["stage"]))
     payload["families"] = list(PHASE4_FAMILIES)
 
-    index_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    index_path.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     return index_path

@@ -54,7 +54,9 @@ def test_shap_summary_keys(xai_root: Path, family: str) -> None:
 
     # Ensure lengths match
     n_features = len(summary["feature_names"])
-    assert len(summary["importance_ranking"]) == n_features, "importance_ranking length mismatch"
+    assert (
+        len(summary["importance_ranking"]) == n_features
+    ), "importance_ranking length mismatch"
     assert len(summary["mean_abs_shap"]) == n_features, "mean_abs_shap length mismatch"
 
 
@@ -105,8 +107,12 @@ def test_shap_no_test_leakage(xai_root: Path) -> None:
 
             # Check that we don't have test-specific keys
             # (This is a sanity check - the real validation is in code review)
-            assert "test_indices" not in summary, "SHAP summary should not contain test_indices"
-            assert "test_shap_values" not in summary, "SHAP summary should not contain test_shap_values"
+            assert (
+                "test_indices" not in summary
+            ), "SHAP summary should not contain test_indices"
+            assert (
+                "test_shap_values" not in summary
+            ), "SHAP summary should not contain test_shap_values"
 
 
 def test_shap_reproducibility(xai_root: Path) -> None:
@@ -130,11 +136,15 @@ def test_shap_reproducibility(xai_root: Path) -> None:
 
             # Verify that importance rankings are integers
             for idx in summary["importance_ranking"]:
-                assert isinstance(idx, int), f"Importance ranking should be int, got {type(idx)}"
+                assert isinstance(
+                    idx, int
+                ), f"Importance ranking should be int, got {type(idx)}"
 
             # Verify that mean_abs_shap values are floats
             for val in summary["mean_abs_shap"]:
-                assert isinstance(val, (int, float)), f"Mean abs SHAP should be numeric, got {type(val)}"
+                assert isinstance(
+                    val, (int, float)
+                ), f"Mean abs SHAP should be numeric, got {type(val)}"
 
 
 def test_xai_summary_aggregation(xai_root: Path) -> None:

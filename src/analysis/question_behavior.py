@@ -12,7 +12,15 @@ import pandas as pd
 from src.analysis.artifacts import ensure_phase4_layout, write_phase4_artifact_index
 
 REQUIRED_COLUMNS = ("question", "answer", "label")
-TAXONOMY = ("yes_no", "comparison", "procedural", "opinion", "factual", "multi_part", "other")
+TAXONOMY = (
+    "yes_no",
+    "comparison",
+    "procedural",
+    "opinion",
+    "factual",
+    "multi_part",
+    "other",
+)
 
 
 REFUSAL_PATTERNS = (
@@ -42,7 +50,9 @@ def classify_question(question: str) -> str:
         return "other"
     if "?" in q and (" and " in q or ";" in q):
         return "multi_part"
-    if re.search(r"^(is|are|was|were|do|does|did|can|could|should|would|will|has|have)\b", q):
+    if re.search(
+        r"^(is|are|was|were|do|does|did|can|could|should|would|will|has|have)\b", q
+    ):
         return "yes_no"
     if "compare" in q or "difference" in q or " vs " in q:
         return "comparison"
@@ -75,7 +85,9 @@ def _refusal_rate(series: pd.Series) -> pd.Series:
 
 
 def _plot_behavior(comparison: pd.DataFrame, out_path: Path) -> None:
-    pivot = comparison.pivot(index="question_type", columns="label", values="mean_answer_length").fillna(0.0)
+    pivot = comparison.pivot(
+        index="question_type", columns="label", values="mean_answer_length"
+    ).fillna(0.0)
     pivot.plot(kind="bar", figsize=(11, 5))
     plt.ylabel("mean answer length")
     plt.title("Answer length by question type and label")
@@ -201,9 +213,13 @@ def run_question_behavior(
                 "mean_alignment",
                 "refusal_rate",
             ],
-            "refusal_spread_by_question_type": per_type_spread.to_dict(orient="records"),
+            "refusal_spread_by_question_type": per_type_spread.to_dict(
+                orient="records"
+            ),
         }
-        summary_json.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        summary_json.write_text(
+            json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
         summary_md.write_text(
             "# Question Behavior Summary\n\n"
             "- Deterministic taxonomy assignment across seven categories.\n"

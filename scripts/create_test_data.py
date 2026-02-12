@@ -26,7 +26,8 @@ test_data = {
         "What's your company mission?",
         "How long have you been in business?",
         "What are your core values?",
-    ] * 5,  # Repeat to get 100 rows
+    ]
+    * 5,  # Repeat to get 100 rows
     "answer": [
         "We cannot disclose financial information.",
         "That's confidential.",
@@ -49,7 +50,8 @@ test_data = {
         "To innovate and serve customers.",
         "For over 10 years.",
         "Integrity and excellence.",
-    ] * 5,
+    ]
+    * 5,
     "label": [
         "evasive",
         "evasive",
@@ -71,7 +73,8 @@ test_data = {
         "non_evasive",
         "non_evasive",
         "non_evasive",
-    ] * 5,
+    ]
+    * 5,
 }
 
 df = pd.DataFrame(test_data)

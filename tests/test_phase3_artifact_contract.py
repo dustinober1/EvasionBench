@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import json
 
-from src.analysis.artifacts import PHASE3_FAMILIES, ensure_phase3_layout, write_artifact_index
+from src.analysis.artifacts import (
+    PHASE3_FAMILIES,
+    ensure_phase3_layout,
+    write_artifact_index,
+)
 
 
 def test_phase3_layout_is_deterministic(tmp_path):

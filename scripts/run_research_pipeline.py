@@ -17,7 +17,12 @@ if str(ROOT) not in sys.path:
 
 
 def _utc_now() -> str:
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    return (
+        datetime.now(timezone.utc)
+        .replace(microsecond=0)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
 
 
 def _git_sha() -> str:
@@ -81,7 +86,9 @@ def _display_path(path: Path) -> str:
         return str(path)
 
 
-def build_default_stages(input_path: str | Path, output_root: str | Path) -> list[PipelineStage]:
+def build_default_stages(
+    input_path: str | Path, output_root: str | Path
+) -> list[PipelineStage]:
     input_abs = _resolve(input_path)
     report_root = _resolve(output_root)
 
@@ -174,7 +181,10 @@ def build_default_stages(input_path: str | Path, output_root: str | Path) -> lis
                 "--output-root",
                 "artifacts/explainability/phase6/transformer",
             ),
-            outputs=(ROOT / "artifacts/explainability/phase6/transformer/transformer_xai_summary.json",),
+            outputs=(
+                ROOT
+                / "artifacts/explainability/phase6/transformer/transformer_xai_summary.json",
+            ),
             hint="Ensure phase6 transformer model is available before transformer explainability.",
         ),
         PipelineStage(
@@ -187,7 +197,9 @@ def build_default_stages(input_path: str | Path, output_root: str | Path) -> lis
                 "--output-root",
                 "artifacts/diagnostics/phase6",
             ),
-            outputs=(ROOT / "artifacts/diagnostics/phase6/label_diagnostics_summary.json",),
+            outputs=(
+                ROOT / "artifacts/diagnostics/phase6/label_diagnostics_summary.json",
+            ),
             hint="Inspect label-diagnostics dependencies and rerun diagnostics stage.",
         ),
         PipelineStage(
@@ -272,7 +284,9 @@ def run_pipeline(
 
     if from_stage:
         if from_stage not in keys:
-            raise ValueError(f"Unknown --from-stage value '{from_stage}'. Available: {', '.join(keys)}")
+            raise ValueError(
+                f"Unknown --from-stage value '{from_stage}'. Available: {', '.join(keys)}"
+            )
         stage_list = stage_list[keys.index(from_stage) :]
 
     execution_start = _utc_now()
@@ -340,7 +354,9 @@ def run_pipeline(
 
     output_root.mkdir(parents=True, exist_ok=True)
     summary_path = output_root / "run_summary.json"
-    summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    summary_path.write_text(
+        json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
     return (1 if failure else 0), summary
 

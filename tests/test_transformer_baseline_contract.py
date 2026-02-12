@@ -42,7 +42,9 @@ def test_transformer_baseline_contract(output_root: Path = None) -> None:
     config_path = model_dir / "config.json"
     config = json.loads(config_path.read_text(encoding="utf-8"))
     assert "num_labels" in config, "Model config missing num_labels"
-    assert config["num_labels"] == 2, f"Expected num_labels=2, got {config['num_labels']}"
+    assert (
+        config["num_labels"] == 2
+    ), f"Expected num_labels=2, got {config['num_labels']}"
 
     # Validate run_metadata has transformer-specific fields
     metadata_path = output_root / "run_metadata.json"
@@ -86,7 +88,9 @@ def test_transformer_mlflow_integration(output_root: Path = None) -> None:
     assert (output_root / "run_metadata.json").exists()
 
     # Verify metadata contains git_sha
-    metadata = json.loads((output_root / "run_metadata.json").read_text(encoding="utf-8"))
+    metadata = json.loads(
+        (output_root / "run_metadata.json").read_text(encoding="utf-8")
+    )
     assert "git_sha" in metadata
     assert len(metadata["git_sha"]) > 0
 

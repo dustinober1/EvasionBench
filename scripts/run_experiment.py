@@ -40,7 +40,9 @@ def _load_manifest(path: Path) -> dict:
 
 def _stringify_params(params: dict) -> dict[str, str]:
     return {
-        str(k): json.dumps(v, sort_keys=True) if isinstance(v, (dict, list, tuple)) else str(v)
+        str(k): json.dumps(v, sort_keys=True)
+        if isinstance(v, (dict, list, tuple))
+        else str(v)
         for k, v in params.items()
     }
 
@@ -48,7 +50,9 @@ def _stringify_params(params: dict) -> dict[str, str]:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--data", default="data/processed/evasionbench_prepared.parquet", help="Prepared data"
+        "--data",
+        default="data/processed/evasionbench_prepared.parquet",
+        help="Prepared data",
     )
     parser.add_argument(
         "--contract",
@@ -137,10 +141,14 @@ def main() -> int:
             }
         )
         mlflow.log_params(
-            _stringify_params({f"tfidf_{k}": v for k, v in training["vectorizer_params"].items()})
+            _stringify_params(
+                {f"tfidf_{k}": v for k, v in training["vectorizer_params"].items()}
+            )
         )
         mlflow.log_params(
-            _stringify_params({f"clf_{k}": v for k, v in training["classifier_params"].items()})
+            _stringify_params(
+                {f"clf_{k}": v for k, v in training["classifier_params"].items()}
+            )
         )
         mlflow.log_metrics(metrics)
 

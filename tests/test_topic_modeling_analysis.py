@@ -24,7 +24,9 @@ def sample_frame() -> pd.DataFrame:
 
 
 def test_topic_modeling_outputs_required_files(tmp_path):
-    generated = run_topic_modeling(sample_frame(), tmp_path / "phase4", source_data="prepared.parquet")
+    generated = run_topic_modeling(
+        sample_frame(), tmp_path / "phase4", source_data="prepared.parquet"
+    )
 
     out_dir = tmp_path / "phase4" / "topic_modeling"
     assert generated
@@ -35,14 +37,24 @@ def test_topic_modeling_outputs_required_files(tmp_path):
 
 def test_topic_modeling_is_deterministic(tmp_path):
     out_root = tmp_path / "phase4"
-    run_topic_modeling(sample_frame(), out_root, source_data="prepared.parquet", topics=3, seed=42)
-    first = (out_root / "topic_modeling" / "topic_top_terms.csv").read_text(encoding="utf-8")
+    run_topic_modeling(
+        sample_frame(), out_root, source_data="prepared.parquet", topics=3, seed=42
+    )
+    first = (out_root / "topic_modeling" / "topic_top_terms.csv").read_text(
+        encoding="utf-8"
+    )
 
-    run_topic_modeling(sample_frame(), out_root, source_data="prepared.parquet", topics=3, seed=42)
-    second = (out_root / "topic_modeling" / "topic_top_terms.csv").read_text(encoding="utf-8")
+    run_topic_modeling(
+        sample_frame(), out_root, source_data="prepared.parquet", topics=3, seed=42
+    )
+    second = (out_root / "topic_modeling" / "topic_top_terms.csv").read_text(
+        encoding="utf-8"
+    )
     assert first == second
 
 
 def test_topic_modeling_raises_on_missing_columns(tmp_path):
     with pytest.raises(ValueError, match="Missing required columns"):
-        run_topic_modeling(pd.DataFrame({"answer": ["x"]}), tmp_path / "phase4", source_data="x")
+        run_topic_modeling(
+            pd.DataFrame({"answer": ["x"]}), tmp_path / "phase4", source_data="x"
+        )

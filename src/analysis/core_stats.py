@@ -47,7 +47,9 @@ def _length_tests(frame: pd.DataFrame) -> dict:
 
     for measure in ("question_length", "answer_length"):
         samples = [
-            frame.loc[frame["label"].astype(str) == label, measure].astype(float).tolist()
+            frame.loc[frame["label"].astype(str) == label, measure]
+            .astype(float)
+            .tolist()
             for label in labels
         ]
         usable = [sample for sample in samples if len(sample) > 0]
@@ -68,8 +70,12 @@ def _length_tests(frame: pd.DataFrame) -> dict:
         pairwise = []
         for i in range(len(labels)):
             for j in range(i + 1, len(labels)):
-                left = frame.loc[frame["label"].astype(str) == labels[i], measure].astype(float)
-                right = frame.loc[frame["label"].astype(str) == labels[j], measure].astype(float)
+                left = frame.loc[
+                    frame["label"].astype(str) == labels[i], measure
+                ].astype(float)
+                right = frame.loc[
+                    frame["label"].astype(str) == labels[j], measure
+                ].astype(float)
                 if left.empty or right.empty:
                     continue
                 try:
@@ -152,7 +158,12 @@ def run_core_stats(
         generated.extend([class_csv, class_json])
 
         class_plot = out_dir / "class_distribution.png"
-        _save_plot(class_dist.set_index("label")["count"], class_plot, "Label Distribution", "label")
+        _save_plot(
+            class_dist.set_index("label")["count"],
+            class_plot,
+            "Label Distribution",
+            "label",
+        )
         generated.append(class_plot)
 
     if "lengths" in sections_set:
@@ -166,7 +177,9 @@ def run_core_stats(
             .agg(["mean", "median", "std", "min", "max"])
             .reset_index()
         )
-        summary.columns = ["_".join([c for c in col if c]) for col in summary.columns.to_flat_index()]
+        summary.columns = [
+            "_".join([c for c in col if c]) for col in summary.columns.to_flat_index()
+        ]
         summary = summary.sort_values("label", ascending=True).reset_index(drop=True)
         summary_csv = out_dir / "length_summary.csv"
         summary_json = out_dir / "length_summary.json"
@@ -175,7 +188,9 @@ def run_core_stats(
 
         test_result = _length_tests(frame)
         tests_path = out_dir / "length_tests.json"
-        tests_path.write_text(json.dumps(test_result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        tests_path.write_text(
+            json.dumps(test_result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
         generated.append(tests_path)
 
         interpretation_path = out_dir / "length_interpretation.md"
@@ -189,7 +204,11 @@ def run_core_stats(
 
         for measure in ("question_length", "answer_length"):
             plot = out_dir / f"{measure}_by_label.png"
-            grouped = lengths.groupby("label", dropna=False)[measure].mean().sort_values(ascending=False)
+            grouped = (
+                lengths.groupby("label", dropna=False)[measure]
+                .mean()
+                .sort_values(ascending=False)
+            )
             _save_plot(grouped, plot, f"Mean {measure} by label", "label")
             generated.append(plot)
 

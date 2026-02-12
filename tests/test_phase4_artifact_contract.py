@@ -46,8 +46,13 @@ def test_phase4_artifact_index_contains_required_keys(tmp_path):
     entry = payload["entries"][0]
     assert entry["stage"] == "semantic_similarity"
     assert entry["source_data"] == "data/processed/evasionbench_prepared.parquet"
-    assert entry["generated_files"] == ["semantic_similarity/semantic_similarity_by_label.csv"]
-    assert entry["metadata"]["hypothesis_summary"] == "semantic_similarity/hypothesis_summary.md"
+    assert entry["generated_files"] == [
+        "semantic_similarity/semantic_similarity_by_label.csv"
+    ]
+    assert (
+        entry["metadata"]["hypothesis_summary"]
+        == "semantic_similarity/hypothesis_summary.md"
+    )
 
 
 def test_phase4_artifact_index_validates_hypothesis_pointer(tmp_path):

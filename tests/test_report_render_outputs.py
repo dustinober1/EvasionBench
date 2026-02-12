@@ -5,7 +5,12 @@ import subprocess
 import sys
 from pathlib import Path
 
-from src.reporting import build_report_manifest, build_traceability_map, make_provenance_entry, write_json
+from src.reporting import (
+    build_report_manifest,
+    build_traceability_map,
+    make_provenance_entry,
+    write_json,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 

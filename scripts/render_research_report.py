@@ -12,7 +12,12 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.reporting import build_traceability_map, load_report_manifest, normalize_path, utc_now_iso
+from src.reporting import (
+    build_traceability_map,
+    load_report_manifest,
+    normalize_path,
+    utc_now_iso,
+)
 
 
 BASE_CSS = """
@@ -176,7 +181,9 @@ def _write_minimal_pdf(text: str, path: Path) -> None:
         + stream_data
         + b"\nendstream\nendobj\n"
     )
-    objects.append(b"5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n")
+    objects.append(
+        b"5 0 obj\n<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>\nendobj\n"
+    )
 
     output = bytearray(b"%PDF-1.4\n")
     offsets = [0]
@@ -285,9 +292,7 @@ def main() -> int:
 
     print(f"wrote html: {normalize_path(html_path, base=project_root)}")
     print(f"wrote pdf: {normalize_path(pdf_path, base=project_root)}")
-    print(
-        f"wrote traceability: {normalize_path(traceability_path, base=project_root)}"
-    )
+    print(f"wrote traceability: {normalize_path(traceability_path, base=project_root)}")
     return 0
 
 

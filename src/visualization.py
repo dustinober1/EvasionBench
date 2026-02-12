@@ -14,9 +14,20 @@ def plot_label_distribution(series, title="Label distribution"):
 
 
 def plot_macro_f1_comparison(ranking: pd.DataFrame, output_path: str | Path) -> Path:
-    chart = ranking[["model_family", "f1_macro"]].copy().sort_values(by="f1_macro", ascending=False)
+    chart = (
+        ranking[["model_family", "f1_macro"]]
+        .copy()
+        .sort_values(by="f1_macro", ascending=False)
+    )
     plt.figure(figsize=(8, 4))
-    sns.barplot(data=chart, x="model_family", y="f1_macro", hue="model_family", palette="Blues_d", legend=False)
+    sns.barplot(
+        data=chart,
+        x="model_family",
+        y="f1_macro",
+        hue="model_family",
+        palette="Blues_d",
+        legend=False,
+    )
     plt.ylim(0.0, 1.0)
     plt.title("Phase 5 Macro-F1 by Model Family")
     plt.xlabel("Model Family")
@@ -30,7 +41,9 @@ def plot_macro_f1_comparison(ranking: pd.DataFrame, output_path: str | Path) -> 
     return out
 
 
-def plot_per_class_delta_heatmap(per_class_wide: pd.DataFrame, output_path: str | Path) -> Path:
+def plot_per_class_delta_heatmap(
+    per_class_wide: pd.DataFrame, output_path: str | Path
+) -> Path:
     score_cols = [col for col in per_class_wide.columns if col != "label"]
     matrix = per_class_wide.set_index("label")[score_cols]
     best = matrix.max(axis=1)

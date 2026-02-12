@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 import matplotlib
+
 matplotlib.use("Agg")  # Use non-interactive backend
 import matplotlib.pyplot as plt
 import numpy as np
@@ -79,7 +80,11 @@ def explain_classical_model(
     if "question" not in df.columns or "answer" not in df.columns:
         raise ValueError("Dataset must contain 'question' and 'answer' columns")
 
-    features = (df["question"].fillna("").astype(str) + " [SEP] " + df["answer"].fillna("").astype(str)).astype(str)
+    features = (
+        df["question"].fillna("").astype(str)
+        + " [SEP] "
+        + df["answer"].fillna("").astype(str)
+    ).astype(str)
 
     # Get label column if available
     target_col = "label" if "label" in df.columns else None
@@ -94,7 +99,9 @@ def explain_classical_model(
 
         # Select appropriate explainer for the model type
         if isinstance(classifier, LogisticRegression):
-            explainer = shap.LinearExplainer(classifier, X_train, feature_perturbation="interventional")
+            explainer = shap.LinearExplainer(
+                classifier, X_train, feature_perturbation="interventional"
+            )
         else:
             raise ValueError(f"Unsupported classifier in Pipeline: {type(classifier)}")
 
@@ -180,13 +187,17 @@ def explain_classical_model(
 
     # Select representative samples for local explanations
     sample_indices = _select_representative_samples(
-        shap_values, labels, n_samples=samples_per_class * 2 if labels is not None else n_samples
+        shap_values,
+        labels,
+        n_samples=samples_per_class * 2 if labels is not None else n_samples,
     )
 
     local_explanations = {
         "indices": sample_indices.tolist(),
         "shap_values": shap_values[sample_indices].tolist(),
-        "true_labels": labels.iloc[sample_indices].tolist() if labels is not None else None,
+        "true_labels": labels.iloc[sample_indices].tolist()
+        if labels is not None
+        else None,
     }
 
     # Generate summary plot
@@ -203,7 +214,9 @@ def explain_classical_model(
     plt.figure(figsize=(10, 6))
 
     # Select top features for visualization
-    top_indices = global_importance["importance_ranking"][:min(20, len(global_importance["importance_ranking"]))]
+    top_indices = global_importance["importance_ranking"][
+        : min(20, len(global_importance["importance_ranking"]))
+    ]
     top_features = [feature_names[i] for i in top_indices]
     top_importance = global_importance["mean_abs_shap"]
 
@@ -227,8 +240,12 @@ def explain_classical_model(
     summary_path = output_dir / "shap_summary.json"
     samples_path = output_dir / "shap_samples.json"
 
-    summary_path.write_text(json.dumps(global_importance, indent=2) + "\n", encoding="utf-8")
-    samples_path.write_text(json.dumps(local_explanations, indent=2) + "\n", encoding="utf-8")
+    summary_path.write_text(
+        json.dumps(global_importance, indent=2) + "\n", encoding="utf-8"
+    )
+    samples_path.write_text(
+        json.dumps(local_explanations, indent=2) + "\n", encoding="utf-8"
+    )
 
     return {
         "feature_names": feature_names,
@@ -312,12 +329,15 @@ def _select_representative_samples(
         return np.array(selected_indices[:n_samples])
     else:
         # Random selection if no labels
-        return np.random.choice(total_samples, min(n_samples, total_samples), replace=False)
+        return np.random.choice(
+            total_samples, min(n_samples, total_samples), replace=False
+        )
 
 
 # =============================================================================
 # Transformer Explainability with Captum
 # =============================================================================
+
 
 def explain_transformer_instance(
     model: Any,
@@ -379,7 +399,9 @@ def explain_transformer_instance(
     # Get label mapping from model config
     if hasattr(model, "config") and hasattr(model.config, "id2label"):
         id2label = model.config.id2label
-        predicted_label = id2label.get(predicted_class_id, f"class_{predicted_class_id}")
+        predicted_label = id2label.get(
+            predicted_class_id, f"class_{predicted_class_id}"
+        )
     else:
         predicted_label = f"class_{predicted_class_id}"
 
@@ -513,7 +535,9 @@ def explain_transformer_batch(
 
         if hasattr(model, "config") and hasattr(model.config, "id2label"):
             id2label = model.config.id2label
-            predicted_label = id2label.get(predicted_class_id, f"class_{predicted_class_id}")
+            predicted_label = id2label.get(
+                predicted_class_id, f"class_{predicted_class_id}"
+            )
         else:
             predicted_label = f"class_{predicted_class_id}"
 
@@ -525,7 +549,9 @@ def explain_transformer_batch(
     # Group by (true_label, correct_prediction)
     data_with_preds = data.copy()
     data_with_preds["predicted_label"] = predicted_labels
-    data_with_preds["correct"] = data_with_preds[label_col] == data_with_preds["predicted_label"]
+    data_with_preds["correct"] = (
+        data_with_preds[label_col] == data_with_preds["predicted_label"]
+    )
 
     selected_indices = []
 
@@ -533,22 +559,30 @@ def explain_transformer_batch(
     for true_label in data_with_preds[label_col].unique():
         for correct in [True, False]:
             group = data_with_preds[
-                (data_with_preds[label_col] == true_label) &
-                (data_with_preds["correct"] == correct)
+                (data_with_preds[label_col] == true_label)
+                & (data_with_preds["correct"] == correct)
             ]
 
             if len(group) > 0:
-                n_from_group = max(1, n_samples // (len(data_with_preds[label_col].unique()) * 2))
+                n_from_group = max(
+                    1, n_samples // (len(data_with_preds[label_col].unique()) * 2)
+                )
                 available = min(n_from_group, len(group))
-                selected = np.random.choice(group.index.tolist(), available, replace=False)
+                selected = np.random.choice(
+                    group.index.tolist(), available, replace=False
+                )
                 selected_indices.extend(selected)
 
     # If we don't have enough samples, fill randomly
     if len(selected_indices) < n_samples:
         remaining = n_samples - len(selected_indices)
-        remaining_indices = [i for i in data_with_preds.index.tolist() if i not in selected_indices]
+        remaining_indices = [
+            i for i in data_with_preds.index.tolist() if i not in selected_indices
+        ]
         if remaining_indices:
-            additional = np.random.choice(remaining_indices, min(remaining, len(remaining_indices)), replace=False)
+            additional = np.random.choice(
+                remaining_indices, min(remaining, len(remaining_indices)), replace=False
+            )
             selected_indices.extend(additional.tolist())
 
     # Truncate to n_samples
@@ -576,11 +610,13 @@ def explain_transformer_batch(
         # Track top tokens for summary
         if len(result["tokens"]) > 0:
             top_token_idx = int(np.argmax(np.abs(result["attributions"])))
-            top_tokens_all.append({
-                "token": result["tokens"][top_token_idx],
-                "attribution": float(result["attributions"][top_token_idx]),
-                "sample_id": int(idx),
-            })
+            top_tokens_all.append(
+                {
+                    "token": result["tokens"][top_token_idx],
+                    "attribution": float(result["attributions"][top_token_idx]),
+                    "sample_id": int(idx),
+                }
+            )
 
     # Compute summary statistics
     attribution_sums = [exp["attribution_sum"] for exp in explanations]
@@ -590,17 +626,21 @@ def explain_transformer_batch(
     xai_json = output_dir / "transformer_xai.json"
     serializable_explanations = []
     for exp in explanations:
-        serializable_explanations.append({
-            "sample_id": exp["sample_id"],
-            "text": texts[exp["sample_id"]],
-            "true_label": exp["true_label"],
-            "predicted_label": exp["predicted_label"],
-            "tokens": exp["tokens"],
-            "attributions": exp["attributions"].tolist(),
-            "attribution_sum": exp["attribution_sum"],
-        })
+        serializable_explanations.append(
+            {
+                "sample_id": exp["sample_id"],
+                "text": texts[exp["sample_id"]],
+                "true_label": exp["true_label"],
+                "predicted_label": exp["predicted_label"],
+                "tokens": exp["tokens"],
+                "attributions": exp["attributions"].tolist(),
+                "attribution_sum": exp["attribution_sum"],
+            }
+        )
 
-    xai_json.write_text(json.dumps(serializable_explanations, indent=2) + "\n", encoding="utf-8")
+    xai_json.write_text(
+        json.dumps(serializable_explanations, indent=2) + "\n", encoding="utf-8"
+    )
 
     # Write summary
     summary = {
@@ -693,29 +733,35 @@ def _generate_transformer_html(explanations: list[dict], output_dir: Path) -> No
                 style = ""
 
             # Handle special tokens that should stay together
-            display_token = token.replace("##", "") if token.startswith("##") else f" {token}"
+            display_token = (
+                token.replace("##", "") if token.startswith("##") else f" {token}"
+            )
 
             tokens_html.append(
                 f"<span class='token {css_class}' style='{style}' title='Attribution: {attr:.4f}'>{display_token}</span>"
             )
 
-        html_parts.extend([
-            "    <div class='sample'>",
-            f"      <div class='sample-header'>",
-            f"        Sample {exp['sample_id']} | ",
-            f"        True: <span class='{'label-correct' if is_correct else 'label-incorrect'}'>{true}</span> | ",
-            f"        Predicted: {predicted}",
-            f"      </div>",
-            f"      <div class='tokens'>{''.join(tokens_html)}</div>",
-            f"      <div class='attribution-info'>Attribution sum: {exp['attribution_sum']:.4f}</div>",
-            "    </div>",
-        ])
+        html_parts.extend(
+            [
+                "    <div class='sample'>",
+                f"      <div class='sample-header'>",
+                f"        Sample {exp['sample_id']} | ",
+                f"        True: <span class='{'label-correct' if is_correct else 'label-incorrect'}'>{true}</span> | ",
+                f"        Predicted: {predicted}",
+                f"      </div>",
+                f"      <div class='tokens'>{''.join(tokens_html)}</div>",
+                f"      <div class='attribution-info'>Attribution sum: {exp['attribution_sum']:.4f}</div>",
+                "    </div>",
+            ]
+        )
 
-    html_parts.extend([
-        "  </div>",
-        "</body>",
-        "</html>",
-    ])
+    html_parts.extend(
+        [
+            "  </div>",
+            "</body>",
+            "</html>",
+        ]
+    )
 
     html_path = output_dir / "transformer_xai.html"
     html_path.write_text("\n".join(html_parts), encoding="utf-8")

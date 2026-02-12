@@ -53,9 +53,18 @@ def parse_args() -> argparse.Namespace:
         help="Which model family/families to generate explanations for",
     )
     parser.add_argument("--random-state", type=int, default=42)
-    parser.add_argument("--n-samples", type=int, default=100, help="Background samples for SHAP")
-    parser.add_argument("--top-k", type=int, default=20, help="Top features for global importance")
-    parser.add_argument("--samples-per-class", type=int, default=5, help="Samples per class for local explanations")
+    parser.add_argument(
+        "--n-samples", type=int, default=100, help="Background samples for SHAP"
+    )
+    parser.add_argument(
+        "--top-k", type=int, default=20, help="Top features for global importance"
+    )
+    parser.add_argument(
+        "--samples-per-class",
+        type=int,
+        default=5,
+        help="Samples per class for local explanations",
+    )
     parser.add_argument("--tracking-uri", default="file:./mlruns")
     parser.add_argument("--experiment-name", default="evasionbench-explainability")
     return parser.parse_args()
@@ -103,13 +112,19 @@ def main() -> int:
 
         # Check if model directory exists
         if not family_dir.exists():
-            print(f"Warning: Model directory not found: {family_dir}, skipping {family}", file=sys.stderr)
+            print(
+                f"Warning: Model directory not found: {family_dir}, skipping {family}",
+                file=sys.stderr,
+            )
             continue
 
         # Check for required metadata
         metadata_path = family_dir / "run_metadata.json"
         if not metadata_path.exists():
-            print(f"Warning: Metadata not found: {metadata_path}, skipping {family}", file=sys.stderr)
+            print(
+                f"Warning: Metadata not found: {metadata_path}, skipping {family}",
+                file=sys.stderr,
+            )
             continue
 
         # Load metadata to get info
@@ -155,7 +170,9 @@ def main() -> int:
 
                 # Log artifacts
                 for artifact_path in family_output_dir.glob("*"):
-                    mlflow.log_artifact(str(artifact_path), artifact_path=f"phase6_xai/{family}")
+                    mlflow.log_artifact(
+                        str(artifact_path), artifact_path=f"phase6_xai/{family}"
+                    )
 
                 # Log metadata tags
                 mlflow.set_tags(
@@ -175,7 +192,10 @@ def main() -> int:
                     "artifacts": [p.name for p in family_output_dir.glob("*")],
                 }
 
-                print(f"  ✓ {family}: {len(result['feature_names'])} features, {len(result['sample_indices'])} samples", file=sys.stderr)
+                print(
+                    f"  ✓ {family}: {len(result['feature_names'])} features, {len(result['sample_indices'])} samples",
+                    file=sys.stderr,
+                )
 
         except Exception as e:
             print(f"Error generating explanations for {family}: {e}", file=sys.stderr)
@@ -186,9 +206,15 @@ def main() -> int:
 
     # Write combined summary
     summary_path = output_root / "xai_summary.json"
-    summary_path.write_text(json.dumps(xai_summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    summary_path.write_text(
+        json.dumps(xai_summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
-    print(json.dumps({"families": sorted(xai_summary.keys()), "output_root": str(output_root)}))
+    print(
+        json.dumps(
+            {"families": sorted(xai_summary.keys()), "output_root": str(output_root)}
+        )
+    )
     return 0
 
 

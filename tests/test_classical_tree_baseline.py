@@ -51,7 +51,9 @@ def test_tree_baseline_writes_contract_artifacts(tmp_path: Path) -> None:
     metrics = json.loads((output_root / "metrics.json").read_text(encoding="utf-8"))
     assert "f1_macro" in metrics
 
-    metadata = json.loads((output_root / "run_metadata.json").read_text(encoding="utf-8"))
+    metadata = json.loads(
+        (output_root / "run_metadata.json").read_text(encoding="utf-8")
+    )
     assert metadata["model_family"] == "tree"
     assert metadata["split_seed"] == 42
     assert metadata["split_metadata"]["method"] == "train_test_split"
@@ -84,7 +86,9 @@ def test_tree_baseline_missing_target_column(tmp_path: Path) -> None:
 
 def test_tree_baseline_missing_feature_columns(tmp_path: Path) -> None:
     data_path = tmp_path / "bad_features.parquet"
-    pd.DataFrame([{"question": "Q", "label": "evasive"}]).to_parquet(data_path, index=False)
+    pd.DataFrame([{"question": "Q", "label": "evasive"}]).to_parquet(
+        data_path, index=False
+    )
 
     result = subprocess.run(
         [

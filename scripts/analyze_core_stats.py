@@ -31,7 +31,9 @@ def main() -> int:
     args = parse_args()
     frame = pd.read_parquet(args.input)
     sections = [part.strip() for part in args.sections.split(",") if part.strip()]
-    generated = run_core_stats(frame, args.output_root, source_data=args.input, sections=sections)
+    generated = run_core_stats(
+        frame, args.output_root, source_data=args.input, sections=sections
+    )
     print(f"Generated {len(generated)} core-stats artifacts")
     return 0
 

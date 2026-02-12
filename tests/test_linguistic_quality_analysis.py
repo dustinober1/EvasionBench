@@ -22,10 +22,17 @@ def sample_frame() -> pd.DataFrame:
 
 def test_linguistic_outputs_and_bounds(tmp_path):
     out = tmp_path / "phase3"
-    run_linguistic_quality(sample_frame(), out, source_data="data/processed/evasionbench_prepared.parquet")
+    run_linguistic_quality(
+        sample_frame(), out, source_data="data/processed/evasionbench_prepared.parquet"
+    )
 
     read_df = pd.read_csv(out / "linguistic_quality" / "readability_summary.csv")
-    assert {"label", "flesch_reading_ease", "flesch_kincaid_grade", "smog_index"}.issubset(read_df.columns)
+    assert {
+        "label",
+        "flesch_reading_ease",
+        "flesch_kincaid_grade",
+        "smog_index",
+    }.issubset(read_df.columns)
 
     pos_df = pd.read_csv(out / "linguistic_quality" / "pos_proportions.csv")
     assert {"label", "pos", "count", "proportion"}.issubset(pos_df.columns)
@@ -38,13 +45,19 @@ def test_linguistic_outputs_and_bounds(tmp_path):
 def test_linguistic_is_deterministic(tmp_path):
     out = tmp_path / "phase3"
     run_linguistic_quality(sample_frame(), out, source_data="x")
-    first = (out / "linguistic_quality" / "discourse_markers.csv").read_text(encoding="utf-8")
+    first = (out / "linguistic_quality" / "discourse_markers.csv").read_text(
+        encoding="utf-8"
+    )
 
     run_linguistic_quality(sample_frame(), out, source_data="x")
-    second = (out / "linguistic_quality" / "discourse_markers.csv").read_text(encoding="utf-8")
+    second = (out / "linguistic_quality" / "discourse_markers.csv").read_text(
+        encoding="utf-8"
+    )
     assert first == second
 
 
 def test_linguistic_rejects_invalid_schema(tmp_path):
     with pytest.raises(ValueError, match="Missing required columns"):
-        run_linguistic_quality(pd.DataFrame({"label": ["x"]}), tmp_path / "phase3", source_data="x")
+        run_linguistic_quality(
+            pd.DataFrame({"label": ["x"]}), tmp_path / "phase3", source_data="x"
+        )

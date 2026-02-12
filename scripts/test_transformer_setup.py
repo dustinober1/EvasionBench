@@ -13,6 +13,7 @@ try:
     import torch
     import transformers
     from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
     print(f"✓ torch {torch.__version__}")
     print(f"✓ transformers {transformers.__version__}")
     print(f"✓ CUDA available: {torch.cuda.is_available()}")
@@ -36,7 +37,9 @@ except Exception as e:
 print("\nTesting tokenization...")
 try:
     text = "What is the revenue? [SEP] We made $1M in revenue."
-    inputs = tokenizer(text, padding="max_length", truncation=True, max_length=512, return_tensors="pt")
+    inputs = tokenizer(
+        text, padding="max_length", truncation=True, max_length=512, return_tensors="pt"
+    )
     print(f"✓ Input IDs shape: {inputs['input_ids'].shape}")
     print(f"✓ Attention mask shape: {inputs['attention_mask'].shape}")
 except Exception as e:

@@ -36,16 +36,34 @@ def _git_sha() -> str:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", required=True, help="Prepared parquet dataset")
-    parser.add_argument("--output-root", required=True, help="Root output directory for phase-6 artifacts")
-    parser.add_argument("--model-name", default="distilbert-base-uncased", help="Hugging Face model name")
-    parser.add_argument("--max-epochs", type=int, default=3, help="Maximum training epochs")
-    parser.add_argument("--learning-rate", type=float, default=2e-5, help="Learning rate")
+    parser.add_argument(
+        "--output-root",
+        required=True,
+        help="Root output directory for phase-6 artifacts",
+    )
+    parser.add_argument(
+        "--model-name",
+        default="distilbert-base-uncased",
+        help="Hugging Face model name",
+    )
+    parser.add_argument(
+        "--max-epochs", type=int, default=3, help="Maximum training epochs"
+    )
+    parser.add_argument(
+        "--learning-rate", type=float, default=2e-5, help="Learning rate"
+    )
     parser.add_argument("--target-col", default="label")
     parser.add_argument("--random-state", type=int, default=42)
     parser.add_argument("--test-size", type=float, default=0.2)
     parser.add_argument("--tracking-uri", default="file:./mlruns")
-    parser.add_argument("--experiment-name", default="evasionbench-transformer-baselines")
-    parser.add_argument("--model-name-registry", default="evasionbench-distilbert", help="MLflow registered model name")
+    parser.add_argument(
+        "--experiment-name", default="evasionbench-transformer-baselines"
+    )
+    parser.add_argument(
+        "--model-name-registry",
+        default="evasionbench-distilbert",
+        help="MLflow registered model name",
+    )
     return parser.parse_args()
 
 
@@ -76,7 +94,9 @@ def _metadata(
 
 def _stringify_params(params: dict) -> dict[str, str]:
     return {
-        str(k): json.dumps(v, sort_keys=True) if isinstance(v, (dict, list, tuple)) else str(v)
+        str(k): json.dumps(v, sort_keys=True)
+        if isinstance(v, (dict, list, tuple))
+        else str(v)
         for k, v in params.items()
     }
 

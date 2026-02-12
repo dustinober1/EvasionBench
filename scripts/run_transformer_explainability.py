@@ -134,7 +134,9 @@ def main() -> int:
         if "question" in df.columns and "answer" in df.columns:
             print(f"Creating 'text' column from question + answer...")
             df["text"] = (
-                df["question"].fillna("").astype(str) + " [SEP] " + df["answer"].fillna("").astype(str)
+                df["question"].fillna("").astype(str)
+                + " [SEP] "
+                + df["answer"].fillna("").astype(str)
             )
             text_col = "text"
         else:
@@ -202,9 +204,15 @@ def main() -> int:
         )
 
         # Log artifacts
-        mlflow.log_artifact(str(output_root / "transformer_xai.json"), artifact_path="xai")
-        mlflow.log_artifact(str(output_root / "transformer_xai_summary.json"), artifact_path="xai")
-        mlflow.log_artifact(str(output_root / "transformer_xai.html"), artifact_path="xai")
+        mlflow.log_artifact(
+            str(output_root / "transformer_xai.json"), artifact_path="xai"
+        )
+        mlflow.log_artifact(
+            str(output_root / "transformer_xai_summary.json"), artifact_path="xai"
+        )
+        mlflow.log_artifact(
+            str(output_root / "transformer_xai.html"), artifact_path="xai"
+        )
 
         # Set tags
         mlflow.set_tags(
@@ -231,13 +239,17 @@ def main() -> int:
         "avg_attribution_sum": summary["avg_attribution_sum"],
         "artifacts": {
             "transformer_xai.json": str(output_root / "transformer_xai.json"),
-            "transformer_xai_summary.json": str(output_root / "transformer_xai_summary.json"),
+            "transformer_xai_summary.json": str(
+                output_root / "transformer_xai_summary.json"
+            ),
             "transformer_xai.html": str(output_root / "transformer_xai.html"),
         },
     }
 
     summary_file = output_root / "run_summary.json"
-    summary_file.write_text(json.dumps(output_summary, indent=2) + "\n", encoding="utf-8")
+    summary_file.write_text(
+        json.dumps(output_summary, indent=2) + "\n", encoding="utf-8"
+    )
 
     print(json.dumps(output_summary, indent=2))
     return 0

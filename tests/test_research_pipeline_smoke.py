@@ -63,7 +63,9 @@ def test_pipeline_orders_stages_and_writes_logs(tmp_path: Path) -> None:
     for idx, key in enumerate(["stage_one", "stage_two"], start=1):
         assert (output_root / "logs" / f"{idx:02d}_{key}.log").exists()
 
-    run_summary = json.loads((output_root / "run_summary.json").read_text(encoding="utf-8"))
+    run_summary = json.loads(
+        (output_root / "run_summary.json").read_text(encoding="utf-8")
+    )
     assert run_summary["status"] == "passed"
 
 

@@ -36,7 +36,11 @@ def _git_sha() -> str:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", required=True, help="Prepared parquet dataset")
-    parser.add_argument("--output-root", required=True, help="Root output directory for phase-5 artifacts")
+    parser.add_argument(
+        "--output-root",
+        required=True,
+        help="Root output directory for phase-5 artifacts",
+    )
     parser.add_argument(
         "--families",
         choices=["all", "logreg", "tree", "boosting"],
@@ -59,7 +63,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--boosting-max-iter", type=int, default=50)
     parser.add_argument("--tracking-uri", default="file:./mlruns")
     parser.add_argument("--experiment-name", default="evasionbench-classical-baselines")
-    parser.add_argument("--compare", action="store_true", help="Run model comparison after families finish")
+    parser.add_argument(
+        "--compare",
+        action="store_true",
+        help="Run model comparison after families finish",
+    )
     return parser.parse_args()
 
 
@@ -97,12 +105,16 @@ def _metadata(
 
 def _stringify_params(params: dict) -> dict[str, str]:
     return {
-        str(k): json.dumps(v, sort_keys=True) if isinstance(v, (dict, list, tuple)) else str(v)
+        str(k): json.dumps(v, sort_keys=True)
+        if isinstance(v, (dict, list, tuple))
+        else str(v)
         for k, v in params.items()
     }
 
 
-def _run_logreg(frame: pd.DataFrame, args: argparse.Namespace, output_root: Path) -> dict[str, float]:
+def _run_logreg(
+    frame: pd.DataFrame, args: argparse.Namespace, output_root: Path
+) -> dict[str, float]:
     trained = train_tfidf_logreg(
         frame,
         target_col=args.target_col,
@@ -137,7 +149,9 @@ def _run_logreg(frame: pd.DataFrame, args: argparse.Namespace, output_root: Path
     with open(model_path, "wb") as f:
         pickle.dump(trained["model"], f)
 
-    artifacts = write_evaluation_artifacts(family_dir, trained["y_test"], y_pred, metrics, metadata)
+    artifacts = write_evaluation_artifacts(
+        family_dir, trained["y_test"], y_pred, metrics, metadata
+    )
     artifacts.append(model_path)
 
     with mlflow.start_run(run_name="phase5-logreg"):
@@ -154,10 +168,14 @@ def _run_logreg(frame: pd.DataFrame, args: argparse.Namespace, output_root: Path
             }
         )
         mlflow.log_params(
-            _stringify_params({f"tfidf_{k}": v for k, v in trained["vectorizer_params"].items()})
+            _stringify_params(
+                {f"tfidf_{k}": v for k, v in trained["vectorizer_params"].items()}
+            )
         )
         mlflow.log_params(
-            _stringify_params({f"clf_{k}": v for k, v in trained["classifier_params"].items()})
+            _stringify_params(
+                {f"clf_{k}": v for k, v in trained["classifier_params"].items()}
+            )
         )
         mlflow.log_metrics(metrics)
         mlflow.set_tags(
@@ -244,7 +262,9 @@ def _run_tree_or_boosting(
             }
         )
         mlflow.log_params(
-            _stringify_params({f"tfidf_{k}": v for k, v in trained["vectorizer_params"].items()})
+            _stringify_params(
+                {f"tfidf_{k}": v for k, v in trained["vectorizer_params"].items()}
+            )
         )
         mlflow.log_params(
             _stringify_params(
@@ -288,10 +308,14 @@ def main() -> int:
         if family == "logreg":
             metrics_summary[family] = _run_logreg(frame, args, output_root)
         else:
-            metrics_summary[family] = _run_tree_or_boosting(frame, args, output_root, family)
+            metrics_summary[family] = _run_tree_or_boosting(
+                frame, args, output_root, family
+            )
 
     summary_path = output_root / "run_summary.json"
-    summary_path.write_text(json.dumps(metrics_summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    summary_path.write_text(
+        json.dumps(metrics_summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
     if args.compare:
         subprocess.run(
@@ -306,7 +330,14 @@ def main() -> int:
             check=True,
         )
 
-    print(json.dumps({"families": sorted(metrics_summary.keys()), "output_root": str(output_root)}))
+    print(
+        json.dumps(
+            {
+                "families": sorted(metrics_summary.keys()),
+                "output_root": str(output_root),
+            }
+        )
+    )
     return 0
 
 

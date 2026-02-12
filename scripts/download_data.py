@@ -22,7 +22,9 @@ from src.data import (
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", default=str(DEFAULT_OUTPUT), help="Parquet output path")
+    parser.add_argument(
+        "--output", default=str(DEFAULT_OUTPUT), help="Parquet output path"
+    )
     parser.add_argument("--dataset-id", default=DEFAULT_DATASET_ID)
     parser.add_argument("--split", default=DEFAULT_SPLIT)
     parser.add_argument("--revision", default=DEFAULT_REVISION)

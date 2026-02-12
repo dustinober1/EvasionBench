@@ -27,7 +27,9 @@ def _tokenize(text: str) -> list[str]:
 
 def _lexical_summary(frame: pd.DataFrame) -> pd.DataFrame:
     records = []
-    for label, group in frame.assign(label=frame["label"].astype(str)).groupby("label", dropna=False):
+    for label, group in frame.assign(label=frame["label"].astype(str)).groupby(
+        "label", dropna=False
+    ):
         tokens = []
         lengths = []
         for text in group["answer"].astype(str):
@@ -42,29 +44,43 @@ def _lexical_summary(frame: pd.DataFrame) -> pd.DataFrame:
                 "num_texts": int(group.shape[0]),
                 "token_count": token_count,
                 "unique_token_count": unique_count,
-                "type_token_ratio": float(unique_count / token_count) if token_count else 0.0,
-                "avg_word_length": float(sum(lengths) / len(lengths)) if lengths else 0.0,
+                "type_token_ratio": float(unique_count / token_count)
+                if token_count
+                else 0.0,
+                "avg_word_length": float(sum(lengths) / len(lengths))
+                if lengths
+                else 0.0,
             }
         )
     return pd.DataFrame(records).sort_values("label").reset_index(drop=True)
 
 
-def _top_ngrams_for_label(texts: list[str], ngram_range: tuple[int, int], top_k: int) -> list[dict]:
+def _top_ngrams_for_label(
+    texts: list[str], ngram_range: tuple[int, int], top_k: int
+) -> list[dict]:
     if not texts:
         return []
-    vectorizer = CountVectorizer(lowercase=True, ngram_range=ngram_range, token_pattern=r"(?u)\b\w+\b")
+    vectorizer = CountVectorizer(
+        lowercase=True, ngram_range=ngram_range, token_pattern=r"(?u)\b\w+\b"
+    )
     matrix = vectorizer.fit_transform(texts)
     sums = matrix.sum(axis=0).A1
     terms = vectorizer.get_feature_names_out()
     table = pd.DataFrame({"ngram": terms, "count": sums})
-    table = table.sort_values(["count", "ngram"], ascending=[False, True]).head(top_k).reset_index(drop=True)
+    table = (
+        table.sort_values(["count", "ngram"], ascending=[False, True])
+        .head(top_k)
+        .reset_index(drop=True)
+    )
     return table.to_dict(orient="records")
 
 
 def _plot_top_ngrams(top_rows: list[dict], path: Path, title: str) -> None:
     if not top_rows:
         return
-    frame = pd.DataFrame(top_rows).sort_values(["count", "ngram"], ascending=[True, True])
+    frame = pd.DataFrame(top_rows).sort_values(
+        ["count", "ngram"], ascending=[True, True]
+    )
     plt.figure(figsize=(8, 4))
     plt.barh(frame["ngram"], frame["count"])
     plt.title(title)
@@ -98,7 +114,9 @@ def run_lexical(
 
     if "ngrams" in sections_set:
         payload: dict[str, dict] = {}
-        for label, group in frame.assign(label=frame["label"].astype(str)).groupby("label", dropna=False):
+        for label, group in frame.assign(label=frame["label"].astype(str)).groupby(
+            "label", dropna=False
+        ):
             texts = group["answer"].astype(str).tolist()
             uni = _top_ngrams_for_label(texts, (1, 1), top_k)
             bi = _top_ngrams_for_label(texts, (2, 2), top_k)
@@ -119,7 +137,9 @@ def run_lexical(
                     generated.append(plot)
 
         ngram_json = out_dir / "top_ngrams.json"
-        ngram_json.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        ngram_json.write_text(
+            json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
         generated.append(ngram_json)
 
     write_artifact_index(

@@ -24,7 +24,9 @@ def sample_frame() -> pd.DataFrame:
 
 def test_lexical_outputs_schema(tmp_path):
     out = tmp_path / "phase3"
-    run_lexical(sample_frame(), out, source_data="data/processed/evasionbench_prepared.parquet")
+    run_lexical(
+        sample_frame(), out, source_data="data/processed/evasionbench_prepared.parquet"
+    )
 
     summary = pd.read_csv(out / "lexical" / "lexical_summary.csv")
     expected = {
@@ -37,7 +39,9 @@ def test_lexical_outputs_schema(tmp_path):
     }
     assert expected.issubset(summary.columns)
 
-    payload = json.loads((out / "lexical" / "top_ngrams.json").read_text(encoding="utf-8"))
+    payload = json.loads(
+        (out / "lexical" / "top_ngrams.json").read_text(encoding="utf-8")
+    )
     assert "direct" in payload
     assert "unigrams" in payload["direct"]
 
@@ -54,4 +58,6 @@ def test_lexical_is_deterministic(tmp_path):
 
 def test_lexical_rejects_invalid_schema(tmp_path):
     with pytest.raises(ValueError, match="Missing required columns"):
-        run_lexical(pd.DataFrame({"label": ["x"]}), tmp_path / "phase3", source_data="x")
+        run_lexical(
+            pd.DataFrame({"label": ["x"]}), tmp_path / "phase3", source_data="x"
+        )

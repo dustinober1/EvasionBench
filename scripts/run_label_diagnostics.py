@@ -48,10 +48,22 @@ def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", required=True, help="Prepared parquet dataset")
-    parser.add_argument("--output-root", required=True, help="Root output directory for diagnostic artifacts")
-    parser.add_argument("--random-state", type=int, default=42, help="Random seed for reproducibility")
-    parser.add_argument("--tracking-uri", default="file:./mlruns", help="MLflow tracking URI")
-    parser.add_argument("--experiment-name", default="evasionbench-label-diagnostics", help="MLflow experiment name")
+    parser.add_argument(
+        "--output-root",
+        required=True,
+        help="Root output directory for diagnostic artifacts",
+    )
+    parser.add_argument(
+        "--random-state", type=int, default=42, help="Random seed for reproducibility"
+    )
+    parser.add_argument(
+        "--tracking-uri", default="file:./mlruns", help="MLflow tracking URI"
+    )
+    parser.add_argument(
+        "--experiment-name",
+        default="evasionbench-label-diagnostics",
+        help="MLflow experiment name",
+    )
     return parser.parse_args()
 
 
@@ -67,10 +79,20 @@ def _create_markdown_report(
     report_path = output_root / "label_diagnostics_report.md"
 
     # Count issues by type
-    label_issues = issue_summary["is_label_issue"].sum() if "is_label_issue" in issue_summary.columns else 0
-    outlier_issues = issue_summary["is_outlier_issue"].sum() if "is_outlier_issue" in issue_summary.columns else 0
+    label_issues = (
+        issue_summary["is_label_issue"].sum()
+        if "is_label_issue" in issue_summary.columns
+        else 0
+    )
+    outlier_issues = (
+        issue_summary["is_outlier_issue"].sum()
+        if "is_outlier_issue" in issue_summary.columns
+        else 0
+    )
     near_duplicate_issues = (
-        issue_summary["is_near_duplicate_issue"].sum() if "is_near_duplicate_issue" in issue_summary.columns else 0
+        issue_summary["is_near_duplicate_issue"].sum()
+        if "is_near_duplicate_issue" in issue_summary.columns
+        else 0
     )
 
     # Calculate quality score (percentage of examples without issues)
@@ -88,8 +110,12 @@ def _create_markdown_report(
         "",
         "| Issue Type | Count | Percentage |",
         "|------------|-------|------------|",
-        f"| Label Errors | {label_issues} | {label_issues/train_size*100:.1f}% |" if train_size > 0 else "| Label Errors | 0 | 0% |",
-        f"| Outliers | {outlier_issues} | {outlier_issues/train_size*100:.1f}% |" if train_size > 0 else "| Outliers | 0 | 0% |",
+        f"| Label Errors | {label_issues} | {label_issues/train_size*100:.1f}% |"
+        if train_size > 0
+        else "| Label Errors | 0 | 0% |",
+        f"| Outliers | {outlier_issues} | {outlier_issues/train_size*100:.1f}% |"
+        if train_size > 0
+        else "| Outliers | 0 | 0% |",
         f"| Near Duplicates | {near_duplicate_issues} | {near_duplicate_issues/train_size*100:.1f}% |"
         if train_size > 0
         else "| Near Duplicates | 0 | 0% |",
@@ -98,19 +124,25 @@ def _create_markdown_report(
 
     # Add suspect examples section
     if not suspect_examples.empty:
-        lines.extend([
-            "## Suspect Label Examples",
-            "",
-            f"Found **{len(suspect_examples)}** examples with potential label issues.",
-            "",
-            "### Top 10 Most Suspect Examples",
-            "",
-            "| Rank | Label | Label Score | Issue Types | Question |",
-            "|------|-------|-------------|-------------|----------|",
-        ])
+        lines.extend(
+            [
+                "## Suspect Label Examples",
+                "",
+                f"Found **{len(suspect_examples)}** examples with potential label issues.",
+                "",
+                "### Top 10 Most Suspect Examples",
+                "",
+                "| Rank | Label | Label Score | Issue Types | Question |",
+                "|------|-------|-------------|-------------|----------|",
+            ]
+        )
 
         for idx, row in suspect_examples.head(10).iterrows():
-            question = str(row["question"])[:60] + "..." if len(str(row["question"])) > 60 else str(row["question"])
+            question = (
+                str(row["question"])[:60] + "..."
+                if len(str(row["question"])) > 60
+                else str(row["question"])
+            )
             issue_types = []
             if row.get("is_label_issue", False):
                 issue_types.append("label_error")
@@ -125,120 +157,166 @@ def _create_markdown_report(
 
         lines.append("")
     else:
-        lines.extend([
-            "## Suspect Label Examples",
-            "",
-            "No suspect examples found. All labels appear to be correct.",
-            "",
-        ])
+        lines.extend(
+            [
+                "## Suspect Label Examples",
+                "",
+                "No suspect examples found. All labels appear to be correct.",
+                "",
+            ]
+        )
 
     # Add outlier section
     if not outlier_examples.empty:
-        lines.extend([
-            "## Outlier Examples",
-            "",
-            f"Found **{len(outlier_examples)}** outlier examples that may represent edge cases.",
-            "",
-            "### Top 5 Outliers",
-            "",
-            "| Rank | Label | Outlier Score | Question |",
-            "|------|-------|---------------|----------|",
-        ])
+        lines.extend(
+            [
+                "## Outlier Examples",
+                "",
+                f"Found **{len(outlier_examples)}** outlier examples that may represent edge cases.",
+                "",
+                "### Top 5 Outliers",
+                "",
+                "| Rank | Label | Outlier Score | Question |",
+                "|------|-------|---------------|----------|",
+            ]
+        )
 
         for idx, row in outlier_examples.head(5).iterrows():
-            question = str(row["question"])[:60] + "..." if len(str(row["question"])) > 60 else str(row["question"])
-            lines.append(f"| {idx+1} | {row['label']} | {row.get('outlier_score', 'N/A'):.3f} | {question} |")
+            question = (
+                str(row["question"])[:60] + "..."
+                if len(str(row["question"])) > 60
+                else str(row["question"])
+            )
+            lines.append(
+                f"| {idx+1} | {row['label']} | {row.get('outlier_score', 'N/A'):.3f} | {question} |"
+            )
 
         lines.append("")
     else:
-        lines.extend([
-            "## Outlier Examples",
-            "",
-            "No outliers detected.",
-            "",
-        ])
+        lines.extend(
+            [
+                "## Outlier Examples",
+                "",
+                "No outliers detected.",
+                "",
+            ]
+        )
 
     # Add near-duplicate section
     if not near_duplicate_pairs.empty and "question_x" in near_duplicate_pairs.columns:
-        lines.extend([
-            "## Near-Duplicate Pairs",
-            "",
-            f"Found **{len(near_duplicate_pairs)}** near-duplicate pairs that may have inconsistent labels.",
-            "",
-            "### Top 5 Near-Duplicate Pairs",
-            "",
-            "| Rank | Question 1 | Answer 1 | Label 1 | Question 2 | Answer 2 | Label 2 | Distance Score |",
-            "|------|------------|----------|---------|------------|----------|---------|----------------|",
-        ])
+        lines.extend(
+            [
+                "## Near-Duplicate Pairs",
+                "",
+                f"Found **{len(near_duplicate_pairs)}** near-duplicate pairs that may have inconsistent labels.",
+                "",
+                "### Top 5 Near-Duplicate Pairs",
+                "",
+                "| Rank | Question 1 | Answer 1 | Label 1 | Question 2 | Answer 2 | Label 2 | Distance Score |",
+                "|------|------------|----------|---------|------------|----------|---------|----------------|",
+            ]
+        )
 
         for idx, row in near_duplicate_pairs.head(5).iterrows():
-            q1 = str(row["question_x"])[:40] + "..." if len(str(row["question_x"])) > 40 else str(row["question_x"])
-            a1 = str(row["answer_x"])[:30] + "..." if len(str(row["answer_x"])) > 30 else str(row["answer_x"])
-            q2 = str(row["question_y"])[:40] + "..." if len(str(row["question_y"])) > 40 else str(row["question_y"])
-            a2 = str(row["answer_y"])[:30] + "..." if len(str(row["answer_y"])) > 30 else str(row["answer_y"])
+            q1 = (
+                str(row["question_x"])[:40] + "..."
+                if len(str(row["question_x"])) > 40
+                else str(row["question_x"])
+            )
+            a1 = (
+                str(row["answer_x"])[:30] + "..."
+                if len(str(row["answer_x"])) > 30
+                else str(row["answer_x"])
+            )
+            q2 = (
+                str(row["question_y"])[:40] + "..."
+                if len(str(row["question_y"])) > 40
+                else str(row["question_y"])
+            )
+            a2 = (
+                str(row["answer_y"])[:30] + "..."
+                if len(str(row["answer_y"])) > 30
+                else str(row["answer_y"])
+            )
 
-            lines.append(f"| {idx+1} | {q1} | {a1} | {row['label_x']} | {q2} | {a2} | {row['label_y']} | {row.get('distance_score', 'N/A'):.3f} |")
+            lines.append(
+                f"| {idx+1} | {q1} | {a1} | {row['label_x']} | {q2} | {a2} | {row['label_y']} | {row.get('distance_score', 'N/A'):.3f} |"
+            )
 
         lines.append("")
     else:
-        lines.extend([
-            "## Near-Duplicate Pairs",
-            "",
-            "No near-duplicates detected.",
-            "",
-        ])
+        lines.extend(
+            [
+                "## Near-Duplicate Pairs",
+                "",
+                "No near-duplicates detected.",
+                "",
+            ]
+        )
 
     # Add recommendations
-    lines.extend([
-        "## Recommendations",
-        "",
-    ])
+    lines.extend(
+        [
+            "## Recommendations",
+            "",
+        ]
+    )
 
     if label_issues > 0:
-        lines.extend([
-            f"1. **HIGH PRIORITY:** Review {label_issues} suspect examples with potential label errors.",
-            "   - See `suspect_examples.csv` for full list with confidence scores.",
-            "   - Focus on examples with `label_score < 0.5` (lowest confidence).",
-            "",
-        ])
+        lines.extend(
+            [
+                f"1. **HIGH PRIORITY:** Review {label_issues} suspect examples with potential label errors.",
+                "   - See `suspect_examples.csv` for full list with confidence scores.",
+                "   - Focus on examples with `label_score < 0.5` (lowest confidence).",
+                "",
+            ]
+        )
 
     if outlier_issues > 0:
-        lines.extend([
-            f"2. **MEDIUM PRIORITY:** Examine {outlier_issues} outlier examples for edge cases.",
-            "   - These may represent rare patterns or data quality issues.",
-            "   - See `outlier_examples.csv` for full list.",
-            "",
-        ])
+        lines.extend(
+            [
+                f"2. **MEDIUM PRIORITY:** Examine {outlier_issues} outlier examples for edge cases.",
+                "   - These may represent rare patterns or data quality issues.",
+                "   - See `outlier_examples.csv` for full list.",
+                "",
+            ]
+        )
 
     if near_duplicate_issues > 0:
-        lines.extend([
-            f"3. **LOW PRIORITY:** Check {near_duplicate_issues} near-duplicate pairs for label consistency.",
-            "   - Similar examples with different labels may indicate annotation inconsistency.",
-            "   - See `near_duplicate_pairs.csv` for full list.",
-            "",
-        ])
+        lines.extend(
+            [
+                f"3. **LOW PRIORITY:** Check {near_duplicate_issues} near-duplicate pairs for label consistency.",
+                "   - Similar examples with different labels may indicate annotation inconsistency.",
+                "   - See `near_duplicate_pairs.csv` for full list.",
+                "",
+            ]
+        )
 
     if label_issues == 0 and outlier_issues == 0 and near_duplicate_issues == 0:
-        lines.extend([
-            "1. **EXCELLENT:** No label quality issues detected.",
-            "   - Training data appears to be high quality.",
-            "   - Proceed with model training.",
-            "",
-        ])
+        lines.extend(
+            [
+                "1. **EXCELLENT:** No label quality issues detected.",
+                "   - Training data appears to be high quality.",
+                "   - Proceed with model training.",
+                "",
+            ]
+        )
 
-    lines.extend([
-        "## Next Steps",
-        "",
-        "1. Review suspect examples and correct labels if needed",
-        "2. Update source data with corrected labels",
-        "3. Re-run diagnostics to verify improvements",
-        "4. Re-train models with cleaned data",
-        "",
-        f"---",
-        f"",
-        f"*Generated by Cleanlab label diagnostics*",
-        f"*Git SHA: {_git_sha()}*",
-    ])
+    lines.extend(
+        [
+            "## Next Steps",
+            "",
+            "1. Review suspect examples and correct labels if needed",
+            "2. Update source data with corrected labels",
+            "3. Re-run diagnostics to verify improvements",
+            "4. Re-train models with cleaned data",
+            "",
+            f"---",
+            f"",
+            f"*Generated by Cleanlab label diagnostics*",
+            f"*Git SHA: {_git_sha()}*",
+        ]
+    )
 
     report_path.write_text("\n".join(lines), encoding="utf-8")
     return report_path
@@ -264,7 +342,9 @@ def main() -> int:
 
     # Run diagnostics
     print("Running Cleanlab label quality diagnostics...")
-    datalab, issue_summary = run_label_diagnostics(frame, random_state=args.random_state)
+    datalab, issue_summary = run_label_diagnostics(
+        frame, random_state=args.random_state
+    )
 
     # Get training data info (issue_summary only contains training data)
     train_size = len(issue_summary)
@@ -276,7 +356,9 @@ def main() -> int:
         suspect_examples["label_score"] = issue_summary.loc[suspect_mask, "label_score"]
         suspect_examples["is_label_issue"] = True
         suspect_examples["is_outlier_issue"] = (
-            issue_summary.loc[suspect_mask, "is_outlier_issue"] if "is_outlier_issue" in issue_summary.columns else False
+            issue_summary.loc[suspect_mask, "is_outlier_issue"]
+            if "is_outlier_issue" in issue_summary.columns
+            else False
         )
         suspect_examples["is_near_duplicate_issue"] = (
             issue_summary.loc[suspect_mask, "is_near_duplicate_issue"]
@@ -291,8 +373,12 @@ def main() -> int:
     if "is_outlier_issue" in issue_summary.columns:
         outlier_mask = issue_summary["is_outlier_issue"]
         outlier_examples = frame.loc[issue_summary[outlier_mask].index].copy()
-        outlier_examples["outlier_score"] = issue_summary.loc[outlier_mask, "outlier_score"]
-        outlier_examples = outlier_examples.sort_values("outlier_score", ascending=False)
+        outlier_examples["outlier_score"] = issue_summary.loc[
+            outlier_mask, "outlier_score"
+        ]
+        outlier_examples = outlier_examples.sort_values(
+            "outlier_score", ascending=False
+        )
     else:
         outlier_examples = pd.DataFrame()
 
@@ -304,7 +390,9 @@ def main() -> int:
             # Get examples with near-duplicate issues
             duplicate_examples = frame.loc[issue_summary[duplicate_mask].index].copy()
             # Pair up similar examples (simplified approach)
-            near_duplicate_pairs = duplicate_examples.head(100).reset_index()  # Limit to 100 for safety
+            near_duplicate_pairs = duplicate_examples.head(
+                100
+            ).reset_index()  # Limit to 100 for safety
 
     # Save outputs
     suspect_path = output_root / "suspect_examples.csv"
@@ -323,9 +411,13 @@ def main() -> int:
     # Create summary JSON
     summary = {
         "training_size": train_size,
-        "label_issues": int(issue_summary["is_label_issue"].sum()) if "is_label_issue" in issue_summary.columns else 0,
+        "label_issues": int(issue_summary["is_label_issue"].sum())
+        if "is_label_issue" in issue_summary.columns
+        else 0,
         "outlier_issues": (
-            int(issue_summary["is_outlier_issue"].sum()) if "is_outlier_issue" in issue_summary.columns else 0
+            int(issue_summary["is_outlier_issue"].sum())
+            if "is_outlier_issue" in issue_summary.columns
+            else 0
         ),
         "near_duplicate_issues": (
             int(issue_summary["is_near_duplicate_issue"].sum())
@@ -342,12 +434,19 @@ def main() -> int:
     }
 
     summary_path = output_root / "label_diagnostics_summary.json"
-    summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    summary_path.write_text(
+        json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(f"Saved summary: {summary_path}")
 
     # Create markdown report
     report_path = _create_markdown_report(
-        output_root, issue_summary, suspect_examples, outlier_examples, near_duplicate_pairs, train_size
+        output_root,
+        issue_summary,
+        suspect_examples,
+        outlier_examples,
+        near_duplicate_pairs,
+        train_size,
     )
     print(f"Saved report: {report_path}")
 

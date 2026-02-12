@@ -46,7 +46,11 @@ def _readability(frame: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     if frame.shape[0] > max_docs:
         frame = (
             frame.groupby("label", group_keys=False)
-            .apply(lambda part: part.sample(max(1, int(max_docs * len(part) / len(frame))), random_state=42))
+            .apply(
+                lambda part: part.sample(
+                    max(1, int(max_docs * len(part) / len(frame))), random_state=42
+                )
+            )
             .reset_index(drop=True)
         )
 
@@ -64,7 +68,9 @@ def _readability(frame: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
         )
     raw = pd.DataFrame(rows)
     agg = (
-        raw.groupby("label", dropna=False)[["flesch_reading_ease", "flesch_kincaid_grade", "smog_index"]]
+        raw.groupby("label", dropna=False)[
+            ["flesch_reading_ease", "flesch_kincaid_grade", "smog_index"]
+        ]
         .mean()
         .reset_index()
         .sort_values("label")
@@ -78,7 +84,11 @@ def _pos(frame: pd.DataFrame, nlp) -> pd.DataFrame:
     if frame.shape[0] > max_docs:
         sampled = (
             frame.groupby("label", group_keys=False)
-            .apply(lambda part: part.sample(max(1, int(max_docs * len(part) / len(frame))), random_state=42))
+            .apply(
+                lambda part: part.sample(
+                    max(1, int(max_docs * len(part) / len(frame))), random_state=42
+                )
+            )
             .reset_index(drop=True)
         )
     else:
@@ -89,7 +99,9 @@ def _pos(frame: pd.DataFrame, nlp) -> pd.DataFrame:
 
     labels = sampled["label"].astype(str).tolist()
     texts = sampled["answer"].astype(str).tolist()
-    pipeline_disabled = [name for name in ("ner", "parser", "lemmatizer") if name in nlp.pipe_names]
+    pipeline_disabled = [
+        name for name in ("ner", "parser", "lemmatizer") if name in nlp.pipe_names
+    ]
     docs = nlp.pipe(texts, batch_size=128, disable=pipeline_disabled)
     for label, doc in zip(labels, docs):
         counts = counts_by_label.setdefault(label, {})
@@ -118,7 +130,9 @@ def _pos(frame: pd.DataFrame, nlp) -> pd.DataFrame:
 
 def _discourse(frame: pd.DataFrame) -> pd.DataFrame:
     rows = []
-    for label, group in frame.assign(label=frame["label"].astype(str)).groupby("label", dropna=False):
+    for label, group in frame.assign(label=frame["label"].astype(str)).groupby(
+        "label", dropna=False
+    ):
         hedging_hits = 0
         evasive_hits = 0
         total_rows = int(group.shape[0])
@@ -169,7 +183,9 @@ def run_linguistic_quality(
             generated.append(plot_path)
 
         interpretation_lines.append("## Readability")
-        interpretation_lines.append("Readability metrics are aggregated by label for cross-group comparison.")
+        interpretation_lines.append(
+            "Readability metrics are aggregated by label for cross-group comparison."
+        )
         interpretation_lines.append("")
 
     if "pos" in sections_set:
@@ -179,7 +195,9 @@ def run_linguistic_quality(
         generated.append(pos_csv)
 
         interpretation_lines.append("## POS")
-        interpretation_lines.append("POS token proportions are normalized per label to support fair comparison.")
+        interpretation_lines.append(
+            "POS token proportions are normalized per label to support fair comparison."
+        )
         interpretation_lines.append("")
 
     if "discourse" in sections_set:
@@ -194,7 +212,9 @@ def run_linguistic_quality(
             generated.append(plot_path)
 
         interpretation_lines.append("## Discourse")
-        interpretation_lines.append("Hedging and evasive cue frequencies indicate potential response-style differences.")
+        interpretation_lines.append(
+            "Hedging and evasive cue frequencies indicate potential response-style differences."
+        )
         interpretation_lines.append("")
 
     interpretation = out_dir / "linguistic_interpretation.md"
@@ -206,7 +226,10 @@ def run_linguistic_quality(
         stage="linguistic_quality",
         generated_files=generated,
         source_data=source_data,
-        metadata={"sections": sorted(sections_set), "spacy_model": getattr(nlp, "meta", {}).get("name", "blank-en")},
+        metadata={
+            "sections": sorted(sections_set),
+            "spacy_model": getattr(nlp, "meta", {}).get("name", "blank-en"),
+        },
     )
     generated.append(Path(output_root) / "artifact_index.json")
     return generated

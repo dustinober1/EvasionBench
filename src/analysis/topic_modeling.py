@@ -43,7 +43,9 @@ def _top_terms(model: NMF, feature_names: list[str], n_terms: int = 12) -> pd.Da
 
 
 def _plot_topic_prevalence(prevalence: pd.DataFrame, out_path: Path) -> None:
-    pivot = prevalence.pivot(index="topic", columns="label", values="mean_weight").fillna(0.0)
+    pivot = prevalence.pivot(
+        index="topic", columns="label", values="mean_weight"
+    ).fillna(0.0)
     pivot = pivot.sort_index()
     pivot.plot(kind="bar", figsize=(10, 5))
     plt.ylabel("mean topic weight")
@@ -71,11 +73,15 @@ def run_topic_modeling(
     answers = _safe_text(frame["answer"])
     labels = frame["label"].astype(str)
 
-    vectorizer = TfidfVectorizer(lowercase=True, stop_words="english", min_df=2, max_df=0.95)
+    vectorizer = TfidfVectorizer(
+        lowercase=True, stop_words="english", min_df=2, max_df=0.95
+    )
     dtm = vectorizer.fit_transform(answers)
 
     n_topics = max(2, min(int(topics), max(2, min(dtm.shape[0] - 1, dtm.shape[1] - 1))))
-    model = NMF(n_components=n_topics, random_state=int(seed), init="nndsvda", max_iter=400)
+    model = NMF(
+        n_components=n_topics, random_state=int(seed), init="nndsvda", max_iter=400
+    )
     doc_topics = model.fit_transform(dtm)
 
     feature_names = vectorizer.get_feature_names_out().tolist()
@@ -84,7 +90,9 @@ def run_topic_modeling(
     top_terms.to_csv(top_terms_path, index=False)
     generated.append(top_terms_path)
 
-    doc_df = pd.DataFrame(doc_topics, columns=[f"topic_{i}" for i in range(doc_topics.shape[1])])
+    doc_df = pd.DataFrame(
+        doc_topics, columns=[f"topic_{i}" for i in range(doc_topics.shape[1])]
+    )
     doc_df.insert(0, "label", labels.to_list())
     doc_df.insert(0, "row_id", list(range(len(doc_df))))
     doc_topics_path = out_dir / "document_topics.parquet"
@@ -99,7 +107,11 @@ def run_topic_modeling(
             prevalence_rows.append(
                 {"topic": int(topic), "label": str(label), "mean_weight": float(value)}
             )
-    prevalence = pd.DataFrame(prevalence_rows).sort_values(["topic", "label"]).reset_index(drop=True)
+    prevalence = (
+        pd.DataFrame(prevalence_rows)
+        .sort_values(["topic", "label"])
+        .reset_index(drop=True)
+    )
 
     prevalence_csv = out_dir / "topic_prevalence_by_label.csv"
     prevalence.to_csv(prevalence_csv, index=False)
@@ -111,7 +123,9 @@ def run_topic_modeling(
 
     prevalence_deltas: list[dict[str, object]] = []
     for topic in sorted(prevalence["topic"].unique().tolist()):
-        topic_slice = prevalence.loc[prevalence["topic"] == topic].sort_values("mean_weight")
+        topic_slice = prevalence.loc[prevalence["topic"] == topic].sort_values(
+            "mean_weight"
+        )
         if topic_slice.shape[0] < 2:
             continue
         low = topic_slice.iloc[0]
@@ -143,7 +157,10 @@ def run_topic_modeling(
     summary_json = out_dir / "topic_summary.json"
     summary_md = out_dir / "topic_summary.md"
     if emit_summary:
-        summary_json.write_text(json.dumps(summary_payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        summary_json.write_text(
+            json.dumps(summary_payload, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
         summary_md.write_text(
             "# Topic Modeling Summary\n\n"
             f"- Topics: {n_topics}\n"

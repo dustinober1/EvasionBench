@@ -95,7 +95,13 @@ def test_diagnostics_schema(sample_dataframe):
         # Check summary JSON has required keys
         summary_path = output_root / "label_diagnostics_summary.json"
         summary = json.loads(summary_path.read_text())
-        required_keys = ["training_size", "label_issues", "outlier_issues", "near_duplicate_issues", "quality_score"]
+        required_keys = [
+            "training_size",
+            "label_issues",
+            "outlier_issues",
+            "near_duplicate_issues",
+            "quality_score",
+        ]
         for key in required_keys:
             assert key in summary, f"Missing key: {key}"
 
@@ -171,25 +177,33 @@ def test_diagnostics_csv_format(sample_dataframe):
 
         # Check suspect examples CSV format
         suspect_path = output_root / "suspect_examples.csv"
-        if suspect_path.exists() and suspect_path.stat().st_size > 0:  # File exists and not empty
+        if (
+            suspect_path.exists() and suspect_path.stat().st_size > 0
+        ):  # File exists and not empty
             try:
                 suspect_df = pd.read_csv(suspect_path)
                 # Check required columns
                 required_cols = ["question", "answer", "label"]
                 for col in required_cols:
-                    assert col in suspect_df.columns, f"Missing column in suspect CSV: {col}"
+                    assert (
+                        col in suspect_df.columns
+                    ), f"Missing column in suspect CSV: {col}"
             except pd.errors.EmptyDataError:
                 # Empty CSV is acceptable when no issues are found
                 pass
 
         # Check outlier examples CSV format
         outlier_path = output_root / "outlier_examples.csv"
-        if outlier_path.exists() and outlier_path.stat().st_size > 0:  # File exists and not empty
+        if (
+            outlier_path.exists() and outlier_path.stat().st_size > 0
+        ):  # File exists and not empty
             try:
                 outlier_df = pd.read_csv(outlier_path)
                 required_cols = ["question", "answer", "label"]
                 for col in required_cols:
-                    assert col in outlier_df.columns, f"Missing column in outlier CSV: {col}"
+                    assert (
+                        col in outlier_df.columns
+                    ), f"Missing column in outlier CSV: {col}"
             except pd.errors.EmptyDataError:
                 # Empty CSV is acceptable when no issues are found
                 pass
@@ -197,7 +211,9 @@ def test_diagnostics_csv_format(sample_dataframe):
 
 def test_compute_pred_probs_for_diagnostics(sample_dataframe):
     """Test that prediction probabilities are computed correctly."""
-    pred_probs, X, vectorizer, model = compute_pred_probs_for_diagnostics(sample_dataframe, random_state=42)
+    pred_probs, X, vectorizer, model = compute_pred_probs_for_diagnostics(
+        sample_dataframe, random_state=42
+    )
 
     # Check output shapes
     assert pred_probs.shape[0] == len(sample_dataframe)

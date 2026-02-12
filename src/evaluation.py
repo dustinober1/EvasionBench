@@ -37,7 +37,9 @@ def compute_classification_metrics(
     y_pred_seq = [str(v) for v in y_pred]
     return {
         "accuracy": float(accuracy_score(y_true_seq, y_pred_seq)),
-        "f1_macro": float(f1_score(y_true_seq, y_pred_seq, average="macro", zero_division=0)),
+        "f1_macro": float(
+            f1_score(y_true_seq, y_pred_seq, average="macro", zero_division=0)
+        ),
         "precision_macro": float(
             precision_score(y_true_seq, y_pred_seq, average="macro", zero_division=0)
         ),
@@ -76,16 +78,25 @@ def write_evaluation_artifacts(
     metrics_path = output_dir / "metrics.json"
     metadata_path = output_dir / "run_metadata.json"
 
-    report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    report_path.write_text(
+        json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     matrix_path.write_text(
-        json.dumps({"labels": labels, "confusion_matrix": matrix}, indent=2, sort_keys=True) + "\n",
+        json.dumps(
+            {"labels": labels, "confusion_matrix": matrix}, indent=2, sort_keys=True
+        )
+        + "\n",
         encoding="utf-8",
     )
-    metrics_path.write_text(json.dumps(metrics, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    metrics_path.write_text(
+        json.dumps(metrics, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
     payload = dict(metadata or {})
     payload.setdefault("labels", labels)
-    metadata_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    metadata_path.write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
     return [metrics_path, report_path, matrix_path, metadata_path]
 
@@ -94,21 +105,27 @@ def validate_evaluation_contract(output_dir: str | Path) -> None:
     root = Path(output_dir)
     missing = [name for name in REQUIRED_EVAL_FILES if not (root / name).exists()]
     if missing:
-        raise ValueError(f"Missing required evaluation artifact files: {', '.join(missing)}")
+        raise ValueError(
+            f"Missing required evaluation artifact files: {', '.join(missing)}"
+        )
 
     metrics = json.loads((root / "metrics.json").read_text(encoding="utf-8"))
     for key in ("accuracy", "f1_macro", "precision_macro", "recall_macro"):
         if key not in metrics:
             raise ValueError(f"metrics.json missing required key: {key}")
 
-    report = json.loads((root / "classification_report.json").read_text(encoding="utf-8"))
+    report = json.loads(
+        (root / "classification_report.json").read_text(encoding="utf-8")
+    )
     for key in ("accuracy", "macro avg", "weighted avg"):
         if key not in report:
             raise ValueError(f"classification_report.json missing required key: {key}")
 
     matrix = json.loads((root / "confusion_matrix.json").read_text(encoding="utf-8"))
     if "labels" not in matrix or "confusion_matrix" not in matrix:
-        raise ValueError("confusion_matrix.json missing required keys: labels, confusion_matrix")
+        raise ValueError(
+            "confusion_matrix.json missing required keys: labels, confusion_matrix"
+        )
 
     metadata = json.loads((root / "run_metadata.json").read_text(encoding="utf-8"))
     for key in ("model_family", "split_seed", "feature_config"):

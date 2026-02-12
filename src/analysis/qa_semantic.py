@@ -138,7 +138,10 @@ def run_qa_semantic(
     hypothesis_md = out_dir / "hypothesis_summary.md"
     hypothesis_summary = _build_hypothesis_summary(summary)
     if emit_hypothesis_summary:
-        hypothesis_path.write_text(json.dumps(hypothesis_summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        hypothesis_path.write_text(
+            json.dumps(hypothesis_summary, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
         md_lines = ["# Semantic Similarity Hypothesis Summary", ""]
         for item in hypothesis_summary["hypotheses"]:
             md_lines.extend([f"## {item['id']}: {item['name']}", item["finding"], ""])

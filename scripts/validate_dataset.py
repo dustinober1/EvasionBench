@@ -56,7 +56,6 @@ def validate_dataset(data_path: Path, contract_path: Path) -> None:
         )
 
 
-
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data", required=True, help="Parquet data path")
