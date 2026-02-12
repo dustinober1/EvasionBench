@@ -261,10 +261,16 @@ with tab3:
                 cm_data = json.load(f)
 
             st.subheader("Confusion Matrix")
-            df_cm = pd.DataFrame(
-                cm_data["matrix"], index=cm_data["labels"], columns=cm_data["labels"]
-            )
-            st.dataframe(df_cm, use_container_width=True)
+            matrix = cm_data.get("matrix", cm_data.get("confusion_matrix"))
+            labels = cm_data.get("labels")
+            if matrix is None:
+                st.warning("Confusion matrix data is missing expected keys.")
+            elif labels is None:
+                df_cm = pd.DataFrame(matrix)
+                st.dataframe(df_cm, use_container_width=True)
+            else:
+                df_cm = pd.DataFrame(matrix, index=labels, columns=labels)
+                st.dataframe(df_cm, use_container_width=True)
     else:
         st.info("No sample predictions available.")
 
