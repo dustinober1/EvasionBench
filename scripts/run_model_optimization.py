@@ -18,7 +18,7 @@ from sklearn.calibration import CalibratedClassifierCV
 from sklearn.decomposition import TruncatedSVD
 from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.metrics import classification_report
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.pipeline import Pipeline
@@ -31,7 +31,7 @@ if str(ROOT) not in sys.path:
 from src.evaluation import compute_classification_metrics, write_evaluation_artifacts
 
 DEFAULT_ACCURACY_FLOOR = 0.6431560071727436
-SUPPORTED_FAMILIES = ("logreg", "svm", "tree", "boosting")
+SUPPORTED_FAMILIES = ("logreg", "sgd", "svm", "tree", "boosting")
 
 
 class SafeTruncatedSVD(BaseEstimator, TransformerMixin):
@@ -112,7 +112,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--accuracy-floor", type=float, default=DEFAULT_ACCURACY_FLOOR)
     parser.add_argument(
         "--families",
-        choices=["all", *SUPPORTED_FAMILIES],
+        choices=["all", "nonlogreg", *SUPPORTED_FAMILIES],
         default="all",
         help="Model families to optimize",
     )
@@ -137,6 +137,18 @@ def parse_args() -> argparse.Namespace:
         help="Calibration method for linear SVM candidates",
     )
     parser.add_argument(
+        "--sgd-calibration-method",
+        choices=["none", "sigmoid"],
+        default="sigmoid",
+        help="Calibration method for SGD hinge candidates",
+    )
+    parser.add_argument(
+        "--sgd-search-profile",
+        choices=["phase8_3"],
+        default="phase8_3",
+        help="SGD candidate grid profile",
+    )
+    parser.add_argument(
         "--svm-search-profile",
         choices=["phase8_2", "phase8_2_wide"],
         default="phase8_2",
@@ -154,6 +166,8 @@ def parse_args() -> argparse.Namespace:
 def _selected_families(raw: str) -> list[str]:
     if raw == "all":
         return list(SUPPORTED_FAMILIES)
+    if raw == "nonlogreg":
+        return [family for family in SUPPORTED_FAMILIES if family != "logreg"]
     return [raw]
 
 
@@ -460,6 +474,103 @@ def _svm_candidates(
     return candidates
 
 
+def _sgd_candidates(
+    random_state: int,
+    calibration_method: str,
+    search_profile: str,
+) -> list[Candidate]:
+    if search_profile == "phase8_3":
+        class_weight_options: list[Any] = [
+            None,
+            "balanced",
+            {"direct": 1.0, "intermediate": 1.1, "fully_evasive": 1.4},
+        ]
+        alpha_options = [1e-5, 3e-5]
+        loss_options = ["hinge", "log_loss"]
+        ngram_options = [(1, 2)]
+        min_df_options = [1, 2]
+        max_features_options = [8000]
+        max_iter_options = [5000]
+    else:
+        raise ValueError(f"Unsupported SGD search profile: {search_profile}")
+
+    candidates: list[Candidate] = []
+    trial_idx = 1
+
+    for loss in loss_options:
+        for alpha in alpha_options:
+            for ngram_range in ngram_options:
+                for min_df in min_df_options:
+                    for max_features in max_features_options:
+                        for max_iter in max_iter_options:
+                            for class_weight in class_weight_options:
+                                params = {
+                                    "loss": loss,
+                                    "alpha": alpha,
+                                    "ngram_range": ngram_range,
+                                    "min_df": min_df,
+                                    "max_features": max_features,
+                                    "class_weight": class_weight,
+                                    "max_iter": max_iter,
+                                    "tol": 1e-3,
+                                }
+                                pipeline = Pipeline(
+                                    steps=[
+                                        (
+                                            "tfidf",
+                                            TfidfVectorizer(
+                                                ngram_range=ngram_range,
+                                                min_df=min_df,
+                                                max_features=max_features,
+                                            ),
+                                        ),
+                                        (
+                                            "clf",
+                                            SGDClassifier(
+                                                loss=loss,
+                                                alpha=alpha,
+                                                class_weight=class_weight,
+                                                max_iter=max_iter,
+                                                tol=1e-3,
+                                                random_state=random_state,
+                                            ),
+                                        ),
+                                    ]
+                                )
+
+                                trial_id = f"sgd_{trial_idx:04d}"
+                                if loss == "hinge" and calibration_method != "none":
+                                    calibrated = CalibratedClassifierCV(
+                                        estimator=pipeline,
+                                        method=calibration_method,
+                                        cv=3,
+                                    )
+                                    candidates.append(
+                                        Candidate(
+                                            trial_id=trial_id,
+                                            family="sgd",
+                                            estimator=calibrated,
+                                            params={
+                                                **params,
+                                                "calibration": calibration_method,
+                                                "calibration_cv": 3,
+                                            },
+                                        )
+                                    )
+                                else:
+                                    candidates.append(
+                                        Candidate(
+                                            trial_id=trial_id,
+                                            family="sgd",
+                                            estimator=pipeline,
+                                            params={**params, "calibration": "none"},
+                                        )
+                                    )
+                                trial_idx += 1
+
+    return candidates
+
+
 def _boosting_candidates(random_state: int) -> list[Candidate]:
     candidates: list[Candidate] = []
     trial_idx = 1
@@ -522,6 +633,8 @@ def _candidate_space(
     random_state: int,
     calibration_method: str,
     logreg_search_profile: str,
+    sgd_calibration_method: str,
+    sgd_search_profile: str,
     svm_calibration_method: str,
     svm_search_profile: str,
 ) -> list[Candidate]:
@@ -532,6 +645,14 @@ def _candidate_space(
                 random_state,
                 calibration_method,
                 logreg_search_profile,
+            )
+        )
+    if "sgd" in families:
+        candidates.extend(
+            _sgd_candidates(
+                random_state,
+                sgd_calibration_method,
+                sgd_search_profile,
             )
         )
     if "svm" in families:
@@ -725,6 +846,8 @@ def main() -> int:
         args.random_state,
         args.calibration_method,
         args.logreg_search_profile,
+        args.sgd_calibration_method,
+        args.sgd_search_profile,
         args.svm_calibration_method,
         args.svm_search_profile,
     )
@@ -777,6 +900,8 @@ def main() -> int:
             "split": split_info,
             "families": families,
             "logreg_search_profile": args.logreg_search_profile,
+            "sgd_calibration_method": args.sgd_calibration_method,
+            "sgd_search_profile": args.sgd_search_profile,
             "svm_calibration_method": args.svm_calibration_method,
             "svm_search_profile": args.svm_search_profile,
             "trial_count": len(results),
@@ -854,6 +979,8 @@ def main() -> int:
                 "holdout_size": args.holdout_size,
                 "families": json.dumps(families),
                 "logreg_search_profile": args.logreg_search_profile,
+                "sgd_calibration_method": args.sgd_calibration_method,
+                "sgd_search_profile": args.sgd_search_profile,
                 "svm_calibration_method": args.svm_calibration_method,
                 "svm_search_profile": args.svm_search_profile,
                 "trial_count": len(results),
