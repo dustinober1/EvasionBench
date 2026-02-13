@@ -15,15 +15,15 @@ Use `scripts/build_pages_dataset.py` as the single source of truth for publicati
 - `artifacts/reports/phase7/report.html`
 - `artifacts/reports/phase7/report.pdf`
 - `artifacts/reports/phase7/report_traceability.json`
+
+Optional input:
+
+- `artifacts/reports/phase7/run_summary.json`
 - `artifacts/analysis/phase3/artifact_index.json`
 - `artifacts/analysis/phase4/artifact_index.json`
 - `artifacts/models/phase5/model_comparison/summary.json`
 - `artifacts/diagnostics/phase6/label_diagnostics_summary.json`
 - `artifacts/explainability/phase6/xai_summary.json`
-
-Optional input:
-
-- `artifacts/reports/phase7/run_summary.json`
 
 ## Publish Rules
 

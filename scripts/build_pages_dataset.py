@@ -84,6 +84,24 @@ class BuildInputs:
     xai_summary: Path
 
 
+REQUIRED_INPUT_FIELDS = (
+    "manifest",
+    "report_html",
+    "report_pdf",
+    "report_markdown",
+    "report_traceability",
+    "report_provenance",
+)
+OPTIONAL_INPUT_FIELDS = (
+    "report_run_summary",
+    "phase3_index",
+    "phase4_index",
+    "model_comparison_summary",
+    "diagnostics_summary",
+    "xai_summary",
+)
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -196,6 +214,12 @@ def _load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _load_json_if_exists(path: Path) -> dict[str, Any] | None:
+    if not path.exists():
+        return None
+    return _load_json(path)
+
+
 def _normalize_absolute_path(value: str, *, project_root: Path) -> str:
     path_value = Path(value)
     if not path_value.is_absolute():
@@ -267,12 +291,10 @@ def _artifact_is_publishable(path: Path) -> bool:
     return False
 
 
-def _validate_required_inputs(inputs: BuildInputs) -> None:
+def _validate_required_inputs(inputs: BuildInputs) -> list[Path]:
     missing: list[str] = []
-    for field in inputs.__dataclass_fields__.keys():
+    for field in REQUIRED_INPUT_FIELDS:
         target = getattr(inputs, field)
-        if field == "report_run_summary":
-            continue
         if not target.exists():
             missing.append(normalize_path(target, base=ROOT))
 
@@ -280,6 +302,14 @@ def _validate_required_inputs(inputs: BuildInputs) -> None:
         raise PagesDatasetBuildError(
             "Missing required publication inputs:\n- " + "\n- ".join(missing)
         )
+
+    missing_optional: list[Path] = []
+    for field in OPTIONAL_INPUT_FIELDS:
+        target = getattr(inputs, field)
+        if not target.exists():
+            missing_optional.append(target)
+
+    return missing_optional
 
 
 def _register_candidate(
@@ -441,21 +471,54 @@ def build_pages_dataset(args: argparse.Namespace) -> Path:
         xai_summary=_resolve(args.xai_summary, project_root=project_root),
     )
 
-    _validate_required_inputs(inputs)
+    missing_optional_inputs = _validate_required_inputs(inputs)
+    for missing in missing_optional_inputs:
+        print(
+            "warning: optional publication input not found: "
+            + normalize_path(missing, base=project_root)
+        )
 
     manifest = load_report_manifest(inputs.manifest)
     report_context = build_report_context(manifest, project_root=project_root)
 
-    phase3_index = _load_json(inputs.phase3_index)
-    phase4_index = _load_json(inputs.phase4_index)
-    model_comparison_summary = _sanitize_paths(
-        _load_json(inputs.model_comparison_summary), project_root=project_root
+    phase3_index = _sanitize_paths(
+        _load_json_if_exists(inputs.phase3_index) or {"phase": "phase3", "entries": []},
+        project_root=project_root,
     )
+    phase4_index = _sanitize_paths(
+        _load_json_if_exists(inputs.phase4_index) or {"phase": "phase4", "entries": []},
+        project_root=project_root,
+    )
+
+    loaded_model_summary = _load_json_if_exists(inputs.model_comparison_summary)
+    if loaded_model_summary is None:
+        fallback_models: dict[str, Any] = {}
+        if report_context.get(
+            "best_classical_family"
+        ) != "unknown" and report_context.get("best_classical_metrics"):
+            fallback_models[str(report_context["best_classical_family"])] = dict(
+                report_context["best_classical_metrics"]
+            )
+        model_comparison_summary = {
+            "best_model_family": report_context.get("best_classical_family", "unknown"),
+            "models": fallback_models,
+            "artifacts": {},
+        }
+    else:
+        model_comparison_summary = loaded_model_summary
+    model_comparison_summary = _sanitize_paths(
+        model_comparison_summary, project_root=project_root
+    )
+
     diagnostics_summary = _sanitize_paths(
-        _load_json(inputs.diagnostics_summary), project_root=project_root
+        _load_json_if_exists(inputs.diagnostics_summary)
+        or dict(report_context.get("diagnostics_summary", {})),
+        project_root=project_root,
     )
     xai_summary = _sanitize_paths(
-        _load_json(inputs.xai_summary), project_root=project_root
+        _load_json_if_exists(inputs.xai_summary)
+        or dict(report_context.get("xai_summary", {})),
+        project_root=project_root,
     )
 
     report_run_summary: dict[str, Any] = {}

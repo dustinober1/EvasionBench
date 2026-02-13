@@ -269,3 +269,40 @@ def test_pages_dataset_outputs_and_sanitizes_paths(tmp_path: Path) -> None:
 
     assert site_data["summary"]["published_assets"] >= 10
     assert site_data["downloads"]["report_html"]
+
+
+def test_pages_dataset_allows_missing_optional_inputs(tmp_path: Path) -> None:
+    manifest_path = _fixture_project(tmp_path)
+    publish_root = tmp_path / "artifacts/publish"
+
+    (tmp_path / "artifacts/analysis/phase3/artifact_index.json").unlink()
+    (tmp_path / "artifacts/analysis/phase4/artifact_index.json").unlink()
+    (tmp_path / "artifacts/models/phase5/model_comparison/summary.json").unlink()
+    (tmp_path / "artifacts/diagnostics/phase6/label_diagnostics_summary.json").unlink()
+    (tmp_path / "artifacts/explainability/phase6/xai_summary.json").unlink()
+
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "scripts/build_pages_dataset.py",
+            "--manifest",
+            str(manifest_path),
+            "--output-root",
+            str(publish_root),
+            "--project-root",
+            str(tmp_path),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert proc.returncode == 0, proc.stderr
+
+    site_data = json.loads(
+        (publish_root / "data/site_data.json").read_text(encoding="utf-8")
+    )
+    assert site_data["analysis_indexes"]["phase3"]["entries"] == []
+    assert site_data["analysis_indexes"]["phase4"]["entries"] == []
+    assert "best_model_family" in site_data
