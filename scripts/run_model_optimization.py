@@ -22,6 +22,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.pipeline import Pipeline
+from sklearn.svm import LinearSVC
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -30,7 +31,7 @@ if str(ROOT) not in sys.path:
 from src.evaluation import compute_classification_metrics, write_evaluation_artifacts
 
 DEFAULT_ACCURACY_FLOOR = 0.6431560071727436
-SUPPORTED_FAMILIES = ("logreg", "tree", "boosting")
+SUPPORTED_FAMILIES = ("logreg", "svm", "tree", "boosting")
 
 
 class SafeTruncatedSVD(BaseEstimator, TransformerMixin):
@@ -129,6 +130,18 @@ def parse_args() -> argparse.Namespace:
         default="none",
         help="Enable calibration candidates for logistic regression",
     )
+    parser.add_argument(
+        "--svm-calibration-method",
+        choices=["none", "sigmoid"],
+        default="sigmoid",
+        help="Calibration method for linear SVM candidates",
+    )
+    parser.add_argument(
+        "--logreg-search-profile",
+        choices=["phase8", "phase8_1"],
+        default="phase8",
+        help="Logistic regression candidate grid profile",
+    )
     return parser.parse_args()
 
 
@@ -180,17 +193,38 @@ def _split_holdout(
     return train_df, holdout_df, split_info
 
 
-def _logreg_candidates(random_state: int, calibration_method: str) -> list[Candidate]:
-    class_weight_options: list[Any] = [
-        "balanced",
-        {"direct": 1.0, "intermediate": 1.2, "fully_evasive": 2.2},
-    ]
-    c_options = [0.2, 0.3, 0.5, 0.8]
-    ngram_options = [(1, 2)]
-    min_df_options = [1, 2, 3]
-    max_features_options = [8000, 10000, 15000]
-    solver_options = ["lbfgs"]
-    max_iter_options = [2000]
+def _logreg_candidates(
+    random_state: int,
+    calibration_method: str,
+    search_profile: str,
+) -> list[Candidate]:
+    if search_profile == "phase8_1":
+        class_weight_options: list[Any] = [
+            "balanced",
+            None,
+            {"direct": 1.0, "intermediate": 1.1, "fully_evasive": 1.4},
+            {"direct": 1.0, "intermediate": 1.1, "fully_evasive": 1.6},
+            {"direct": 1.0, "intermediate": 1.2, "fully_evasive": 1.8},
+            {"direct": 1.0, "intermediate": 1.2, "fully_evasive": 2.0},
+            {"direct": 1.0, "intermediate": 1.2, "fully_evasive": 2.2},
+        ]
+        c_options = [0.6, 0.8, 1.0]
+        ngram_options = [(1, 2)]
+        min_df_options = [1, 2]
+        max_features_options = [8000, 12000, 15000]
+        solver_options = ["lbfgs"]
+        max_iter_options = [2000]
+    else:
+        class_weight_options = [
+            "balanced",
+            {"direct": 1.0, "intermediate": 1.2, "fully_evasive": 2.2},
+        ]
+        c_options = [0.2, 0.3, 0.5, 0.8]
+        ngram_options = [(1, 2)]
+        min_df_options = [1, 2, 3]
+        max_features_options = [8000, 10000, 15000]
+        solver_options = ["lbfgs"]
+        max_iter_options = [2000]
 
     candidates: list[Candidate] = []
     trial_idx = 1
@@ -315,6 +349,94 @@ def _tree_candidates(random_state: int) -> list[Candidate]:
     return candidates
 
 
+def _svm_candidates(random_state: int, calibration_method: str) -> list[Candidate]:
+    class_weight_options: list[Any] = [
+        None,
+        "balanced",
+        {"direct": 1.0, "intermediate": 1.1, "fully_evasive": 1.6},
+    ]
+    c_options = [0.5, 1.0]
+    ngram_options = [(1, 2)]
+    min_df_options = [1, 2]
+    max_features_options = [8000]
+    max_iter_options = [8000]
+
+    candidates: list[Candidate] = []
+    trial_idx = 1
+
+    for c_value in c_options:
+        for ngram_range in ngram_options:
+            for min_df in min_df_options:
+                for max_features in max_features_options:
+                    for max_iter in max_iter_options:
+                        for class_weight in class_weight_options:
+                            params = {
+                                "C": c_value,
+                                "ngram_range": ngram_range,
+                                "min_df": min_df,
+                                "max_features": max_features,
+                                "class_weight": class_weight,
+                                "max_iter": max_iter,
+                                "dual": "auto",
+                                "loss": "squared_hinge",
+                            }
+                            pipeline = Pipeline(
+                                steps=[
+                                    (
+                                        "tfidf",
+                                        TfidfVectorizer(
+                                            ngram_range=ngram_range,
+                                            min_df=min_df,
+                                            max_features=max_features,
+                                        ),
+                                    ),
+                                    (
+                                        "clf",
+                                        LinearSVC(
+                                            C=c_value,
+                                            class_weight=class_weight,
+                                            dual="auto",
+                                            loss="squared_hinge",
+                                            max_iter=max_iter,
+                                            random_state=random_state,
+                                        ),
+                                    ),
+                                ]
+                            )
+
+                            trial_id = f"svm_{trial_idx:04d}"
+                            if calibration_method == "none":
+                                candidates.append(
+                                    Candidate(
+                                        trial_id=trial_id,
+                                        family="svm",
+                                        estimator=pipeline,
+                                        params={**params, "calibration": "none"},
+                                    )
+                                )
+                            else:
+                                calibrated = CalibratedClassifierCV(
+                                    estimator=pipeline,
+                                    method=calibration_method,
+                                    cv=3,
+                                )
+                                candidates.append(
+                                    Candidate(
+                                        trial_id=trial_id,
+                                        family="svm",
+                                        estimator=calibrated,
+                                        params={
+                                            **params,
+                                            "calibration": calibration_method,
+                                            "calibration_cv": 3,
+                                        },
+                                    )
+                                )
+                            trial_idx += 1
+
+    return candidates
+
+
 def _boosting_candidates(random_state: int) -> list[Candidate]:
     candidates: list[Candidate] = []
     trial_idx = 1
@@ -373,11 +495,23 @@ def _boosting_candidates(random_state: int) -> list[Candidate]:
 
 
 def _candidate_space(
-    families: list[str], random_state: int, calibration_method: str
+    families: list[str],
+    random_state: int,
+    calibration_method: str,
+    logreg_search_profile: str,
+    svm_calibration_method: str,
 ) -> list[Candidate]:
     candidates: list[Candidate] = []
     if "logreg" in families:
-        candidates.extend(_logreg_candidates(random_state, calibration_method))
+        candidates.extend(
+            _logreg_candidates(
+                random_state,
+                calibration_method,
+                logreg_search_profile,
+            )
+        )
+    if "svm" in families:
+        candidates.extend(_svm_candidates(random_state, svm_calibration_method))
     if "tree" in families:
         candidates.extend(_tree_candidates(random_state))
     if "boosting" in families:
@@ -556,7 +690,13 @@ def main() -> int:
     holdout_labels = holdout_df[args.target_col].astype(str)
 
     families = _selected_families(args.families)
-    candidates = _candidate_space(families, args.random_state, args.calibration_method)
+    candidates = _candidate_space(
+        families,
+        args.random_state,
+        args.calibration_method,
+        args.logreg_search_profile,
+        args.svm_calibration_method,
+    )
     if args.max_trials > 0:
         candidates = candidates[: args.max_trials]
 
@@ -605,6 +745,8 @@ def main() -> int:
             "random_state": args.random_state,
             "split": split_info,
             "families": families,
+            "logreg_search_profile": args.logreg_search_profile,
+            "svm_calibration_method": args.svm_calibration_method,
             "trial_count": len(results),
             "winner_rule": winner_rule,
             "winner_trial_id": winner_result.trial_id,
@@ -679,6 +821,8 @@ def main() -> int:
                 "cv_folds": args.cv_folds,
                 "holdout_size": args.holdout_size,
                 "families": json.dumps(families),
+                "logreg_search_profile": args.logreg_search_profile,
+                "svm_calibration_method": args.svm_calibration_method,
                 "trial_count": len(results),
                 "winner_trial_id": winner_result.trial_id,
                 "winner_family": winner_result.family,
