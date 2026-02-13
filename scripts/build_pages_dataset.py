@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import shutil
 import subprocess
 import sys
@@ -21,6 +22,7 @@ from src.reporting import (
     load_report_manifest,
     normalize_path,
     resolve_artifact_path,
+    utc_from_timestamp,
     utc_now_iso,
     write_json,
 )
@@ -29,6 +31,7 @@ ALLOWED_SUFFIXES = {
     ".csv",
     ".html",
     ".json",
+    ".log",
     ".md",
     ".pdf",
     ".png",
@@ -79,9 +82,12 @@ class BuildInputs:
     report_run_summary: Path
     phase3_index: Path
     phase4_index: Path
+    selected_model_summary: Path
     model_comparison_summary: Path
     diagnostics_summary: Path
     xai_summary: Path
+    phase9_error_root: Path
+    phase9_exploration_root: Path
 
 
 REQUIRED_INPUT_FIELDS = (
@@ -96,10 +102,22 @@ OPTIONAL_INPUT_FIELDS = (
     "report_run_summary",
     "phase3_index",
     "phase4_index",
+    "selected_model_summary",
     "model_comparison_summary",
     "diagnostics_summary",
     "xai_summary",
+    "phase9_error_root",
+    "phase9_exploration_root",
 )
+
+REQUIRED_KPI_FIELDS = (
+    "model_family",
+    "accuracy",
+    "f1_macro",
+    "precision_macro",
+    "recall_macro",
+)
+KPI_PLACEHOLDERS = {"", "n/a", "na", "none", "null", "unknown"}
 
 
 def parse_args() -> argparse.Namespace:
@@ -150,6 +168,11 @@ def parse_args() -> argparse.Namespace:
         help="Phase-4 artifact index path.",
     )
     parser.add_argument(
+        "--selected-model-summary",
+        default="artifacts/models/phase8/selected_model.json",
+        help="Phase-8 selected model summary path.",
+    )
+    parser.add_argument(
         "--model-comparison-summary",
         default="artifacts/models/phase5/model_comparison/summary.json",
         help="Phase-5 model-comparison summary path.",
@@ -163,6 +186,16 @@ def parse_args() -> argparse.Namespace:
         "--xai-summary",
         default="artifacts/explainability/phase6/xai_summary.json",
         help="Phase-6 classical explainability summary path.",
+    )
+    parser.add_argument(
+        "--phase9-error-root",
+        default="artifacts/analysis/phase9/error_analysis",
+        help="Phase-9 error-analysis artifact root.",
+    )
+    parser.add_argument(
+        "--phase9-exploration-root",
+        default="artifacts/analysis/phase9/exploration",
+        help="Phase-9 exploration artifact root.",
     )
     parser.add_argument(
         "--output-root",
@@ -443,6 +476,343 @@ def _featured_figures(
     ]
 
 
+def _coerce_float(value: Any) -> float | None:
+    if value is None or isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        numeric = float(value)
+        return numeric if math.isfinite(numeric) else None
+    if isinstance(value, str):
+        candidate = value.strip()
+        if not candidate:
+            return None
+        try:
+            numeric = float(candidate)
+        except ValueError:
+            return None
+        return numeric if math.isfinite(numeric) else None
+    return None
+
+
+def _first_non_empty_string(*values: Any, default: str = "unknown") -> str:
+    for value in values:
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return default
+
+
+def _extract_phase8_kpi(summary: Mapping[str, Any]) -> dict[str, Any]:
+    metrics = summary.get("metrics")
+    metric_row = dict(metrics) if isinstance(metrics, Mapping) else {}
+
+    return {
+        "model_family": _first_non_empty_string(
+            summary.get("best_model_family"),
+            summary.get("model_family"),
+            summary.get("winner_family"),
+        ),
+        "accuracy": _coerce_float(
+            metric_row.get("accuracy", summary.get("holdout_accuracy"))
+        ),
+        "f1_macro": _coerce_float(
+            metric_row.get("f1_macro", summary.get("holdout_f1_macro"))
+        ),
+        "precision_macro": _coerce_float(
+            metric_row.get("precision_macro", summary.get("holdout_precision_macro"))
+        ),
+        "recall_macro": _coerce_float(
+            metric_row.get("recall_macro", summary.get("holdout_recall_macro"))
+        ),
+        "fully_evasive_f1": _coerce_float(
+            summary.get("holdout_fully_evasive_f1")
+            or metric_row.get("fully_evasive_f1")
+        ),
+        "accuracy_floor": _coerce_float(summary.get("accuracy_floor")),
+        "selection_metric": summary.get("selection_metric"),
+        "evaluation_protocol": summary.get("evaluation_protocol"),
+        "winner_trial_id": summary.get("winner_trial_id"),
+        "source": "phase8_selected_model",
+        "provisional": False,
+    }
+
+
+def _extract_phase5_kpi(summary: Mapping[str, Any]) -> dict[str, Any]:
+    family = _first_non_empty_string(
+        summary.get("best_model_family"), default="unknown"
+    )
+    models = summary.get("models")
+    model_row = (
+        dict(models.get(family, {}))
+        if isinstance(models, Mapping) and isinstance(models.get(family), Mapping)
+        else {}
+    )
+
+    return {
+        "model_family": family,
+        "accuracy": _coerce_float(model_row.get("accuracy")),
+        "f1_macro": _coerce_float(model_row.get("f1_macro")),
+        "precision_macro": _coerce_float(model_row.get("precision_macro")),
+        "recall_macro": _coerce_float(model_row.get("recall_macro")),
+        "source": "phase5_model_comparison",
+        "provisional": False,
+    }
+
+
+def _extract_manifest_kpi(context: Mapping[str, Any]) -> dict[str, Any]:
+    family = _first_non_empty_string(
+        context.get("best_classical_family"), default="unknown"
+    )
+    metrics = context.get("best_classical_metrics")
+    model_row = dict(metrics) if isinstance(metrics, Mapping) else {}
+    return {
+        "model_family": family,
+        "accuracy": _coerce_float(model_row.get("accuracy")),
+        "f1_macro": _coerce_float(model_row.get("f1_macro")),
+        "precision_macro": _coerce_float(model_row.get("precision_macro")),
+        "recall_macro": _coerce_float(model_row.get("recall_macro")),
+        "source": "manifest_fallback",
+        "provisional": True,
+    }
+
+
+def _is_placeholder(value: Any) -> bool:
+    if value is None:
+        return True
+    if isinstance(value, str):
+        return value.strip().lower() in KPI_PLACEHOLDERS
+    if isinstance(value, (int, float)):
+        return not math.isfinite(float(value))
+    return False
+
+
+def _missing_kpi_fields(payload: Mapping[str, Any]) -> list[str]:
+    return [
+        field for field in REQUIRED_KPI_FIELDS if _is_placeholder(payload.get(field))
+    ]
+
+
+def _resolve_canonical_kpi(
+    *,
+    selected_model_summary: Mapping[str, Any] | None,
+    phase5_summary: Mapping[str, Any],
+    report_context: Mapping[str, Any],
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    attempts: list[dict[str, Any]] = []
+    candidates = []
+
+    if selected_model_summary:
+        candidates.append(_extract_phase8_kpi(selected_model_summary))
+    candidates.append(_extract_phase5_kpi(phase5_summary))
+    candidates.append(_extract_manifest_kpi(report_context))
+
+    for candidate in candidates:
+        missing = _missing_kpi_fields(candidate)
+        attempts.append(
+            {
+                "source": candidate["source"],
+                "missing_fields": missing,
+                "provisional": bool(candidate.get("provisional", False)),
+            }
+        )
+        if not missing:
+            return dict(candidate), attempts
+
+    return dict(candidates[-1]), attempts
+
+
+def _collect_run_log_paths(
+    *,
+    report_run_summary: Mapping[str, Any],
+    report_run_summary_path: Path,
+    project_root: Path,
+) -> list[str]:
+    source_paths: list[str] = []
+    if report_run_summary_path.exists():
+        source_paths.append(normalize_path(report_run_summary_path, base=project_root))
+
+    def _maybe_add(raw: Any) -> None:
+        if not isinstance(raw, str) or not raw.strip():
+            return
+        source = _source_from_raw(raw, project_root=project_root)
+        if source is None:
+            return
+        source_paths.append(normalize_path(source, base=project_root))
+
+    _maybe_add(report_run_summary.get("failure", {}).get("log"))
+    for stage in report_run_summary.get("stages", []):
+        if isinstance(stage, Mapping):
+            _maybe_add(stage.get("log"))
+
+    return sorted(set(source_paths))
+
+
+def _latest_success_timestamp_from_reports(
+    *,
+    report_html: Path,
+    report_pdf: Path,
+    report_traceability: Path,
+) -> str | None:
+    targets = [report_html, report_pdf, report_traceability]
+    if not all(path.exists() for path in targets):
+        return None
+    latest = max(path.stat().st_mtime for path in targets)
+    return utc_from_timestamp(latest)
+
+
+def _build_run_status_summary(
+    *,
+    report_run_summary: Mapping[str, Any],
+    report_run_summary_path: Path,
+    project_root: Path,
+    report_html: Path,
+    report_pdf: Path,
+    report_traceability: Path,
+) -> dict[str, Any]:
+    attempted_status = str(report_run_summary.get("status", "unknown"))
+    attempted_completed = report_run_summary.get("completed_at")
+    attempted_started = report_run_summary.get("started_at")
+    attempted_timestamp = attempted_completed or attempted_started
+
+    latest_success_timestamp = None
+    latest_success_source = "unavailable"
+    if attempted_status == "passed" and isinstance(attempted_completed, str):
+        latest_success_timestamp = attempted_completed
+        latest_success_source = "phase7_run_summary"
+    else:
+        inferred = _latest_success_timestamp_from_reports(
+            report_html=report_html,
+            report_pdf=report_pdf,
+            report_traceability=report_traceability,
+        )
+        if inferred:
+            latest_success_timestamp = inferred
+            latest_success_source = "report_artifact_timestamps"
+
+    failure_log = report_run_summary.get("failure", {}).get("log")
+    run_log_paths = _collect_run_log_paths(
+        report_run_summary=report_run_summary,
+        report_run_summary_path=report_run_summary_path,
+        project_root=project_root,
+    )
+    return {
+        "latest_successful_run_timestamp": latest_success_timestamp,
+        "latest_successful_run_source": latest_success_source,
+        "latest_attempted_status": attempted_status,
+        "latest_attempted_timestamp": attempted_timestamp,
+        "latest_attempted_started_at": attempted_started,
+        "latest_attempted_completed_at": attempted_completed,
+        "latest_attempted_summary_path": (
+            normalize_path(report_run_summary_path, base=project_root)
+            if report_run_summary_path.exists()
+            else None
+        ),
+        "latest_failure_log_path": failure_log
+        if isinstance(failure_log, str)
+        else None,
+        "log_artifacts": run_log_paths,
+    }
+
+
+def _with_published_links(
+    *,
+    run_status_summary: Mapping[str, Any],
+    published_lookup: Mapping[str, str],
+) -> dict[str, Any]:
+    payload = dict(run_status_summary)
+
+    summary_path = payload.get("latest_attempted_summary_path")
+    if isinstance(summary_path, str):
+        payload["latest_attempted_summary_published_path"] = published_lookup.get(
+            summary_path
+        )
+
+    failure_path = payload.get("latest_failure_log_path")
+    if isinstance(failure_path, str):
+        payload["latest_failure_log_published_path"] = published_lookup.get(
+            failure_path
+        )
+
+    linked_logs: list[str] = []
+    for source in payload.get("log_artifacts", []):
+        if not isinstance(source, str):
+            continue
+        published = published_lookup.get(source)
+        if published:
+            linked_logs.append(published)
+    payload["published_log_artifacts"] = sorted(set(linked_logs))
+    return payload
+
+
+def _quality_report(
+    *,
+    kpi_summary: Mapping[str, Any],
+    kpi_attempts: list[dict[str, Any]],
+    run_status_summary: Mapping[str, Any],
+    key_findings: list[dict[str, Any]],
+    generated_at: str,
+) -> dict[str, Any]:
+    missing = _missing_kpi_fields(kpi_summary)
+    placeholder_cards: list[str] = []
+    for card in key_findings:
+        label = str(card.get("label", ""))
+        if _is_placeholder(card.get("value")):
+            placeholder_cards.append(label)
+
+    return {
+        "generated_at": generated_at,
+        "missing_fields": missing,
+        "fallback_usage": {
+            "kpi_source": kpi_summary.get("source", "unknown"),
+            "kpi_provisional": bool(kpi_summary.get("provisional", False)),
+            "used_fallback_source": str(kpi_summary.get("source", "")).startswith(
+                "phase5"
+            )
+            or bool(kpi_summary.get("provisional", False)),
+        },
+        "kpi_resolution_attempts": kpi_attempts,
+        "placeholder_cards": sorted(set(placeholder_cards)),
+        "run_status_summary": dict(run_status_summary),
+    }
+
+
+def _phase9_payload(
+    *,
+    root: Path,
+    project_root: Path,
+    published_lookup: Mapping[str, str],
+) -> dict[str, Any]:
+    if not root.exists() or not root.is_dir():
+        return {"status": "missing", "root": normalize_path(root, base=project_root)}
+
+    files: dict[str, str] = {}
+    for path in sorted(root.iterdir()):
+        if not path.is_file():
+            continue
+        source_rel = normalize_path(path, base=project_root)
+        published = published_lookup.get(source_rel)
+        if published:
+            files[path.name] = published
+
+    payload: dict[str, Any] = {
+        "status": "available",
+        "root": normalize_path(root, base=project_root),
+        "files": files,
+    }
+    for key in (
+        "error_summary.json",
+        "temporal_summary.json",
+        "segment_summary.json",
+        "artifact_index.json",
+    ):
+        if key not in files:
+            continue
+        source = root / key
+        payload[key.replace(".json", "")] = _sanitize_paths(
+            _load_json(source), project_root=project_root
+        )
+    return payload
+
+
 def build_pages_dataset(args: argparse.Namespace) -> Path:
     project_root = Path(args.project_root).resolve()
     output_root = _resolve(args.output_root, project_root=project_root)
@@ -462,6 +832,9 @@ def build_pages_dataset(args: argparse.Namespace) -> Path:
         report_run_summary=_resolve(args.report_run_summary, project_root=project_root),
         phase3_index=_resolve(args.phase3_index, project_root=project_root),
         phase4_index=_resolve(args.phase4_index, project_root=project_root),
+        selected_model_summary=_resolve(
+            args.selected_model_summary, project_root=project_root
+        ),
         model_comparison_summary=_resolve(
             args.model_comparison_summary, project_root=project_root
         ),
@@ -469,6 +842,10 @@ def build_pages_dataset(args: argparse.Namespace) -> Path:
             args.diagnostics_summary, project_root=project_root
         ),
         xai_summary=_resolve(args.xai_summary, project_root=project_root),
+        phase9_error_root=_resolve(args.phase9_error_root, project_root=project_root),
+        phase9_exploration_root=_resolve(
+            args.phase9_exploration_root, project_root=project_root
+        ),
     )
 
     missing_optional_inputs = _validate_required_inputs(inputs)
@@ -487,6 +864,10 @@ def build_pages_dataset(args: argparse.Namespace) -> Path:
     )
     phase4_index = _sanitize_paths(
         _load_json_if_exists(inputs.phase4_index) or {"phase": "phase4", "entries": []},
+        project_root=project_root,
+    )
+    selected_model_summary = _sanitize_paths(
+        _load_json_if_exists(inputs.selected_model_summary) or {},
         project_root=project_root,
     )
 
@@ -600,6 +981,13 @@ def build_pages_dataset(args: argparse.Namespace) -> Path:
             "table",
         ),
         (
+            inputs.selected_model_summary,
+            "models",
+            "phase8_model_selection",
+            "phase8:selected_model",
+            "table",
+        ),
+        (
             inputs.model_comparison_summary,
             "models",
             "phase5_model_comparison",
@@ -620,6 +1008,13 @@ def build_pages_dataset(args: argparse.Namespace) -> Path:
             "phase6:xai_summary",
             "table",
         ),
+        (
+            inputs.report_run_summary,
+            "reports",
+            "phase7_pipeline",
+            "phase7:run_summary",
+            "table",
+        ),
     ]
 
     for source, section, stage, entry_id, kind in static_report_assets:
@@ -633,6 +1028,29 @@ def build_pages_dataset(args: argparse.Namespace) -> Path:
             project_root=project_root,
         )
 
+    for root, stage, entry_prefix in (
+        (inputs.phase9_error_root, "phase9_error_analysis", "phase9:error_analysis"),
+        (
+            inputs.phase9_exploration_root,
+            "phase9_exploration",
+            "phase9:exploration",
+        ),
+    ):
+        if not root.exists() or not root.is_dir():
+            continue
+        for source in sorted(root.iterdir()):
+            if not source.is_file():
+                continue
+            _register_candidate(
+                candidates,
+                source,
+                section="analyses",
+                stage=stage,
+                entry_id=f"{entry_prefix}:{source.name}",
+                kind="artifact",
+                project_root=project_root,
+            )
+
     for raw in _iter_string_values(model_comparison_summary):
         source = _source_from_raw(raw, project_root=project_root)
         if source is None:
@@ -643,6 +1061,20 @@ def build_pages_dataset(args: argparse.Namespace) -> Path:
             section="models",
             stage="phase5_model_comparison",
             entry_id=f"phase5:model_comparison:{normalize_path(source, base=project_root)}",
+            kind="artifact",
+            project_root=project_root,
+        )
+
+    for raw in _iter_string_values(report_run_summary):
+        source = _source_from_raw(raw, project_root=project_root)
+        if source is None:
+            continue
+        _register_candidate(
+            candidates,
+            source,
+            section="reports",
+            stage="phase7_pipeline",
+            entry_id=f"phase7:run_log:{normalize_path(source, base=project_root)}",
             kind="artifact",
             project_root=project_root,
         )
@@ -689,38 +1121,79 @@ def build_pages_dataset(args: argparse.Namespace) -> Path:
         "provenance_manifest": published_lookup.get(
             normalize_path(inputs.report_provenance, base=project_root)
         ),
+        "run_summary": published_lookup.get(
+            normalize_path(inputs.report_run_summary, base=project_root)
+        ),
     }
 
-    best_model_family = str(
-        model_comparison_summary.get("best_model_family", "unknown")
+    canonical_kpi, kpi_attempts = _resolve_canonical_kpi(
+        selected_model_summary=selected_model_summary,
+        phase5_summary=model_comparison_summary,
+        report_context=report_context,
     )
-    best_metrics = dict(
-        model_comparison_summary.get("models", {}).get(best_model_family, {})
-    )
+    missing_kpi_fields = _missing_kpi_fields(canonical_kpi)
+    if missing_kpi_fields:
+        rendered_attempts = ", ".join(
+            f"{row['source']}(missing={','.join(row['missing_fields']) or 'none'})"
+            for row in kpi_attempts
+        )
+        raise PagesDatasetBuildError(
+            "Canonical KPI contract violation: missing required fields "
+            + ", ".join(sorted(missing_kpi_fields))
+            + f". Source attempts: {rendered_attempts}"
+        )
+
+    best_model_family = str(canonical_kpi.get("model_family", "unknown"))
+    best_metrics = {
+        "accuracy": canonical_kpi.get("accuracy"),
+        "f1_macro": canonical_kpi.get("f1_macro"),
+        "precision_macro": canonical_kpi.get("precision_macro"),
+        "recall_macro": canonical_kpi.get("recall_macro"),
+    }
     transformer_metrics = dict(report_context.get("transformer_metrics", {}))
+    run_status_summary = _build_run_status_summary(
+        report_run_summary=report_run_summary,
+        report_run_summary_path=inputs.report_run_summary,
+        project_root=project_root,
+        report_html=inputs.report_html,
+        report_pdf=inputs.report_pdf,
+        report_traceability=inputs.report_traceability,
+    )
 
     key_findings = [
         {
-            "label": "Best classical model",
+            "label": "Selected model family",
             "value": best_model_family,
         },
         {
-            "label": "Best classical macro F1",
-            "value": str(best_metrics.get("f1_macro", "n/a")),
+            "label": "Holdout accuracy",
+            "value": canonical_kpi["accuracy"],
         },
         {
-            "label": "Best classical accuracy",
-            "value": str(best_metrics.get("accuracy", "n/a")),
+            "label": "Holdout macro F1",
+            "value": canonical_kpi["f1_macro"],
         },
         {
-            "label": "Transformer macro F1",
-            "value": str(transformer_metrics.get("f1_macro", "n/a")),
+            "label": "Holdout precision (macro)",
+            "value": canonical_kpi["precision_macro"],
         },
         {
-            "label": "Label quality score",
-            "value": str(diagnostics_summary.get("quality_score", "n/a")),
+            "label": "Holdout recall (macro)",
+            "value": canonical_kpi["recall_macro"],
         },
     ]
+    phase9_error = _phase9_payload(
+        root=inputs.phase9_error_root,
+        project_root=project_root,
+        published_lookup=published_lookup,
+    )
+    phase9_exploration = _phase9_payload(
+        root=inputs.phase9_exploration_root,
+        project_root=project_root,
+        published_lookup=published_lookup,
+    )
+    phase9_error_count = len(phase9_error.get("files", {}))
+    phase9_exploration_count = len(phase9_exploration.get("files", {}))
 
     metadata = {
         "generated_at": utc_now_iso(),
@@ -728,6 +1201,32 @@ def build_pages_dataset(args: argparse.Namespace) -> Path:
         "git_sha": _git_sha(project_root),
         "project_root": normalize_path(project_root, base=project_root),
     }
+    run_status_summary = _with_published_links(
+        run_status_summary=run_status_summary,
+        published_lookup=published_lookup,
+    )
+    kpi_summary = {
+        **canonical_kpi,
+        "required_fields": list(REQUIRED_KPI_FIELDS),
+        "resolution_attempts": kpi_attempts,
+        "selected_model_summary_path": normalize_path(
+            inputs.selected_model_summary, base=project_root
+        )
+        if inputs.selected_model_summary.exists()
+        else None,
+    }
+    site_quality_report = _quality_report(
+        kpi_summary=kpi_summary,
+        kpi_attempts=kpi_attempts,
+        run_status_summary=run_status_summary,
+        key_findings=key_findings,
+        generated_at=metadata["generated_at"],
+    )
+    if site_quality_report["placeholder_cards"]:
+        raise PagesDatasetBuildError(
+            "Primary KPI cards contain placeholder values: "
+            + ", ".join(site_quality_report["placeholder_cards"])
+        )
 
     site_data = {
         "metadata": metadata,
@@ -739,10 +1238,14 @@ def build_pages_dataset(args: argparse.Namespace) -> Path:
             "model_artifacts": len(report_context["model_entries"]),
             "explainability_artifacts": len(report_context["explainability_entries"]),
             "diagnostics_artifacts": len(report_context["diagnostics_entries"]),
+            "phase9_error_artifacts": phase9_error_count,
+            "phase9_exploration_artifacts": phase9_exploration_count,
             "published_assets": len(copied_assets),
             "published_size_mb": round(total_bytes / (1024 * 1024), 3),
         },
         "key_findings": key_findings,
+        "kpi_summary": kpi_summary,
+        "site_quality_report": site_quality_report,
         "downloads": downloads,
         "analysis_indexes": {
             "phase3": _sanitize_paths(phase3_index, project_root=project_root),
@@ -755,6 +1258,11 @@ def build_pages_dataset(args: argparse.Namespace) -> Path:
         "xai_summary": xai_summary,
         "diagnostics_summary": diagnostics_summary,
         "pipeline_status": report_run_summary,
+        "run_status_summary": run_status_summary,
+        "phase9": {
+            "error_analysis": phase9_error,
+            "exploration": phase9_exploration,
+        },
         "artifacts": {
             "analyses": analyses_with_links,
             "models": models_with_links,
@@ -782,11 +1290,20 @@ def build_pages_dataset(args: argparse.Namespace) -> Path:
         "assets": copied_assets,
     }
 
+    kpi_path = write_json(data_root / "kpi_summary.json", kpi_summary)
+    site_quality_path = write_json(
+        data_root / "site_quality_report.json", site_quality_report
+    )
     site_data_path = write_json(data_root / "site_data.json", site_data)
     manifest_path = write_json(
         data_root / "publication_manifest.json", publication_manifest
     )
 
+    print(f"wrote KPI summary: {normalize_path(kpi_path, base=project_root)}")
+    print(
+        "wrote site quality report: "
+        + normalize_path(site_quality_path, base=project_root)
+    )
     print(f"wrote site data: {normalize_path(site_data_path, base=project_root)}")
     print(f"wrote publish manifest: {normalize_path(manifest_path, base=project_root)}")
     print(

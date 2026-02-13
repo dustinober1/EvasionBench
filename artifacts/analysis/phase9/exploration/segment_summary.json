@@ -1,0 +1,20 @@
+{
+  "available_columns": [
+    "uid",
+    "question",
+    "answer",
+    "eva4b_label",
+    "label",
+    "answer_length"
+  ],
+  "prediction_status": "ok",
+  "reason": "Missing segment columns required for contextual slicing",
+  "required_any_of": [
+    "sector",
+    "company",
+    "company_name",
+    "industry",
+    "category"
+  ],
+  "status": "skipped"
+}

@@ -1,0 +1,21 @@
+{
+  "available_columns": [
+    "uid",
+    "question",
+    "answer",
+    "eva4b_label",
+    "label",
+    "answer_length"
+  ],
+  "prediction_status": "ok",
+  "reason": "Missing temporal columns required for time-based slicing",
+  "required_any_of": [
+    "date",
+    "timestamp",
+    "quarter",
+    "fiscal_quarter",
+    "year",
+    "period"
+  ],
+  "status": "skipped"
+}

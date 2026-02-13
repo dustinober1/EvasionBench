@@ -40,6 +40,11 @@ def parse_args() -> argparse.Namespace:
         help="Rendered static site root.",
     )
     parser.add_argument(
+        "--input",
+        default="data/processed/evasionbench_prepared.parquet",
+        help="Prepared dataset used by phase-9 analysis stages.",
+    )
+    parser.add_argument(
         "--max-total-mb",
         type=float,
         default=250.0,
@@ -96,8 +101,56 @@ def run_pipeline(args: argparse.Namespace) -> None:
     project_root = Path(args.project_root).resolve()
     publish_root = _resolve(args.publish_root, project_root=project_root)
     site_root = _resolve(args.site_root, project_root=project_root)
+    input_path = _resolve(args.input, project_root=project_root)
 
     stages = [
+        PipelineStage(
+            key="phase9_error_analysis",
+            command=(
+                sys.executable,
+                "scripts/analyze_error_profiles.py",
+                "--input",
+                str(input_path),
+                "--output-root",
+                str(project_root / "artifacts/analysis/phase9/error_analysis"),
+                "--project-root",
+                str(project_root),
+            ),
+            required_outputs=(
+                project_root
+                / "artifacts/analysis/phase9/error_analysis/error_summary.json",
+                project_root
+                / "artifacts/analysis/phase9/error_analysis/misclassification_routes.csv",
+                project_root / "artifacts/analysis/phase9/error_analysis/hard_cases.md",
+                project_root
+                / "artifacts/analysis/phase9/error_analysis/class_failure_heatmap.png",
+                project_root
+                / "artifacts/analysis/phase9/error_analysis/artifact_index.json",
+            ),
+        ),
+        PipelineStage(
+            key="phase9_exploration",
+            command=(
+                sys.executable,
+                "scripts/analyze_phase9_exploration.py",
+                "--input",
+                str(input_path),
+                "--output-root",
+                str(project_root / "artifacts/analysis/phase9/exploration"),
+                "--project-root",
+                str(project_root),
+            ),
+            required_outputs=(
+                project_root
+                / "artifacts/analysis/phase9/exploration/temporal_summary.json",
+                project_root
+                / "artifacts/analysis/phase9/exploration/segment_summary.json",
+                project_root
+                / "artifacts/analysis/phase9/exploration/question_intent_error_map.csv",
+                project_root
+                / "artifacts/analysis/phase9/exploration/artifact_index.json",
+            ),
+        ),
         PipelineStage(
             key="build_pages_dataset",
             command=(
@@ -113,6 +166,8 @@ def run_pipeline(args: argparse.Namespace) -> None:
                 str(project_root),
             ),
             required_outputs=(
+                publish_root / "data" / "kpi_summary.json",
+                publish_root / "data" / "site_quality_report.json",
                 publish_root / "data" / "site_data.json",
                 publish_root / "data" / "publication_manifest.json",
             ),
@@ -140,6 +195,7 @@ def run_pipeline(args: argparse.Namespace) -> None:
                 site_root / "modeling.html",
                 site_root / "explainability.html",
                 site_root / "reproducibility.html",
+                site_root / "error-analysis.html",
                 site_root / "static" / "site.css",
                 site_root / ".nojekyll",
             ),
@@ -149,12 +205,23 @@ def run_pipeline(args: argparse.Namespace) -> None:
     for stage in stages:
         _run_stage(stage, project_root=project_root)
 
+    site_quality_path = publish_root / "data" / "site_quality_report.json"
+    site_quality: dict[str, object] = {}
+    if site_quality_path.exists():
+        loaded = json.loads(site_quality_path.read_text(encoding="utf-8"))
+        site_quality = {
+            "missing_fields": loaded.get("missing_fields", []),
+            "placeholder_cards": loaded.get("placeholder_cards", []),
+            "kpi_source": loaded.get("fallback_usage", {}).get("kpi_source"),
+        }
+
     summary = {
         "pipeline": "github_pages_publication",
         "status": "passed",
         "publish_root": normalize_path(publish_root, base=project_root),
         "site_root": normalize_path(site_root, base=project_root),
         "stages": [stage.key for stage in stages],
+        "site_quality": site_quality,
     }
     summary_path = publish_root / "data" / "pages_pipeline_summary.json"
     summary_path.parent.mkdir(parents=True, exist_ok=True)

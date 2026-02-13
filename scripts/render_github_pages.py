@@ -23,6 +23,7 @@ NAV_ITEMS = (
     ("findings.html", "Findings", "findings"),
     ("modeling.html", "Modeling", "modeling"),
     ("explainability.html", "Explainability", "explainability"),
+    ("error-analysis.html", "Error Analysis", "error_analysis"),
     ("reproducibility.html", "Reproducibility", "reproducibility"),
 )
 
@@ -298,6 +299,48 @@ figcaption {
   color: var(--ink);
 }
 
+.workflow {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.workflow-step {
+  border: 1px solid #d9dfe8;
+  border-radius: 10px;
+  background: #f8fbff;
+  padding: 0.55rem 0.6rem;
+}
+
+.workflow-step .step-title {
+  margin: 0;
+  font-family: "IBM Plex Sans", "Helvetica Neue", sans-serif;
+  font-size: 0.84rem;
+  color: var(--navy);
+}
+
+.workflow-step .step-detail {
+  margin: 0.22rem 0 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.muted-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--muted);
+}
+
+.muted-list li {
+  margin: 0.24rem 0;
+}
+
+.note {
+  margin-top: 0.32rem;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
 .footer {
   color: var(--muted);
   font-size: 0.84rem;
@@ -381,7 +424,7 @@ def _esc(value: Any) -> str:
 
 
 def _format_metric(value: Any) -> str:
-    if isinstance(value, float):
+    if isinstance(value, (float, int)) and not isinstance(value, bool):
         return f"{value:.3f}"
     return _esc(value)
 
@@ -404,7 +447,7 @@ def _render_card_grid(items: list[dict[str, Any]]) -> str:
                 [
                     '<article class="card">',
                     f'<p class="label">{_esc(item.get("label", "Metric"))}</p>',
-                    f'<p class="value">{_esc(item.get("value", "n/a"))}</p>',
+                    f'<p class="value">{_format_metric(item.get("value", "n/a"))}</p>',
                     "</article>",
                 ]
             )
@@ -492,6 +535,83 @@ def _asset_for_suffix(asset_lookup: Mapping[str, str], suffix: str) -> str | Non
     return None
 
 
+def _traceability_ids_for_path(
+    traceability: Mapping[str, Any], artifact_path: str
+) -> list[str]:
+    matches: list[str] = []
+    for trace_id, payload in traceability.items():
+        if str(payload.get("artifact_path", "")) == artifact_path:
+            matches.append(str(trace_id))
+    return sorted(matches)
+
+
+def _figure_interpretation(suffix: str) -> str:
+    if suffix.endswith("class_distribution.png"):
+        return (
+            "Label distribution is materially imbalanced, which motivates macro-F1 "
+            "and class-level diagnostics over raw accuracy alone."
+        )
+    if suffix.endswith("question_length_by_label.png"):
+        return (
+            "Question length varies by label, indicating analysts phrase prompts "
+            "differently before evasive versus direct responses."
+        )
+    if suffix.endswith("evasive_marker_rate.png"):
+        return (
+            "Linguistic markers linked to evasiveness are more frequent in evasive "
+            "classes, supporting validity of text-derived behavioral features."
+        )
+    if suffix.endswith("semantic_similarity_by_label.png"):
+        return (
+            "Lower question-answer semantic alignment in evasive classes indicates "
+            "deflection rather than direct response to analyst intent."
+        )
+    if suffix.endswith("topic_prevalence_by_label.png"):
+        return (
+            "Topic prevalence shifts by class, suggesting some thematic contexts "
+            "are associated with higher rates of evasive responses."
+        )
+    if suffix.endswith("question_behavior_by_label.png"):
+        return (
+            "Behavior metrics vary by question type, revealing intent-dependent "
+            "risk of evasive outcomes."
+        )
+    if suffix.endswith("macro_f1_by_model.png"):
+        return (
+            "Classical model families show a measurable spread in macro-F1, with the "
+            "selected family balancing class coverage under holdout constraints."
+        )
+    if suffix.endswith("per_class_f1_delta_heatmap.png"):
+        return (
+            "Per-class deltas concentrate the remaining error budget into specific "
+            "labels, motivating targeted error-analysis rather than generic tuning."
+        )
+    return "Interpretation generated from the linked analysis artifact."
+
+
+def _workflow_figure() -> str:
+    steps = [
+        ("Phase 3", "Core, lexical, and linguistic statistics"),
+        ("Phase 4", "Semantic, topic, and question-intent behavior"),
+        ("Phase 5-6", "Modeling, explainability, diagnostics"),
+        ("Phase 7", "Manifest + traceability report generation"),
+        ("Phase 9", "Error profiling and conditional exploration"),
+    ]
+    blocks: list[str] = []
+    for title, detail in steps:
+        blocks.append(
+            "\n".join(
+                [
+                    '<div class="workflow-step">',
+                    f'<p class="step-title">{_esc(title)}</p>',
+                    f'<p class="step-detail">{_esc(detail)}</p>',
+                    "</div>",
+                ]
+            )
+        )
+    return '<div class="workflow">' + "\n".join(blocks) + "</div>"
+
+
 def _render_index(
     *,
     site_data: Mapping[str, Any],
@@ -500,18 +620,35 @@ def _render_index(
     summary = dict(site_data.get("summary", {}))
     key_findings = list(site_data.get("key_findings", []))
     downloads = dict(site_data.get("downloads", {}))
+    kpi_summary = dict(site_data.get("kpi_summary", {}))
+    transformer = dict(site_data.get("transformer_metrics", {}))
 
-    summary_rows = [
+    primary_results_rows = [
+        [
+            "Selected model family",
+            f"<code>{_esc(kpi_summary.get('model_family', 'n/a'))}</code>",
+        ],
+        ["Holdout accuracy", _format_metric(kpi_summary.get("accuracy", "n/a"))],
+        ["Holdout macro F1", _format_metric(kpi_summary.get("f1_macro", "n/a"))],
+        [
+            "Holdout precision (macro)",
+            _format_metric(kpi_summary.get("precision_macro", "n/a")),
+        ],
+        [
+            "Holdout recall (macro)",
+            _format_metric(kpi_summary.get("recall_macro", "n/a")),
+        ],
+        [
+            "Transformer macro F1 (phase 6)",
+            _format_metric(transformer.get("f1_macro", "n/a")),
+        ],
+    ]
+
+    scope_rows = [
         [
             "Manifest version",
             f"<code>{_esc(summary.get('manifest_version', 'n/a'))}</code>",
         ],
-        [
-            "Manifest generated",
-            f"<code>{_esc(summary.get('manifest_generated_at', 'n/a'))}</code>",
-        ],
-        ["Analysis artifacts", _esc(summary.get("analysis_artifacts", "n/a"))],
-        ["Model artifacts", _esc(summary.get("model_artifacts", "n/a"))],
         [
             "Published assets",
             _esc(
@@ -519,52 +656,88 @@ def _render_index(
                 f"({summary.get('published_size_mb', 'n/a')} MB)"
             ),
         ],
+        ["Phase-9 error artifacts", _esc(summary.get("phase9_error_artifacts", "0"))],
+        [
+            "Phase-9 exploration artifacts",
+            _esc(summary.get("phase9_exploration_artifacts", "0")),
+        ],
+    ]
+
+    abstract_lines = [
+        "EvasionBench studies evasive behavior in earnings-call responses with a fully script-traceable workflow.",
+        "The publication site is generated from manifest-linked artifacts spanning analysis, modeling, and diagnostics.",
+        "Phase-9 extends prior phases with class-level error profiling and conditional exploratory slices.",
+        "Primary KPIs are sourced through a deterministic priority chain and validated at publish time.",
+        "This reduces narrative drift, removes placeholder metrics, and strengthens reviewer trust in reported results.",
+        "All major figures and tables are linked to provenance or traceability artifacts for independent verification.",
+    ]
+
+    contributions = [
+        "Deterministic KPI contract with fail-fast quality gates and site quality reporting.",
+        "Error-analysis artifacts highlighting top confusion routes, hardest classes, and representative failures.",
+        "Conditional exploratory outputs that document both generated slices and explicit prerequisite-based skips.",
     ]
 
     chart_path = _asset_for_suffix(
         asset_lookup, "model_comparison/macro_f1_by_model.png"
     )
-
-    featured_block = ""
+    primary_figure = ""
     if chart_path:
-        featured_block = (
-            '<section class="panel">'
-            "<h2>Primary Result</h2>"
+        primary_figure = (
             '<div class="figure-grid">'
             "<figure>"
-            f'<img src="{_esc(chart_path)}" alt="Macro F1 by model" />'
-            '<figcaption><span class="caption-title">Figure 1.</span>'
-            " Phase-5 macro F1 comparison across classical model families."
-            "</figcaption></figure></div></section>"
+            f'<img src="{_esc(chart_path)}" alt="Macro F1 by model family" />'
+            '<figcaption><span class="caption-title">Primary result figure.</span>'
+            " Macro-F1 comparison across model families shows the selected baseline in context."
+            "</figcaption></figure></div>"
         )
 
     body = [
         '<section class="panel">',
-        "<h2>Research Scope</h2>",
-        '<p class="kicker">This portal presents reproducible analyses for earnings-call '
-        "evasion detection, covering phase-3/4 findings, phase-5/6 modeling, "
-        "explainability, and diagnostics.</p>",
+        "<h2>Abstract</h2>",
+        '<p class="kicker">'
+        + "<br/>".join(_esc(line) for line in abstract_lines)
+        + "</p>",
+        "</section>",
+        '<section class="panel">',
+        "<h2>Key Contributions</h2>",
+        "<ul>",
+        "\n".join(f"<li>{_esc(line)}</li>" for line in contributions),
+        "</ul>",
         _render_card_grid(key_findings),
         "</section>",
-        featured_block,
         '<section class="panel">',
-        "<h2>Data and Report Access</h2>",
-        '<div class="grid" style="grid-template-columns: 1.3fr 1fr;">',
-        _render_table(["Item", "Value"], summary_rows),
-        '<div class="card">',
-        '<p class="label">Downloads</p>',
-        "<ul>",
+        "<h2>Primary Results Table</h2>",
+        _render_table(["Metric", "Value"], primary_results_rows),
+        primary_figure,
+        "</section>",
+        '<section class="panel">',
+        "<h2>Practical Implications and Limitations</h2>",
+        '<div class="grid" style="grid-template-columns: 1.2fr 1fr;">',
+        '<div class="callout">'
+        "Class-level performance indicates deployment should emphasize review workflows "
+        "around classes with high confusion concentration, especially intermediate vs fully evasive."
+        "</div>",
+        '<div class="card"><p class="label">Limitations Snapshot</p>'
+        '<ul class="muted-list">'
+        "<li>Class imbalance persists and can mask minority failures if only accuracy is reported.</li>"
+        "<li>Temporal and segment exploratory slices depend on source schema availability.</li>"
+        "<li>Error evidence quality is bounded by available row-level prediction artifacts.</li>"
+        "</ul></div>",
+        "</div>",
+        "<h3>Dataset and Report Access</h3>",
+        '<div class="grid" style="grid-template-columns: 1.2fr 1fr;">',
+        _render_table(["Item", "Value"], scope_rows),
+        '<div class="card"><p class="label">Downloads</p><ul>',
         _download_link("Report (HTML)", downloads.get("report_html")),
         _download_link("Report (PDF)", downloads.get("report_pdf")),
         _download_link("Report (Markdown)", downloads.get("report_markdown")),
         _download_link("Traceability JSON", downloads.get("traceability")),
         _download_link("Provenance Manifest", downloads.get("provenance_manifest")),
-        "</ul>",
-        "</div>",
+        "</ul></div>",
         "</div>",
         "</section>",
     ]
-
     return "\n".join(line for line in body if line)
 
 
@@ -590,6 +763,11 @@ def _render_methodology(site_data: Mapping[str, Any]) -> str:
         ["Phase 5", "3", "Classical baselines and model comparison"],
         ["Phase 6", "2", "Transformer baseline, explainability, diagnostics"],
         ["Phase 7", "1", "Manifest-driven report generation and traceability"],
+        [
+            "Phase 9",
+            _esc(site_data.get("summary", {}).get("phase9_error_artifacts", 0)),
+            "Error profiling and exploration slices",
+        ],
     ]
 
     stage_rows: list[list[str]] = []
@@ -602,16 +780,29 @@ def _render_methodology(site_data: Mapping[str, Any]) -> str:
             ]
         )
 
+    kpi_summary = dict(site_data.get("kpi_summary", {}))
+    evaluation_protocol = _esc(kpi_summary.get("evaluation_protocol", "n/a"))
+    assumptions = [
+        "Prepared data labels are treated as reference truth for supervised evaluation.",
+        "Question + answer text concatenation with [SEP] remains the canonical feature interface.",
+        "Publish-time KPI values are read from canonical JSON, not hard-coded in templates.",
+    ]
+    validity_notes = [
+        "Class imbalance and label ambiguity can suppress minority recall even at stable overall accuracy.",
+        "Exploratory temporal/segment analyses are conditional and explicitly skipped when fields are absent.",
+        "Error-route conclusions are specific to the selected model and evaluation split recorded in artifacts.",
+    ]
+
     return "\n".join(
         [
             '<section class="panel">',
-            "<h2>Methodological Design</h2>",
-            '<p class="kicker">The site is generated from deterministic script outputs. '
-            "Each artifact shown here originates from phase entrypoints in "
-            "<code>scripts/</code> and can be traced to provenance metadata.</p>",
-            '<div class="callout">All published metrics and figures are extracted from '
-            "artifact contracts and report manifests; no manual copy editing is used for "
-            "quantitative values.</div>",
+            "<h2>Study Design</h2>",
+            '<p class="kicker">The publication workflow is script-first and contract-driven; '
+            "all metrics and visuals are generated from artifacted outputs with provenance links.</p>",
+            _workflow_figure(),
+            '<p class="note">Evaluation protocol: <code>'
+            + evaluation_protocol
+            + "</code></p>",
             "</section>",
             '<section class="panel">',
             "<h2>Phase Topology</h2>",
@@ -621,6 +812,17 @@ def _render_methodology(site_data: Mapping[str, Any]) -> str:
             "<h2>Artifact Production Stages</h2>",
             _render_table(["Stage", "Generated files", "Source"], stage_rows),
             "</section>",
+            '<section class="panel">',
+            "<h2>Assumptions and Validity Notes</h2>",
+            "<h3>Assumptions</h3>",
+            '<ul class="muted-list">',
+            "\n".join(f"<li>{_esc(line)}</li>" for line in assumptions),
+            "</ul>",
+            "<h3>Validity Notes</h3>",
+            '<ul class="muted-list">',
+            "\n".join(f"<li>{_esc(line)}</li>" for line in validity_notes),
+            "</ul>",
+            "</section>",
         ]
     )
 
@@ -628,9 +830,18 @@ def _render_methodology(site_data: Mapping[str, Any]) -> str:
 def _render_findings(site_data: Mapping[str, Any]) -> str:
     featured = list(site_data.get("featured_figures", []))
     analysis_entries = list(site_data.get("artifacts", {}).get("analyses", []))
+    traceability = dict(site_data.get("traceability", {}))
 
     figure_blocks: list[str] = []
     for index, item in enumerate(featured, start=1):
+        artifact_path = str(item.get("artifact_path", ""))
+        trace_ids = _traceability_ids_for_path(traceability, artifact_path)
+        trace_text = (
+            ", ".join(f"<code>{_esc(trace_id)}</code>" for trace_id in trace_ids)
+            if trace_ids
+            else "<code>n/a</code>"
+        )
+        interpretation = _figure_interpretation(artifact_path)
         figure_blocks.append(
             "\n".join(
                 [
@@ -640,6 +851,9 @@ def _render_findings(site_data: Mapping[str, Any]) -> str:
                     f'<span class="caption-title">Figure {index}.</span> '
                     f"{_esc(item.get('caption', 'Published analysis figure'))} "
                     f"<code>{_esc(item.get('stage', 'unknown'))}</code>",
+                    f"<br/>Interpretation: {_esc(interpretation)}",
+                    f'<br/>Artifact link: <a href="{_esc(item.get("published_path", ""))}" target="_blank" rel="noopener">open artifact</a>',
+                    f"<br/>Traceability IDs: {trace_text}",
                     "</figcaption>",
                     "</figure>",
                 ]
@@ -668,7 +882,7 @@ def _render_findings(site_data: Mapping[str, Any]) -> str:
             "<h2>Phase-3 and Phase-4 Findings</h2>",
             '<p class="kicker">Key figures below summarize lexical, linguistic, semantic, '
             "and question-behavior trends across direct, intermediate, and fully evasive "
-            "responses.</p>",
+            "responses. Each visual includes a short interpretation and traceability pointer.</p>",
             '<div class="figure-grid">',
             "\n".join(figure_blocks),
             "</div>",
@@ -853,25 +1067,149 @@ def _render_explainability(
     )
 
 
+def _render_error_analysis(site_data: Mapping[str, Any]) -> str:
+    phase9 = dict(site_data.get("phase9", {}))
+    error_payload = dict(phase9.get("error_analysis", {}))
+    exploration_payload = dict(phase9.get("exploration", {}))
+
+    if error_payload.get("status") != "available":
+        return "\n".join(
+            [
+                '<section class="panel">',
+                "<h2>Error Analysis</h2>",
+                '<p class="kicker">Phase-9 error-analysis artifacts are not available in the current publish bundle.</p>',
+                "</section>",
+            ]
+        )
+
+    files = dict(error_payload.get("files", {}))
+    error_summary = dict(error_payload.get("error_summary", {}))
+    top_routes = list(error_summary.get("top_misclassification_routes", []))[:3]
+    route_rows: list[list[str]] = []
+    for route in top_routes:
+        route_rows.append(
+            [
+                f"<code>{_esc(route.get('true_label', 'n/a'))}</code>",
+                f"<code>{_esc(route.get('predicted_label', 'n/a'))}</code>",
+                _esc(route.get("count", "0")),
+                _format_metric(route.get("true_label_route_share", 0.0)),
+            ]
+        )
+    if not route_rows:
+        route_rows.append(["n/a", "n/a", "0", "0.000"])
+
+    implications: list[str] = []
+    for route in top_routes:
+        implications.append(
+            "Prioritize interventions for "
+            f"{route.get('true_label', 'n/a')} -> {route.get('predicted_label', 'n/a')} "
+            "because this route dominates observed misclassifications."
+        )
+    if not implications:
+        implications.append(
+            "No dominant routes were detected in the current bundle; review raw route CSV for low-count patterns."
+        )
+
+    heatmap = files.get("class_failure_heatmap.png")
+    route_csv = files.get("misclassification_routes.csv")
+    hard_cases = files.get("hard_cases.md")
+    error_summary_link = files.get("error_summary.json")
+    index_link = files.get("artifact_index.json")
+
+    exploration_files = dict(exploration_payload.get("files", {}))
+    temporal = dict(exploration_payload.get("temporal_summary", {}))
+    segment = dict(exploration_payload.get("segment_summary", {}))
+    question_intent_path = exploration_files.get("question_intent_error_map.csv")
+
+    exploration_rows = [
+        ["Temporal slice", _esc(temporal.get("status", "missing"))],
+        ["Segment slice", _esc(segment.get("status", "missing"))],
+        [
+            "Question-intent error map",
+            (
+                f'<a href="{_esc(question_intent_path)}" target="_blank" rel="noopener">open CSV</a>'
+                if question_intent_path
+                else "unavailable"
+            ),
+        ],
+    ]
+
+    heatmap_block = ""
+    if heatmap:
+        heatmap_block = (
+            '<div class="figure-grid"><figure>'
+            f'<img src="{_esc(heatmap)}" alt="Class failure heatmap" />'
+            '<figcaption><span class="caption-title">Class-level confusion heatmap.</span>'
+            " Concentrated off-diagonal mass indicates targeted failure routes for the next iteration."
+            "</figcaption></figure></div>"
+        )
+
+    return "\n".join(
+        [
+            '<section class="panel">',
+            "<h2>Error Analysis</h2>",
+            '<p class="kicker">This section summarizes class-level failure concentration for the selected model and surfaces representative hard cases.</p>',
+            _render_table(
+                ["True label", "Predicted label", "Count", "Route share"], route_rows
+            ),
+            "</section>",
+            '<section class="panel">',
+            "<h2>Class Failure Heatmap</h2>",
+            heatmap_block,
+            "<h3>Implications for Next Iteration</h3>",
+            '<ul class="muted-list">',
+            "\n".join(f"<li>{_esc(line)}</li>" for line in implications),
+            "</ul>",
+            "<h3>Artifacts</h3>",
+            "<ul>",
+            _download_link("Error summary JSON", error_summary_link),
+            _download_link("Misclassification routes CSV", route_csv),
+            _download_link("Hard cases markdown", hard_cases),
+            _download_link("Error-analysis index", index_link),
+            "</ul>",
+            "</section>",
+            '<section class="panel">',
+            "<h2>Exploratory Slice Status</h2>",
+            _render_table(["Slice", "Status / Access"], exploration_rows),
+            '<p class="note">Temporal and segment slices are generated only when prerequisite columns exist; skipped status is recorded explicitly.</p>',
+            "</section>",
+        ]
+    )
+
+
 def _render_reproducibility(site_data: Mapping[str, Any]) -> str:
     metadata = dict(site_data.get("metadata", {}))
     downloads = dict(site_data.get("downloads", {}))
     traceability = dict(site_data.get("traceability", {}))
     pipeline_status = dict(site_data.get("pipeline_status", {}))
+    run_status = dict(site_data.get("run_status_summary", {}))
 
     reproducibility_rows = [
         ["Generated at", f"<code>{_esc(metadata.get('generated_at', 'n/a'))}</code>"],
         ["Generated by", f"<code>{_esc(metadata.get('generated_by', 'n/a'))}</code>"],
         ["Git SHA", f"<code>{_esc(metadata.get('git_sha', 'n/a'))}</code>"],
+        [
+            "Latest successful run",
+            f"<code>{_esc(run_status.get('latest_successful_run_timestamp', 'n/a'))}</code>",
+        ],
+        [
+            "Latest attempted status",
+            f"<code>{_esc(run_status.get('latest_attempted_status', 'n/a'))}</code>",
+        ],
+        [
+            "Latest attempted timestamp",
+            f"<code>{_esc(run_status.get('latest_attempted_timestamp', 'n/a'))}</code>",
+        ],
     ]
 
     pipeline_rows: list[list[str]] = []
     for stage in pipeline_status.get("stages", []):
+        log_path = str(stage.get("log", "n/a"))
         pipeline_rows.append(
             [
                 f"<code>{_esc(stage.get('stage', 'unknown'))}</code>",
                 _esc(stage.get("status", "unknown")),
-                f"<code>{_esc(stage.get('log', 'n/a'))}</code>",
+                f"<code>{_esc(log_path)}</code>",
             ]
         )
 
@@ -894,7 +1232,19 @@ def _render_reproducibility(site_data: Mapping[str, Any]) -> str:
         _download_link("Report (PDF)", downloads.get("report_pdf")),
         _download_link("Traceability JSON", downloads.get("traceability")),
         _download_link("Provenance Manifest", downloads.get("provenance_manifest")),
+        _download_link("Run Summary", downloads.get("run_summary")),
     ]
+    failure_log_link = run_status.get("latest_failure_log_published_path")
+    if not failure_log_link:
+        failure_log_link = run_status.get("latest_failure_log_path")
+
+    run_log_links = []
+    for item in run_status.get("published_log_artifacts", []):
+        run_log_links.append(
+            f'<li><a href="{_esc(item)}" target="_blank" rel="noopener">{_esc(item)}</a></li>'
+        )
+    if not run_log_links:
+        run_log_links.append("<li>No published run logs recorded.</li>")
 
     return "\n".join(
         [
@@ -907,6 +1257,21 @@ def _render_reproducibility(site_data: Mapping[str, Any]) -> str:
             "\n".join(download_list),
             "</ul>",
             "</div>",
+            "</section>",
+            '<section class="panel">',
+            "<h2>Run Status Hardening</h2>",
+            _render_table(["Field", "Value"], reproducibility_rows),
+            '<div class="callout">Latest successful run and latest attempted run status are surfaced from phase-7 run metadata and linked logs.</div>',
+            "<h3>Failure Log</h3>",
+            (
+                f'<p><a href="{_esc(failure_log_link)}" target="_blank" rel="noopener">{_esc(failure_log_link)}</a></p>'
+                if failure_log_link
+                else "<p>No failure log recorded.</p>"
+            ),
+            "<h3>Published Run Logs</h3>",
+            "<ul>",
+            "\n".join(run_log_links),
+            "</ul>",
             "</section>",
             '<section class="panel">',
             "<h2>Pipeline Status</h2>",
@@ -980,6 +1345,12 @@ def render_site(args: argparse.Namespace) -> Path:
             "Explainability",
             "explainability",
             _render_explainability(site_data=site_data, asset_lookup=asset_lookup),
+        ),
+        (
+            "error-analysis.html",
+            "Error Analysis",
+            "error_analysis",
+            _render_error_analysis(site_data),
         ),
         (
             "reproducibility.html",

@@ -83,6 +83,24 @@ def _fixture_project(project_root: Path) -> Path:
         )
         + "\n",
     )
+    _write(
+        project_root / "artifacts/models/phase8/selected_model.json",
+        json.dumps(
+            {
+                "best_model_family": "logreg",
+                "artifact_root": "artifacts/models/phase8/logreg",
+                "metrics": {
+                    "accuracy": 0.66,
+                    "f1_macro": 0.57,
+                    "precision_macro": 0.58,
+                    "recall_macro": 0.56,
+                },
+                "evaluation_protocol": "stratified_5fold_cv_plus_holdout",
+                "selection_metric": "f1_macro",
+            }
+        )
+        + "\n",
+    )
 
     _write(
         project_root / "artifacts/explainability/phase6/xai_summary.json",
@@ -254,9 +272,13 @@ def test_pages_dataset_outputs_and_sanitizes_paths(tmp_path: Path) -> None:
 
     site_data_path = publish_root / "data/site_data.json"
     publish_manifest_path = publish_root / "data/publication_manifest.json"
+    kpi_summary_path = publish_root / "data/kpi_summary.json"
+    site_quality_path = publish_root / "data/site_quality_report.json"
 
     assert site_data_path.exists()
     assert publish_manifest_path.exists()
+    assert kpi_summary_path.exists()
+    assert site_quality_path.exists()
 
     site_data = json.loads(site_data_path.read_text(encoding="utf-8"))
     publish_manifest = json.loads(publish_manifest_path.read_text(encoding="utf-8"))
@@ -269,6 +291,7 @@ def test_pages_dataset_outputs_and_sanitizes_paths(tmp_path: Path) -> None:
 
     assert site_data["summary"]["published_assets"] >= 10
     assert site_data["downloads"]["report_html"]
+    assert site_data["kpi_summary"]["source"] == "phase8_selected_model"
 
 
 def test_pages_dataset_allows_missing_optional_inputs(tmp_path: Path) -> None:

@@ -1,0 +1,16 @@
+{
+  "generated_at": "2026-02-13T19:51:56Z",
+  "generated_files": [
+    "question_intent_error_map.csv",
+    "segment_summary.json",
+    "temporal_summary.json"
+  ],
+  "metadata": {
+    "question_intent_status": "generated",
+    "segment_status": "skipped",
+    "temporal_status": "skipped"
+  },
+  "phase": "phase9",
+  "source_data": "data/processed/evasionbench_prepared.parquet",
+  "stage": "exploration"
+}

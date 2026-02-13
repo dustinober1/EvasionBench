@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -58,6 +59,7 @@ def test_pages_renderer_outputs_required_pages(tmp_path: Path) -> None:
         site_root / "findings.html",
         site_root / "modeling.html",
         site_root / "explainability.html",
+        site_root / "error-analysis.html",
         site_root / "reproducibility.html",
         site_root / "static/site.css",
         site_root / ".nojekyll",
@@ -68,8 +70,28 @@ def test_pages_renderer_outputs_required_pages(tmp_path: Path) -> None:
     index_html = (site_root / "index.html").read_text(encoding="utf-8")
     methodology_html = (site_root / "methodology.html").read_text(encoding="utf-8")
     modeling_html = (site_root / "modeling.html").read_text(encoding="utf-8")
+    repro_html = (site_root / "reproducibility.html").read_text(encoding="utf-8")
 
     assert "EvasionBench Findings Portal" in index_html
     assert 'href="methodology.html"' in index_html
-    assert "Methodological Design" in methodology_html
+    assert "Study Design" in methodology_html
     assert "Classical Benchmark Table" in modeling_html
+    assert "Run Status Hardening" in repro_html
+
+    html_files = [
+        site_root / "index.html",
+        site_root / "methodology.html",
+        site_root / "findings.html",
+        site_root / "modeling.html",
+        site_root / "explainability.html",
+        site_root / "error-analysis.html",
+        site_root / "reproducibility.html",
+    ]
+    pattern = re.compile(r'(?:href|src)="([^"]+)"')
+    for html_path in html_files:
+        payload = html_path.read_text(encoding="utf-8")
+        for ref in pattern.findall(payload):
+            if ref.startswith(("http://", "https://", "#", "mailto:")):
+                continue
+            target = site_root / ref
+            assert target.exists(), f"{html_path.name} -> {ref}"

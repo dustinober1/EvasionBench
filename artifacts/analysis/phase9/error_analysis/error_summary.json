@@ -1,0 +1,130 @@
+{
+  "analysis_version": "phase9-error-analysis-v1",
+  "baseline_model": {
+    "artifact_root": "artifacts/models/phase5/logreg",
+    "classification_report": "artifacts/models/phase5/logreg/classification_report.json",
+    "family": "logreg"
+  },
+  "generated_at": "2026-02-13T19:51:51Z",
+  "hardest_classes": [
+    {
+      "baseline_available": false,
+      "baseline_f1": null,
+      "baseline_precision": null,
+      "baseline_recall": null,
+      "f1_delta": null,
+      "label": "fully_evasive",
+      "precision_delta": null,
+      "recall_delta": null,
+      "selected_f1": 0.3688760806916426,
+      "selected_precision": 0.28699551569506726,
+      "selected_recall": 0.5161290322580645,
+      "support": 124.0
+    },
+    {
+      "baseline_available": false,
+      "baseline_f1": null,
+      "baseline_precision": null,
+      "baseline_recall": null,
+      "f1_delta": null,
+      "label": "intermediate",
+      "precision_delta": null,
+      "recall_delta": null,
+      "selected_f1": 0.6181575433911882,
+      "selected_precision": 0.6076115485564304,
+      "selected_recall": 0.6290760869565217,
+      "support": 1472.0
+    },
+    {
+      "baseline_available": false,
+      "baseline_f1": null,
+      "baseline_precision": null,
+      "baseline_recall": null,
+      "f1_delta": null,
+      "label": "direct",
+      "precision_delta": null,
+      "recall_delta": null,
+      "selected_f1": 0.6694535682293222,
+      "selected_precision": 0.7010631644777986,
+      "selected_recall": 0.6405714285714286,
+      "support": 1750.0
+    }
+  ],
+  "per_class_deltas": [
+    {
+      "baseline_available": false,
+      "baseline_f1": null,
+      "baseline_precision": null,
+      "baseline_recall": null,
+      "f1_delta": null,
+      "label": "direct",
+      "precision_delta": null,
+      "recall_delta": null,
+      "selected_f1": 0.6694535682293222,
+      "selected_precision": 0.7010631644777986,
+      "selected_recall": 0.6405714285714286,
+      "support": 1750.0
+    },
+    {
+      "baseline_available": false,
+      "baseline_f1": null,
+      "baseline_precision": null,
+      "baseline_recall": null,
+      "f1_delta": null,
+      "label": "fully_evasive",
+      "precision_delta": null,
+      "recall_delta": null,
+      "selected_f1": 0.3688760806916426,
+      "selected_precision": 0.28699551569506726,
+      "selected_recall": 0.5161290322580645,
+      "support": 124.0
+    },
+    {
+      "baseline_available": false,
+      "baseline_f1": null,
+      "baseline_precision": null,
+      "baseline_recall": null,
+      "f1_delta": null,
+      "label": "intermediate",
+      "precision_delta": null,
+      "recall_delta": null,
+      "selected_f1": 0.6181575433911882,
+      "selected_precision": 0.6076115485564304,
+      "selected_recall": 0.6290760869565217,
+      "support": 1472.0
+    }
+  ],
+  "selected_model": {
+    "artifact_root": "artifacts/models/phase8/logreg",
+    "classification_report": "artifacts/models/phase8/logreg/classification_report.json",
+    "confusion_matrix": "artifacts/models/phase8/logreg/confusion_matrix.json",
+    "family": "logreg"
+  },
+  "top_misclassification_routes": [
+    {
+      "count": 71,
+      "global_error_share": 0.05749,
+      "predicted_label": "fully_evasive",
+      "true_label": "direct",
+      "true_label_route_share": 0.112878,
+      "true_label_total_errors": 629
+    },
+    {
+      "count": 558,
+      "global_error_share": 0.451822,
+      "predicted_label": "intermediate",
+      "true_label": "direct",
+      "true_label_route_share": 0.887122,
+      "true_label_total_errors": 629
+    },
+    {
+      "count": 20,
+      "global_error_share": 0.016194,
+      "predicted_label": "direct",
+      "true_label": "fully_evasive",
+      "true_label_route_share": 0.333333,
+      "true_label_total_errors": 60
+    }
+  ],
+  "total_misclassifications": 1235
+}

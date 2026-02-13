@@ -1,0 +1,7 @@
+true_label,predicted_label,count,true_label_total_errors,true_label_route_share,global_error_share
+direct,intermediate,558,629,0.887122,0.451822
+intermediate,direct,458,546,0.838828,0.37085
+intermediate,fully_evasive,88,546,0.161172,0.071255
+direct,fully_evasive,71,629,0.112878,0.05749
+fully_evasive,intermediate,40,60,0.666667,0.032389
+fully_evasive,direct,20,60,0.333333,0.016194

@@ -32,6 +32,14 @@ jobs:
             --publish-root artifacts/publish \
             --site-root artifacts/publish/site
 
+      - name: Print build summary
+        run: |
+          echo "Pages pipeline summary:"
+          cat artifacts/publish/data/pages_pipeline_summary.json
+          echo
+          echo "Site quality report:"
+          cat artifacts/publish/data/site_quality_report.json
+
       - name: Upload pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
