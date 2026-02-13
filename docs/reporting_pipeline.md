@@ -54,3 +54,17 @@ Install/reinstall dependencies with:
   - Inspect the corresponding file in `artifacts/reports/phase7/logs/`.
 - PDF output looks degraded:
   - Install `weasyprint` and rerun the render stage.
+
+## GitHub Pages Publication
+
+Use the script-first publication pipeline to publish a curated, size-bounded subset of artifacts:
+
+- `python scripts/run_pages_pipeline.py --publish-root artifacts/publish --site-root artifacts/publish/site`
+
+Outputs:
+
+- `artifacts/publish/data/site_data.json`
+- `artifacts/publish/data/publication_manifest.json`
+- `artifacts/publish/site/index.html` and companion section pages
+
+Publication rules, exclusions, and size budgets are documented in `docs/pages_data_contract.md`.

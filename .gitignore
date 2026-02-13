@@ -15,6 +15,7 @@ artifacts/models/phase6/transformer/model/*.pt
 
 # Temporary training outputs
 tmp_transformer_output/
+artifacts/publish/
 
 # Notebook checkpoints
 .ipynb_checkpoints

@@ -129,6 +129,7 @@ EvasionBench/
 | `make format` | Auto-format code with Black |
 | `make run-dashboard` | Launch Streamlit dashboard |
 | `make run-api` | Launch FastAPI server |
+| `make pages-build` | Build curated GitHub Pages site (`artifacts/publish/site`) |
 | `make docker-up` | Start all services via Docker Compose |
 | `make optimize-model` | Run phase-8 CV + holdout optimization and select serving winner |
 
@@ -142,6 +143,7 @@ EvasionBench/
 - [DVC Guide](docs/dvc_guide.md) — Pipeline reproduction and data versioning
 - [Explainability Guide](docs/explainability_guide.md) — SHAP/LIME analysis walkthrough
 - [Model Optimization Guide](docs/model_optimization_guide.md) — Phase-8 tuning, selection, and serving defaults
+- [GitHub Pages Data Contract](docs/pages_data_contract.md) — Publication subset, size budgets, and site output contract
 
 ## Dataset
 
