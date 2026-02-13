@@ -54,7 +54,6 @@ def _exploration_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
                     C=0.8,
                     class_weight="balanced",
                     solver="lbfgs",
-                    multi_class="auto",
                 ),
             ),
         ]

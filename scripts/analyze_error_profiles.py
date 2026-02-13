@@ -135,6 +135,25 @@ def _render_heatmap(
     plt.close(fig)
 
 
+def _render_placeholder_heatmap(*, output_path: Path, message: str) -> None:
+    fig, ax = plt.subplots(figsize=(7, 3))
+    ax.axis("off")
+    ax.text(
+        0.5,
+        0.5,
+        message,
+        ha="center",
+        va="center",
+        fontsize=11,
+        color="#303030",
+        wrap=True,
+    )
+    fig.tight_layout()
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output_path, dpi=150)
+    plt.close(fig)
+
+
 def _clip(text: str, *, width: int = 200) -> str:
     raw = " ".join(str(text).split())
     if len(raw) <= width:
@@ -227,6 +246,77 @@ def _artifact_index(
     return write_json(output_root / "artifact_index.json", payload)
 
 
+def _write_skip_bundle(
+    *,
+    output_root: Path,
+    data_path: Path,
+    project_root: Path,
+    reason: str,
+    selected_summary_path: Path,
+    phase5_summary_path: Path,
+) -> list[Path]:
+    output_root.mkdir(parents=True, exist_ok=True)
+
+    error_summary = {
+        "analysis_version": "phase9-error-analysis-v1",
+        "status": "skipped",
+        "reason": reason,
+        "generated_at": utc_now_iso(),
+        "selected_model_summary_path": normalize_path(
+            selected_summary_path, base=project_root
+        ),
+        "phase5_summary_path": normalize_path(phase5_summary_path, base=project_root),
+        "selected_model": {},
+        "baseline_model": {},
+        "total_misclassifications": 0,
+        "top_misclassification_routes": [],
+        "hardest_classes": [],
+        "per_class_deltas": [],
+    }
+    error_summary_path = write_json(output_root / "error_summary.json", error_summary)
+
+    routes_path = output_root / "misclassification_routes.csv"
+    pd.DataFrame(
+        columns=[
+            "true_label",
+            "predicted_label",
+            "count",
+            "true_label_total_errors",
+            "true_label_route_share",
+            "global_error_share",
+        ]
+    ).to_csv(routes_path, index=False)
+
+    hard_cases_path = output_root / "hard_cases.md"
+    hard_cases_path.write_text(
+        "# Hard Cases\n\n" f"- Analysis skipped: {reason}\n",
+        encoding="utf-8",
+    )
+
+    heatmap_path = output_root / "class_failure_heatmap.png"
+    _render_placeholder_heatmap(
+        output_path=heatmap_path,
+        message=f"Phase-9 error analysis skipped.\n{reason}",
+    )
+
+    generated = [error_summary_path, routes_path, hard_cases_path, heatmap_path]
+    index_path = _artifact_index(
+        output_root=output_root,
+        generated_files=generated,
+        source_data=data_path,
+        metadata={
+            "status": "skipped",
+            "reason": reason,
+            "selected_family": "unknown",
+            "baseline_family": "unknown",
+            "top_route_count": 0,
+        },
+        project_root=project_root,
+    )
+    generated.append(index_path)
+    return generated
+
+
 def run(args: argparse.Namespace) -> list[Path]:
     project_root = Path(args.project_root).resolve()
     output_root = _resolve(args.output_root, project_root=project_root)
@@ -239,16 +329,24 @@ def run(args: argparse.Namespace) -> list[Path]:
     phase5_summary_path = _resolve(args.phase5_summary, project_root=project_root)
 
     if not selected_summary_path.exists():
-        raise FileNotFoundError(
-            f"Missing selected model summary: {normalize_path(selected_summary_path, base=project_root)}"
-        )
-    if not phase5_summary_path.exists():
-        raise FileNotFoundError(
-            f"Missing phase-5 summary: {normalize_path(phase5_summary_path, base=project_root)}"
+        return _write_skip_bundle(
+            output_root=output_root,
+            data_path=data_path,
+            project_root=project_root,
+            reason=(
+                "Missing selected model summary: "
+                + normalize_path(selected_summary_path, base=project_root)
+            ),
+            selected_summary_path=selected_summary_path,
+            phase5_summary_path=phase5_summary_path,
         )
 
     selected_summary = _load_json(selected_summary_path)
-    phase5_summary = _load_json(phase5_summary_path)
+    phase5_summary = (
+        _load_json(phase5_summary_path)
+        if phase5_summary_path.exists()
+        else {"best_model_family": "unknown", "models": {}}
+    )
 
     selected_family = str(selected_summary.get("best_model_family", ""))
     selected_root = _resolve(
@@ -257,9 +355,16 @@ def run(args: argparse.Namespace) -> list[Path]:
     selected_report_path = selected_root / "classification_report.json"
     selected_confusion_path = selected_root / "confusion_matrix.json"
     if not selected_report_path.exists() or not selected_confusion_path.exists():
-        raise FileNotFoundError(
-            "Selected model artifacts must include classification_report.json and "
-            f"confusion_matrix.json under {normalize_path(selected_root, base=project_root)}"
+        return _write_skip_bundle(
+            output_root=output_root,
+            data_path=data_path,
+            project_root=project_root,
+            reason=(
+                "Selected model artifacts must include classification_report.json and "
+                f"confusion_matrix.json under {normalize_path(selected_root, base=project_root)}"
+            ),
+            selected_summary_path=selected_summary_path,
+            phase5_summary_path=phase5_summary_path,
         )
 
     baseline_family = str(phase5_summary.get("best_model_family", ""))
@@ -272,14 +377,11 @@ def run(args: argparse.Namespace) -> list[Path]:
         else project_root / "artifacts" / "models" / "phase5" / baseline_family
     )
     baseline_report_path = baseline_root / "classification_report.json"
-    if not baseline_report_path.exists():
-        raise FileNotFoundError(
-            "Baseline classification report not found: "
-            + normalize_path(baseline_report_path, base=project_root)
-        )
 
     selected_report = _load_json(selected_report_path)
-    baseline_report = _load_json(baseline_report_path)
+    baseline_report = (
+        _load_json(baseline_report_path) if baseline_report_path.exists() else {}
+    )
     selected_confusion = _load_json(selected_confusion_path)
 
     labels = list(selected_confusion.get("labels", []))
@@ -402,12 +504,15 @@ def run(args: argparse.Namespace) -> list[Path]:
         "baseline_model": {
             "family": baseline_family,
             "artifact_root": normalize_path(baseline_root, base=project_root),
-            "classification_report": normalize_path(
-                baseline_report_path, base=project_root
+            "classification_report": (
+                normalize_path(baseline_report_path, base=project_root)
+                if baseline_report_path.exists()
+                else None
             ),
+            "available": baseline_report_path.exists(),
         },
         "total_misclassifications": total_errors,
-        "top_misclassification_routes": route_rows[:3],
+        "top_misclassification_routes": routes.head(3).to_dict(orient="records"),
         "hardest_classes": hardest,
         "per_class_deltas": per_class_delta,
     }

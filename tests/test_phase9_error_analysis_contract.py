@@ -69,7 +69,6 @@ def _phase9_fixture(tmp_path: Path) -> tuple[Path, Path, Path, Path]:
                     C=0.25,
                     class_weight="balanced",
                     solver="lbfgs",
-                    multi_class="auto",
                 ),
             ),
         ]
@@ -87,7 +86,6 @@ def _phase9_fixture(tmp_path: Path) -> tuple[Path, Path, Path, Path]:
                     C=1.2,
                     class_weight="balanced",
                     solver="lbfgs",
-                    multi_class="auto",
                 ),
             ),
         ]

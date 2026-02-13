@@ -2,10 +2,11 @@
   "analysis_version": "phase9-error-analysis-v1",
   "baseline_model": {
     "artifact_root": "artifacts/models/phase5/logreg",
+    "available": true,
     "classification_report": "artifacts/models/phase5/logreg/classification_report.json",
     "family": "logreg"
   },
-  "generated_at": "2026-02-13T19:51:51Z",
+  "generated_at": "2026-02-13T20:11:42Z",
   "hardest_classes": [
     {
       "baseline_available": false,
@@ -102,14 +103,6 @@
   },
   "top_misclassification_routes": [
     {
-      "count": 71,
-      "global_error_share": 0.05749,
-      "predicted_label": "fully_evasive",
-      "true_label": "direct",
-      "true_label_route_share": 0.112878,
-      "true_label_total_errors": 629
-    },
-    {
       "count": 558,
       "global_error_share": 0.451822,
       "predicted_label": "intermediate",
@@ -118,12 +111,20 @@
       "true_label_total_errors": 629
     },
     {
-      "count": 20,
-      "global_error_share": 0.016194,
+      "count": 458,
+      "global_error_share": 0.37085,
       "predicted_label": "direct",
-      "true_label": "fully_evasive",
-      "true_label_route_share": 0.333333,
-      "true_label_total_errors": 60
+      "true_label": "intermediate",
+      "true_label_route_share": 0.838828,
+      "true_label_total_errors": 546
+    },
+    {
+      "count": 88,
+      "global_error_share": 0.071255,
+      "predicted_label": "fully_evasive",
+      "true_label": "intermediate",
+      "true_label_route_share": 0.161172,
+      "true_label_total_errors": 546
     }
   ],
   "total_misclassifications": 1235
