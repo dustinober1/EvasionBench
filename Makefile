@@ -51,7 +51,7 @@ model-phase5:
 	python scripts/run_classical_baselines.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase5 --families all --compare
 
 optimize-model:
-	python scripts/run_model_optimization.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase8 --families all --cv-folds 5 --selection-metric f1_macro --accuracy-floor 0.6431560071727436
+	python scripts/run_model_optimization.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase8 --families all --selection-metric f1_macro --accuracy-floor 0.6431560071727436
 
 verify-artifacts:
 	python scripts/verify_artifact_integrity.py --phase5-root artifacts/models/phase5 --families logreg,tree,boosting --min-train-rows 1000 --expected-label-count 3

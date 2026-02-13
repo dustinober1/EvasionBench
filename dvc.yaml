@@ -171,7 +171,7 @@ stages:
       - artifacts/models/phase5/run_summary.json
 
   phase8_optimize:
-    cmd: python scripts/run_model_optimization.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase8 --families all --cv-folds 5 --selection-metric f1_macro --accuracy-floor 0.6431560071727436
+    cmd: python scripts/run_model_optimization.py --input data/processed/evasionbench_prepared.parquet --output-root artifacts/models/phase8 --families all --selection-metric f1_macro --accuracy-floor 0.6431560071727436
     deps:
       - scripts/run_model_optimization.py
       - src/evaluation.py

@@ -102,7 +102,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--target-col", default="label")
     parser.add_argument("--random-state", type=int, default=42)
     parser.add_argument("--holdout-size", type=float, default=0.2)
-    parser.add_argument("--cv-folds", type=int, default=5)
+    parser.add_argument("--cv-folds", type=int, default=3)
     parser.add_argument(
         "--selection-metric",
         choices=["f1_macro", "accuracy", "precision_macro", "recall_macro"],
@@ -126,7 +126,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--calibration-method",
         choices=["none", "sigmoid"],
-        default="sigmoid",
+        default="none",
         help="Enable calibration candidates for logistic regression",
     )
     return parser.parse_args()
@@ -185,11 +185,11 @@ def _logreg_candidates(random_state: int, calibration_method: str) -> list[Candi
         "balanced",
         {"direct": 1.0, "intermediate": 1.2, "fully_evasive": 2.5},
     ]
-    c_options = [0.3, 1.0, 3.0]
-    ngram_options = [(1, 2), (1, 3)]
-    min_df_options = [1, 2]
-    max_features_options = [10000, None]
-    solver_options = ["liblinear", "saga"]
+    c_options = [0.3, 1.0]
+    ngram_options = [(1, 2)]
+    min_df_options = [2]
+    max_features_options = [10000]
+    solver_options = ["liblinear"]
 
     candidates: list[Candidate] = []
     trial_idx = 1
@@ -268,9 +268,9 @@ def _tree_candidates(random_state: int) -> list[Candidate]:
     candidates: list[Candidate] = []
     trial_idx = 1
 
-    for max_features in (5000, 10000):
-        for max_depth in (None, 10, 20):
-            for n_estimators in (200, 400):
+    for max_features in (5000,):
+        for max_depth in (None, 10):
+            for n_estimators in (200,):
                 pipeline = Pipeline(
                     steps=[
                         (
@@ -316,10 +316,10 @@ def _boosting_candidates(random_state: int) -> list[Candidate]:
     candidates: list[Candidate] = []
     trial_idx = 1
 
-    for max_features in (5000, 10000):
-        for max_depth in (None, 10, 20):
-            for learning_rate in (0.03, 0.1):
-                for max_iter in (100, 200):
+    for max_features in (5000,):
+        for max_depth in (None, 10):
+            for learning_rate in (0.1,):
+                for max_iter in (100,):
                     pipeline = Pipeline(
                         steps=[
                             (
