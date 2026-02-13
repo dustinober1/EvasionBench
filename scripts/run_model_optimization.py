@@ -137,6 +137,12 @@ def parse_args() -> argparse.Namespace:
         help="Calibration method for linear SVM candidates",
     )
     parser.add_argument(
+        "--svm-search-profile",
+        choices=["phase8_2", "phase8_2_wide"],
+        default="phase8_2",
+        help="Linear SVM candidate grid profile",
+    )
+    parser.add_argument(
         "--logreg-search-profile",
         choices=["phase8", "phase8_1"],
         default="phase8",
@@ -349,17 +355,34 @@ def _tree_candidates(random_state: int) -> list[Candidate]:
     return candidates
 
 
-def _svm_candidates(random_state: int, calibration_method: str) -> list[Candidate]:
-    class_weight_options: list[Any] = [
-        None,
-        "balanced",
-        {"direct": 1.0, "intermediate": 1.1, "fully_evasive": 1.6},
-    ]
-    c_options = [0.5, 1.0]
-    ngram_options = [(1, 2)]
-    min_df_options = [1, 2]
-    max_features_options = [8000]
-    max_iter_options = [8000]
+def _svm_candidates(
+    random_state: int,
+    calibration_method: str,
+    search_profile: str,
+) -> list[Candidate]:
+    if search_profile == "phase8_2_wide":
+        class_weight_options: list[Any] = [
+            None,
+            "balanced",
+            {"direct": 1.0, "intermediate": 1.1, "fully_evasive": 1.4},
+            {"direct": 1.0, "intermediate": 1.1, "fully_evasive": 1.6},
+        ]
+        c_options = [0.25, 0.5, 1.0]
+        ngram_options = [(1, 2)]
+        min_df_options = [1, 2, 3]
+        max_features_options = [8000, 12000]
+        max_iter_options = [12000]
+    else:
+        class_weight_options = [
+            None,
+            "balanced",
+            {"direct": 1.0, "intermediate": 1.1, "fully_evasive": 1.6},
+        ]
+        c_options = [0.5, 1.0]
+        ngram_options = [(1, 2)]
+        min_df_options = [1, 2]
+        max_features_options = [8000]
+        max_iter_options = [8000]
 
     candidates: list[Candidate] = []
     trial_idx = 1
@@ -500,6 +523,7 @@ def _candidate_space(
     calibration_method: str,
     logreg_search_profile: str,
     svm_calibration_method: str,
+    svm_search_profile: str,
 ) -> list[Candidate]:
     candidates: list[Candidate] = []
     if "logreg" in families:
@@ -511,7 +535,13 @@ def _candidate_space(
             )
         )
     if "svm" in families:
-        candidates.extend(_svm_candidates(random_state, svm_calibration_method))
+        candidates.extend(
+            _svm_candidates(
+                random_state,
+                svm_calibration_method,
+                svm_search_profile,
+            )
+        )
     if "tree" in families:
         candidates.extend(_tree_candidates(random_state))
     if "boosting" in families:
@@ -696,6 +726,7 @@ def main() -> int:
         args.calibration_method,
         args.logreg_search_profile,
         args.svm_calibration_method,
+        args.svm_search_profile,
     )
     if args.max_trials > 0:
         candidates = candidates[: args.max_trials]
@@ -747,6 +778,7 @@ def main() -> int:
             "families": families,
             "logreg_search_profile": args.logreg_search_profile,
             "svm_calibration_method": args.svm_calibration_method,
+            "svm_search_profile": args.svm_search_profile,
             "trial_count": len(results),
             "winner_rule": winner_rule,
             "winner_trial_id": winner_result.trial_id,
@@ -823,6 +855,7 @@ def main() -> int:
                 "families": json.dumps(families),
                 "logreg_search_profile": args.logreg_search_profile,
                 "svm_calibration_method": args.svm_calibration_method,
+                "svm_search_profile": args.svm_search_profile,
                 "trial_count": len(results),
                 "winner_trial_id": winner_result.trial_id,
                 "winner_family": winner_result.family,

@@ -1,0 +1,23 @@
+{
+  "accuracy_floor": 0.64,
+  "artifact_root": "artifacts/models/phase8_2b/svm",
+  "best_model_family": "svm",
+  "cv_folds": 3,
+  "deltas_vs_accuracy_floor": {
+    "accuracy_delta": 0.005845786013150001
+  },
+  "evaluation_protocol": "stratified_5fold_cv_plus_holdout",
+  "git_sha": "fdedf9b",
+  "holdout_fully_evasive_f1": 0.2127659574468085,
+  "metrics": {
+    "accuracy": 0.64584578601315,
+    "f1_macro": 0.503867175572755,
+    "precision_macro": 0.7217359736751684,
+    "recall_macro": 0.480165230748681
+  },
+  "model_path": "artifacts/models/phase8_2b/svm/model.pkl",
+  "random_state": 42,
+  "selection_metric": "f1_macro",
+  "winner_rule": "accuracy_floor_enforced",
+  "winner_trial_id": "svm_0007"
+}
