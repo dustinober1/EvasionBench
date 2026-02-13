@@ -78,3 +78,47 @@ def test_phase8_optimizer_writes_contract_and_selection(tmp_path: Path) -> None:
     assert (winner_root / "classification_report.json").exists()
     assert (winner_root / "confusion_matrix.json").exists()
     assert (winner_root / "run_metadata.json").exists()
+
+
+def test_phase8_optimizer_supports_advanced_nlp_profile(tmp_path: Path) -> None:
+    data_path = tmp_path / "prepared.parquet"
+    output_root = tmp_path / "phase8_nlp"
+    _prepared_data(data_path)
+
+    subprocess.run(
+        [
+            sys.executable,
+            "scripts/run_model_optimization.py",
+            "--input",
+            str(data_path),
+            "--output-root",
+            str(output_root),
+            "--families",
+            "logreg",
+            "--cv-folds",
+            "3",
+            "--max-trials",
+            "3",
+            "--calibration-method",
+            "none",
+            "--logreg-search-profile",
+            "phase9_nlp",
+            "--tracking-uri",
+            f"file:{tmp_path / 'mlruns'}",
+            "--experiment-name",
+            "phase8-test-phase9-nlp",
+        ],
+        check=True,
+    )
+
+    assert (output_root / "optimization_trials.csv").exists()
+    assert (output_root / "cv_summary.json").exists()
+    assert (output_root / "selected_model.json").exists()
+    assert (output_root / "holdout_metrics.json").exists()
+
+    selected = json.loads((output_root / "selected_model.json").read_text("utf-8"))
+    assert selected["best_model_family"] == "logreg"
+
+    winner_root = output_root / selected["best_model_family"]
+    assert (winner_root / "model.pkl").exists()
+    assert (winner_root / "metrics.json").exists()

@@ -1,0 +1,27 @@
+{
+  "accuracy_floor": 0.63,
+  "cv_folds": 3,
+  "evaluation_protocol": "stratified_5fold_cv_plus_holdout",
+  "families": [
+    "logreg"
+  ],
+  "git_sha": "2bc1eec",
+  "logreg_search_profile": "phase9_nlp",
+  "random_state": 84,
+  "selection_metric": "f1_macro",
+  "sgd_calibration_method": "sigmoid",
+  "sgd_search_profile": "phase8_3",
+  "split": {
+    "holdout_rows": 3346,
+    "holdout_size": 0.2,
+    "method": "stratified_train_holdout",
+    "random_state": 84,
+    "stratify": true,
+    "train_rows": 13380
+  },
+  "svm_calibration_method": "sigmoid",
+  "svm_search_profile": "phase8_2",
+  "trial_count": 6,
+  "winner_rule": "accuracy_floor_enforced",
+  "winner_trial_id": "logreg_0002"
+}

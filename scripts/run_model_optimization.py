@@ -21,7 +21,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.metrics import classification_report
 from sklearn.model_selection import StratifiedKFold, train_test_split
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import FeatureUnion, Pipeline
+from sklearn.preprocessing import Normalizer
 from sklearn.svm import LinearSVC
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -156,7 +157,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--logreg-search-profile",
-        choices=["phase8", "phase8_1"],
+        choices=["phase8", "phase8_1", "phase9_nlp"],
         default="phase8",
         help="Logistic regression candidate grid profile",
     )
@@ -218,6 +219,196 @@ def _logreg_candidates(
     calibration_method: str,
     search_profile: str,
 ) -> list[Candidate]:
+    if search_profile == "phase9_nlp":
+        class_weight_options: list[Any] = [
+            "balanced",
+            {"direct": 1.0, "intermediate": 1.15, "fully_evasive": 1.8},
+        ]
+        c_options = [0.6, 1.0]
+        min_df_options = [1, 2]
+        max_features_options = [12000]
+        solver_options = ["lbfgs"]
+        max_iter_options = [2500]
+        char_ngram_options = [(3, 5)]
+        lsa_options: list[int | None] = [None, 256]
+
+        candidates: list[Candidate] = []
+        trial_idx = 1
+
+        for c_value in c_options:
+            for min_df in min_df_options:
+                for max_features in max_features_options:
+                    for solver in solver_options:
+                        for max_iter in max_iter_options:
+                            for class_weight in class_weight_options:
+                                base_params = {
+                                    "C": c_value,
+                                    "word_ngram_range": (1, 2),
+                                    "min_df": min_df,
+                                    "max_features": max_features,
+                                    "solver": solver,
+                                    "max_iter": max_iter,
+                                    "class_weight": class_weight,
+                                    "sublinear_tf": True,
+                                }
+
+                                word_only_pipeline = Pipeline(
+                                    steps=[
+                                        (
+                                            "tfidf",
+                                            TfidfVectorizer(
+                                                ngram_range=(1, 2),
+                                                min_df=min_df,
+                                                max_features=max_features,
+                                                sublinear_tf=True,
+                                                strip_accents="unicode",
+                                            ),
+                                        ),
+                                        (
+                                            "clf",
+                                            LogisticRegression(
+                                                C=c_value,
+                                                solver=solver,
+                                                class_weight=class_weight,
+                                                max_iter=max_iter,
+                                                random_state=random_state,
+                                            ),
+                                        ),
+                                    ]
+                                )
+                                trial_id = f"logreg_{trial_idx:04d}"
+                                candidates.append(
+                                    Candidate(
+                                        trial_id=trial_id,
+                                        family="logreg",
+                                        estimator=word_only_pipeline,
+                                        params={
+                                            **base_params,
+                                            "feature_profile": "word_tfidf_sublinear",
+                                            "calibration": "none",
+                                        },
+                                    )
+                                )
+                                if calibration_method != "none":
+                                    calibrated = CalibratedClassifierCV(
+                                        estimator=word_only_pipeline,
+                                        method=calibration_method,
+                                        cv=3,
+                                    )
+                                    candidates.append(
+                                        Candidate(
+                                            trial_id=f"{trial_id}_cal",
+                                            family="logreg",
+                                            estimator=calibrated,
+                                            params={
+                                                **base_params,
+                                                "feature_profile": "word_tfidf_sublinear",
+                                                "calibration": calibration_method,
+                                                "calibration_cv": 3,
+                                            },
+                                        )
+                                    )
+                                trial_idx += 1
+
+                                for char_ngram in char_ngram_options:
+                                    for lsa_components in lsa_options:
+                                        hybrid_features = FeatureUnion(
+                                            transformer_list=[
+                                                (
+                                                    "word_tfidf",
+                                                    TfidfVectorizer(
+                                                        ngram_range=(1, 2),
+                                                        min_df=min_df,
+                                                        max_features=max_features,
+                                                        sublinear_tf=True,
+                                                        strip_accents="unicode",
+                                                    ),
+                                                ),
+                                                (
+                                                    "char_tfidf",
+                                                    TfidfVectorizer(
+                                                        analyzer="char_wb",
+                                                        ngram_range=char_ngram,
+                                                        min_df=min_df,
+                                                        max_features=max_features,
+                                                        sublinear_tf=True,
+                                                        strip_accents="unicode",
+                                                    ),
+                                                ),
+                                            ]
+                                        )
+
+                                        hybrid_steps: list[tuple[str, Any]] = [
+                                            ("features", hybrid_features)
+                                        ]
+                                        if lsa_components is not None:
+                                            hybrid_steps.extend(
+                                                [
+                                                    (
+                                                        "svd",
+                                                        SafeTruncatedSVD(
+                                                            n_components=lsa_components,
+                                                            random_state=random_state,
+                                                        ),
+                                                    ),
+                                                    ("norm", Normalizer(copy=False)),
+                                                ]
+                                            )
+                                        hybrid_steps.append(
+                                            (
+                                                "clf",
+                                                LogisticRegression(
+                                                    C=c_value,
+                                                    solver=solver,
+                                                    class_weight=class_weight,
+                                                    max_iter=max_iter,
+                                                    random_state=random_state,
+                                                ),
+                                            )
+                                        )
+                                        hybrid_pipeline = Pipeline(steps=hybrid_steps)
+
+                                        trial_id = f"logreg_{trial_idx:04d}"
+                                        candidate_params = {
+                                            **base_params,
+                                            "char_ngram_range": char_ngram,
+                                            "char_max_features": max_features,
+                                            "feature_profile": "hybrid_word_char_tfidf",
+                                            "lsa_components": lsa_components,
+                                        }
+                                        candidates.append(
+                                            Candidate(
+                                                trial_id=trial_id,
+                                                family="logreg",
+                                                estimator=hybrid_pipeline,
+                                                params={
+                                                    **candidate_params,
+                                                    "calibration": "none",
+                                                },
+                                            )
+                                        )
+                                        if calibration_method != "none":
+                                            calibrated = CalibratedClassifierCV(
+                                                estimator=hybrid_pipeline,
+                                                method=calibration_method,
+                                                cv=3,
+                                            )
+                                            candidates.append(
+                                                Candidate(
+                                                    trial_id=f"{trial_id}_cal",
+                                                    family="logreg",
+                                                    estimator=calibrated,
+                                                    params={
+                                                        **candidate_params,
+                                                        "calibration": calibration_method,
+                                                        "calibration_cv": 3,
+                                                    },
+                                                )
+                                            )
+                                        trial_idx += 1
+
+        return candidates
+
     if search_profile == "phase8_1":
         class_weight_options: list[Any] = [
             "balanced",

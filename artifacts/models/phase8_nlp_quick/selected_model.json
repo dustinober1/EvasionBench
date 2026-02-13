@@ -1,0 +1,23 @@
+{
+  "accuracy_floor": 0.63,
+  "artifact_root": "artifacts/models/phase8_nlp_quick/logreg",
+  "best_model_family": "logreg",
+  "cv_folds": 3,
+  "deltas_vs_accuracy_floor": {
+    "accuracy_delta": 5.9772863120199915e-06
+  },
+  "evaluation_protocol": "stratified_5fold_cv_plus_holdout",
+  "git_sha": "2bc1eec",
+  "holdout_fully_evasive_f1": 0.36666666666666664,
+  "metrics": {
+    "accuracy": 0.630005977286312,
+    "f1_macro": 0.5515550180123201,
+    "precision_macro": 0.5307243369360989,
+    "recall_macro": 0.6001864355840513
+  },
+  "model_path": "artifacts/models/phase8_nlp_quick/logreg/model.pkl",
+  "random_state": 84,
+  "selection_metric": "f1_macro",
+  "winner_rule": "accuracy_floor_enforced",
+  "winner_trial_id": "logreg_0002"
+}

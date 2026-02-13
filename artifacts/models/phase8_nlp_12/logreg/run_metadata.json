@@ -1,0 +1,49 @@
+{
+  "accuracy_floor": 0.63,
+  "cv_folds": 3,
+  "evaluation_protocol": "stratified_5fold_cv_plus_holdout",
+  "feature_config": {
+    "combined_feature": "question [SEP] answer"
+  },
+  "git_sha": "2bc1eec",
+  "labels": [
+    "direct",
+    "fully_evasive",
+    "intermediate"
+  ],
+  "model_config": {
+    "C": 0.6,
+    "calibration": "none",
+    "char_max_features": 12000,
+    "char_ngram_range": [
+      3,
+      5
+    ],
+    "class_weight": "balanced",
+    "feature_profile": "hybrid_word_char_tfidf",
+    "lsa_components": null,
+    "max_features": 12000,
+    "max_iter": 2500,
+    "min_df": 1,
+    "solver": "lbfgs",
+    "sublinear_tf": true,
+    "word_ngram_range": [
+      1,
+      2
+    ]
+  },
+  "model_family": "logreg",
+  "selection_metric": "f1_macro",
+  "split_metadata": {
+    "holdout_rows": 3346,
+    "holdout_size": 0.2,
+    "method": "stratified_train_holdout",
+    "random_state": 84,
+    "stratify": true,
+    "train_rows": 13380
+  },
+  "split_seed": 84,
+  "test_rows": 3346,
+  "test_size": 0.2,
+  "train_rows": 13380
+}
