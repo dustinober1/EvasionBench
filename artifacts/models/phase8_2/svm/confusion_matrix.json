@@ -1,0 +1,24 @@
+{
+  "confusion_matrix": [
+    [
+      1280,
+      1,
+      469
+    ],
+    [
+      55,
+      14,
+      55
+    ],
+    [
+      637,
+      1,
+      834
+    ]
+  ],
+  "labels": [
+    "direct",
+    "fully_evasive",
+    "intermediate"
+  ]
+}
