@@ -14,10 +14,14 @@
   "model_config": {
     "C": 0.8,
     "calibration": "none",
-    "class_weight": "balanced",
-    "max_features": 15000,
+    "class_weight": {
+      "direct": 1.0,
+      "fully_evasive": 2.2,
+      "intermediate": 1.2
+    },
+    "max_features": 8000,
     "max_iter": 2000,
-    "min_df": 1,
+    "min_df": 2,
     "ngram_range": [
       1,
       2
@@ -30,11 +34,11 @@
     "holdout_rows": 3346,
     "holdout_size": 0.2,
     "method": "stratified_train_holdout",
-    "random_state": 84,
+    "random_state": 21,
     "stratify": true,
     "train_rows": 13380
   },
-  "split_seed": 84,
+  "split_seed": 21,
   "test_rows": 3346,
   "test_size": 0.2,
   "train_rows": 13380

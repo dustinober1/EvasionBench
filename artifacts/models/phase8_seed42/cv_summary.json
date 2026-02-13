@@ -6,17 +6,17 @@
     "logreg"
   ],
   "git_sha": "2e381ad",
-  "random_state": 84,
+  "random_state": 42,
   "selection_metric": "f1_macro",
   "split": {
     "holdout_rows": 3346,
     "holdout_size": 0.2,
     "method": "stratified_train_holdout",
-    "random_state": 84,
+    "random_state": 42,
     "stratify": true,
     "train_rows": 13380
   },
   "trial_count": 72,
   "winner_rule": "accuracy_floor_enforced",
-  "winner_trial_id": "logreg_0059"
+  "winner_trial_id": "logreg_0056"
 }

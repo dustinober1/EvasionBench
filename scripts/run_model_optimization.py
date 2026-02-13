@@ -183,13 +183,14 @@ def _split_holdout(
 def _logreg_candidates(random_state: int, calibration_method: str) -> list[Candidate]:
     class_weight_options: list[Any] = [
         "balanced",
-        {"direct": 1.0, "intermediate": 1.2, "fully_evasive": 2.5},
+        {"direct": 1.0, "intermediate": 1.2, "fully_evasive": 2.2},
     ]
-    c_options = [0.3, 1.0]
+    c_options = [0.2, 0.3, 0.5, 0.8]
     ngram_options = [(1, 2)]
-    min_df_options = [2]
-    max_features_options = [10000]
-    solver_options = ["liblinear"]
+    min_df_options = [1, 2, 3]
+    max_features_options = [8000, 10000, 15000]
+    solver_options = ["lbfgs"]
+    max_iter_options = [2000]
 
     candidates: list[Candidate] = []
     trial_idx = 1
@@ -199,67 +200,69 @@ def _logreg_candidates(random_state: int, calibration_method: str) -> list[Candi
             for min_df in min_df_options:
                 for max_features in max_features_options:
                     for solver in solver_options:
-                        for class_weight in class_weight_options:
-                            params = {
-                                "C": c_value,
-                                "ngram_range": ngram_range,
-                                "min_df": min_df,
-                                "max_features": max_features,
-                                "solver": solver,
-                                "class_weight": class_weight,
-                            }
-                            pipeline = Pipeline(
-                                steps=[
-                                    (
-                                        "tfidf",
-                                        TfidfVectorizer(
-                                            ngram_range=ngram_range,
-                                            min_df=min_df,
-                                            max_features=max_features,
+                        for max_iter in max_iter_options:
+                            for class_weight in class_weight_options:
+                                params = {
+                                    "C": c_value,
+                                    "ngram_range": ngram_range,
+                                    "min_df": min_df,
+                                    "max_features": max_features,
+                                    "solver": solver,
+                                    "max_iter": max_iter,
+                                    "class_weight": class_weight,
+                                }
+                                pipeline = Pipeline(
+                                    steps=[
+                                        (
+                                            "tfidf",
+                                            TfidfVectorizer(
+                                                ngram_range=ngram_range,
+                                                min_df=min_df,
+                                                max_features=max_features,
+                                            ),
                                         ),
-                                    ),
-                                    (
-                                        "clf",
-                                        LogisticRegression(
-                                            C=c_value,
-                                            solver=solver,
-                                            class_weight=class_weight,
-                                            max_iter=1000,
-                                            random_state=random_state,
+                                        (
+                                            "clf",
+                                            LogisticRegression(
+                                                C=c_value,
+                                                solver=solver,
+                                                class_weight=class_weight,
+                                                max_iter=max_iter,
+                                                random_state=random_state,
+                                            ),
                                         ),
-                                    ),
-                                ]
-                            )
-                            trial_id = f"logreg_{trial_idx:04d}"
-                            candidates.append(
-                                Candidate(
-                                    trial_id=trial_id,
-                                    family="logreg",
-                                    estimator=pipeline,
-                                    params={**params, "calibration": "none"},
+                                    ]
                                 )
-                            )
-
-                            if calibration_method != "none":
-                                calibrated = CalibratedClassifierCV(
-                                    estimator=pipeline,
-                                    method=calibration_method,
-                                    cv=3,
-                                )
+                                trial_id = f"logreg_{trial_idx:04d}"
                                 candidates.append(
                                     Candidate(
-                                        trial_id=f"{trial_id}_cal",
+                                        trial_id=trial_id,
                                         family="logreg",
-                                        estimator=calibrated,
-                                        params={
-                                            **params,
-                                            "calibration": calibration_method,
-                                            "calibration_cv": 3,
-                                        },
+                                        estimator=pipeline,
+                                        params={**params, "calibration": "none"},
                                     )
                                 )
 
-                            trial_idx += 1
+                                if calibration_method != "none":
+                                    calibrated = CalibratedClassifierCV(
+                                        estimator=pipeline,
+                                        method=calibration_method,
+                                        cv=3,
+                                    )
+                                    candidates.append(
+                                        Candidate(
+                                            trial_id=f"{trial_id}_cal",
+                                            family="logreg",
+                                            estimator=calibrated,
+                                            params={
+                                                **params,
+                                                "calibration": calibration_method,
+                                                "calibration_cv": 3,
+                                            },
+                                        )
+                                    )
+
+                                trial_idx += 1
 
     return candidates
 
