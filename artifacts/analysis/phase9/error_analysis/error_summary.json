@@ -6,7 +6,7 @@
     "classification_report": "artifacts/models/phase5/logreg/classification_report.json",
     "family": "logreg"
   },
-  "generated_at": "2026-02-13T20:11:42Z",
+  "generated_at": "2026-02-13T20:16:59Z",
   "hardest_classes": [
     {
       "baseline_available": false,

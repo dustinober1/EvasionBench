@@ -284,6 +284,56 @@ def _artifact_index(
     return write_json(output_root / "artifact_index.json", payload)
 
 
+def _write_skip_bundle(
+    *,
+    output_root: Path,
+    input_path: Path,
+    project_root: Path,
+    reason: str,
+) -> list[Path]:
+    output_root.mkdir(parents=True, exist_ok=True)
+    temporal = {
+        "status": "skipped",
+        "reason": reason,
+        "prediction_status": "skipped",
+    }
+    segment = {
+        "status": "skipped",
+        "reason": reason,
+        "prediction_status": "skipped",
+    }
+    temporal_path = write_json(output_root / "temporal_summary.json", temporal)
+    segment_path = write_json(output_root / "segment_summary.json", segment)
+
+    question_intent_path = output_root / "question_intent_error_map.csv"
+    pd.DataFrame(
+        columns=[
+            "question_type",
+            "n_samples",
+            "n_errors",
+            "error_rate",
+            "intermediate_to_fully_evasive",
+            "fully_evasive_to_intermediate",
+        ]
+    ).to_csv(question_intent_path, index=False)
+
+    generated = [temporal_path, segment_path, question_intent_path]
+    index_path = _artifact_index(
+        output_root=output_root,
+        source_data=input_path,
+        generated_files=generated,
+        temporal_status="skipped",
+        segment_status="skipped",
+        question_intent_status="skipped",
+        project_root=project_root,
+    )
+    payload = _load_json(index_path)
+    payload["metadata"]["reason"] = reason
+    write_json(index_path, payload)
+    generated.append(index_path)
+    return generated
+
+
 def run(args: argparse.Namespace) -> list[Path]:
     project_root = Path(args.project_root).resolve()
     input_path = _resolve(args.input, project_root=project_root)
@@ -294,15 +344,24 @@ def run(args: argparse.Namespace) -> list[Path]:
     output_root.mkdir(parents=True, exist_ok=True)
 
     if not input_path.exists():
-        raise FileNotFoundError(
-            f"Missing prepared dataset: {normalize_path(input_path, base=project_root)}"
+        return _write_skip_bundle(
+            output_root=output_root,
+            input_path=input_path,
+            project_root=project_root,
+            reason=(
+                "Missing prepared dataset: "
+                + normalize_path(input_path, base=project_root)
+            ),
         )
 
     frame = pd.read_parquet(input_path)
     required = {"question", "answer", "label"}
     if not required.issubset(frame.columns):
-        raise ValueError(
-            "Prepared dataset must include columns: question, answer, label"
+        return _write_skip_bundle(
+            output_root=output_root,
+            input_path=input_path,
+            project_root=project_root,
+            reason="Prepared dataset must include columns: question, answer, label",
         )
 
     selected_summary: dict[str, Any] = {}
